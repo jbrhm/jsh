@@ -1,6 +1,10 @@
 #include "pch.hpp"
 
-int main(int argc, char** argv){
+int main(int argc, char* argv[], char* envp[]){
+    // TODO: remove
+    jsh::environment env(envp);
+    env.print();
+
     jsh::set_log_level(1);
 
     std::cout << "Welcome to John's Shell\n";
