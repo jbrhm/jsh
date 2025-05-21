@@ -17,4 +17,5 @@ Operators:
 - `|` (WIP): The `|` (pipe) operator chains together two commands such that the standard output of the first command becomes the standard input for the second command.
 - `&&` (WIP): The `&&` (and) operator chains together two commands without altering either of them.
 
-
+> [!IMPORTANT]  
+> Operator chaining must be used in the form `$<first command and args><whitespace><operator><whitespace><second command and args>`
