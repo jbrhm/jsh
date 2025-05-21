@@ -1,13 +1,9 @@
 #include "pch.hpp"
 
 int main(int argc, char* argv[], char* envp[]){
-    // TODO: remove
-    jsh::environment env(envp);
-    env.print();
-
     jsh::set_log_level(1);
 
-    std::cout << "Welcome to John's Shell\n";
+    jsh::cout_logger.log(jsh::LOG_LEVEL::SILENT, "Welcome to John's Shell\n");
 
     std::string input;
     std::string arg;
@@ -15,9 +11,9 @@ int main(int argc, char* argv[], char* envp[]){
     std::vector<char*> args_ptr;
     while(true){
         // get the command from the user
-        std::cout << "prompt:";
+        jsh::cout_logger.log(jsh::LOG_LEVEL::SILENT, "prompt:");
         getline(std::cin, input);
-        jsh::log(jsh::LOG_LEVEL::DEBUG, input);
+        jsh::cout_logger.log(jsh::LOG_LEVEL::DEBUG, input);
 
         // parse the command into different components
         std::stringstream ss(input);
@@ -39,7 +35,7 @@ int main(int argc, char* argv[], char* envp[]){
             pid_t exit_code = waitpid(pid, &status, 0);
 
             if(exit_code != pid){
-                jsh::log(jsh::LOG_LEVEL::ERROR, "Waiting on PID ", pid, " failed...");
+                jsh::cout_logger.log(jsh::LOG_LEVEL::ERROR, "Waiting on PID ", pid, " failed...");
             }
         }else{ // child
             int exit_code = execvp(args_ptr[0], args_ptr.data());
@@ -47,7 +43,7 @@ int main(int argc, char* argv[], char* envp[]){
             assert(exit_code == -1);
 
             // log that this command was invalid
-            jsh::log(jsh::LOG_LEVEL::ERROR, "Executing command failed...");
+            jsh::cout_logger.log(jsh::LOG_LEVEL::ERROR, "Executing command failed...");
         }
     }
 }

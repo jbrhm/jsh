@@ -1,0 +1,11 @@
+#! /usr/bin/bash
+
+set -euox pipefail
+
+pushd deps/googletest
+
+cmake -S . -B build
+
+cmake --build build
+
+sudo cmake --install build

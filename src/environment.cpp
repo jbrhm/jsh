@@ -36,10 +36,10 @@ namespace jsh {
         return new_environment;
     }
 
-    void environment::print(){
+    void environment::print(logger& log){
         // print all of the variables and their values
         for(auto const& [key, value] : variables){
-            log(LOG_LEVEL::STATUS, key, EQUALS, value);
+            log.log(LOG_LEVEL::SILENT, key, EQUALS, value, '\n');
         }
     }
 }

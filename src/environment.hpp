@@ -42,6 +42,6 @@ namespace jsh{
         [[nodiscard]] auto create_environment() -> std::vector<char*>;
 
         // print out the environment in a nice visual way
-        void print();
+        void print([[maybe_unused]] logger& log = cout_logger);
     };
 }

@@ -28,8 +28,26 @@ if(FOUND_CCACHE)
     set(CMAKE_C_COMPILER_LAUNCHER ccache)
 endif()
 
-# glob all sources
-file(GLOB_RECURSE sources CONFIGURE_DEPENDS src/*.c*)
+# create jsh utils library (so both the executable and the tests can link against it)
+set(utils_sources
+    src/environment.cpp
+)
+add_library(${PROJECT_NAME}_utils SHARED ${utils_sources})
+target_include_directories(${PROJECT_NAME}_utils PUBLIC src)
 
 # create jsh executable
-add_executable(${PROJECT_NAME} ${sources})
+add_executable(${PROJECT_NAME} src/main.cpp)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_utils)
+
+# use google test for regression suite
+find_package(GTest REQUIRED)
+
+file(GLOB_RECURSE tests CONFIGURE_DEPENDS testing/*.cpp)
+
+enable_testing()
+
+add_executable(test_suite ${tests})
+target_link_libraries(test_suite GTest::gtest_main ${PROJECT_NAME}_utils)
+
+include(GoogleTest)
+gtest_discover_tests(test_suite)
