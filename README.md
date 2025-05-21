@@ -20,3 +20,18 @@ Processes are chained together into jobs through the use operators.
 
 > [!IMPORTANT]  
 > Operator chaining must be used in the form `$<first command and args><whitespace><operator><whitespace><second command and args>`
+
+## Redirection:
+
+In `jsh` there are two types of indirection, input and output.
+
+Input Redirection:
+
+Input redirection can be achieved by appending the `<` character followed by the relative or absolute filepath to the desired input file.
+This files contents will then populate standard in for the first program in the job.
+
+Output Redirection:
+
+Output redirection can be achieved by appending the `>` character followed by the relative or absolute filepath to the desired output file.
+This file will then be populated with contents of standard out from the last process in the job.
+
