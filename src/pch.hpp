@@ -4,6 +4,8 @@
 #include <vector>
 #include <string>
 #include <cassert>
+#include <cstring>
+#include <cstdlib>
 
 // OS
 #include <unistd.h>
@@ -11,4 +13,3 @@
 
 // JSH
 #include "macros.hpp"
-#include "environment.hpp"

@@ -1,10 +1,6 @@
 #pragma once
 
-// STL
-#include <concepts>
-#include <iostream>
-#include <type_traits>
-#include <array>
+#include "pch.hpp"
 
 template <typename T>
 concept printable = 

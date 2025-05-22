@@ -1,47 +1,45 @@
 #pragma once
 
-// STL
-#include <unordered_map>
-#include <string>
-#include <cstdint>
-#include <cassert>
-#include <cstring>
-#include <vector>
-#include <utility>
+#include "pch.hpp"
 
-// JSH
-#include "macros.hpp"
-
-namespace jsh{
+namespace jsh {
+    /**
+     * The goal of the environment class is to facilitate the shell's interaction with environment variables
+     */
     class environment {
-    private:
-        
-        // CONSTANTS
-        static constexpr char const* EQUALS = "=";
-
-        // environment variables
-        // mapping key strings to value strings
-        std::unordered_map<std::string, std::string> variables;
-
-        // fully mapped environment variables
-        // should only ever be accessed immediately after callind craete_environment
-        std::vector<std::string> envp;
-
     public:
-        // remove all implicitly defined constructors
-        environment() = delete;
-        environment(environment const& other) = delete;
-        environment(environment&& other) = delete;
-        auto operator=(environment const& other) -> environment& = delete;
-        auto operator=(environment&& other) -> environment& = delete;
+        /**
+         *
+         * set_var: sets the environment variable var to value
+         *
+         * var: the name of the environment variable being altered in c-string format
+         *
+         * value: the value to which the environment variable should be set
+         */
+        static void set_var(char const* var, char const* value);
 
-        // create an environment from the envp* passed into the shell
-        environment(char* envp[]);
+        /**
+         * get_var: gets the value of the environment variable var
+         *
+         * var: the name of the environment variable
+         */
+        inline static void get_var(char const* var);
 
-        // create an environment of the form char* envp[] so it can be passed to subprocesses
-        [[nodiscard]] auto create_environment() -> std::vector<char*>;
+        /**
+         * get: gets the array of environment strings representing the current process' environment
+         */
+        [[nodiscard]] inline static auto get() -> char**;
 
+<<<<<<< Updated upstream
         // print out the environment in a nice visual way
         void print([[maybe_unused]] logger& log = cout_logger);
+=======
+        /**
+         * print: 
+         */
+        inline static void print([[maybe_unused]] logger& log = cout_logger){
+
+        }
+>>>>>>> Stashed changes
     };
-}
+} // namespace jsh
