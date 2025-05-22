@@ -13,6 +13,23 @@ A `process` is as you would expect, it is one binary that will be invoked on the
 A `job` is a series of processes that will run in sequence with one another.
 Processes are chained together into jobs through the use operators.
 
+## Environment Variables:
+
+`jsh` supports setting environment variables through the keyword `export`.
+Export commands must be of the form `$export[whitespace][variable name]=[value]`
+
+> [!IMPORTANT]  
+> Variable names cannot contain the `=` character
+> Variable names cannot contain the `{` or `}` character
+
+`jsh` supports using environment variables through substitution using the `$` character.
+To achieve substitution, the substitution must be of the form `$[command part 1]${[environment variable name]}[command part 2]`.
+In this case the characters from the `$` to the `}` will be replaced by the value of the environment variable name.
+In the case where the environment variable does not exist, it will be substituted for an empty string.
+
+> [!IMPORTANT]  
+> `jsh` does not support nested variable substitutions
+
 ## Operators:
 
 - `|` (WIP): The `|` (pipe) operator chains together two commands such that the standard output of the first command becomes the standard input for the second command.
