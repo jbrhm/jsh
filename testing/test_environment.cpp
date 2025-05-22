@@ -40,6 +40,5 @@ TEST(TestEnvironment, EnvironmentSetGet) {
 
 TEST(TestEnvironment, EnvironmentGetUnset) {
     // make sure if the environment variable is unset, then it returns an empty string
-    std::cout << "not set " << jsh::environment::get_var("NOT SET") << '\n';
     ASSERT_FALSE(std::strcmp(jsh::environment::get_var("NOT SET"), ""));
 }
