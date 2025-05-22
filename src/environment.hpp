@@ -7,6 +7,12 @@ namespace jsh {
      * The goal of the environment class is to facilitate the shell's interaction with environment variables
      */
     class environment {
+    private:
+        /**
+         * get: gets the array of environment strings representing the current process' environment
+         */
+        [[nodiscard]] static auto get() -> char**;
+
     public:
         /**
          *
@@ -14,32 +20,21 @@ namespace jsh {
          *
          * var: the name of the environment variable being altered in c-string format
          *
-         * value: the value to which the environment variable should be set
+         * val: the value to which the environment variable should be set
          */
-        static void set_var(char const* var, char const* value);
+        static void set_var(char const* var, char const* val);
 
         /**
          * get_var: gets the value of the environment variable var
          *
          * var: the name of the environment variable
          */
-        inline static void get_var(char const* var);
+        [[nodiscard]] static auto get_var(char const* var) -> char const*;
+
 
         /**
-         * get: gets the array of environment strings representing the current process' environment
+         * print: prints the current processes environment
          */
-        [[nodiscard]] inline static auto get() -> char**;
-
-<<<<<<< Updated upstream
-        // print out the environment in a nice visual way
-        void print([[maybe_unused]] logger& log = cout_logger);
-=======
-        /**
-         * print: 
-         */
-        inline static void print([[maybe_unused]] logger& log = cout_logger){
-
-        }
->>>>>>> Stashed changes
+        static void print([[maybe_unused]] logger& log = cout_logger);
     };
 } // namespace jsh

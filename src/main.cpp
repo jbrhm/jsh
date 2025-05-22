@@ -39,6 +39,7 @@ int main(int argc, char* argv[], char* envp[]){
             }
         }else{ // child
             int exit_code = execvp(args_ptr[0], args_ptr.data());
+
             // execvp only returns if there was an error
             assert(exit_code == -1);
 
