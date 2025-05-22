@@ -9,6 +9,11 @@ namespace jsh {
     class environment {
     private:
         /**
+         * CONSTANT VARIABLES
+         */
+        static constexpr char const* EMPTY_STRING = "";
+
+        /**
          * get: gets the array of environment strings representing the current process' environment
          */
         [[nodiscard]] static auto get() -> char**;

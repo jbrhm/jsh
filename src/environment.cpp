@@ -18,12 +18,19 @@ namespace jsh {
             assert(std::strstr(var, "=") == nullptr);
 
             // get the environment variable from environ
-            return getenv(var);
+            char const* val = getenv(var);
+
+            // check for failure
+            if(val) [[likely]]{
+                return val;
+            }
+
+            return EMPTY_STRING;
         }
 
         void environment::print([[maybe_unused]] logger& log){
             // iterate until nullptr
-            for(std::size_t i = 0; get()[i]; ++i){
+            for(std::size_t i = 0; get()[i]; ++i) [[likely]]{
                 // print the env variable of the form var=value
                 log.log(LOG_LEVEL::SILENT, get()[i], '\n');
             }
