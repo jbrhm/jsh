@@ -29,6 +29,8 @@ In the case where the environment variable does not exist, it will be substitute
 
 > [!IMPORTANT]  
 > `jsh` does not support nested variable substitutions
+> If there is a `$` character but the `{` and `}` are not properly placed (ie. the `{` is not immediately after the `$`), the substitution will fail and `jsh` will continue on to the next substitution in the input after the current substitutions `$`.
+> `jsh` will use the next `}` after the `{` to use as closing brace for the substitution
 
 ## Operators:
 
