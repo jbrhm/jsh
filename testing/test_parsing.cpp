@@ -41,3 +41,23 @@ TEST(TestParsing, TestPeekInvalid) {
     // check upper bound
     ASSERT_TRUE(jsh::parsing::peek_char(input, 26) == std::nullopt);
 }
+
+TEST(TestParsing, TestSubstitutionBasic) {
+    // set the environment variable
+    jsh::environment::set_var("var", "val");
+
+    // end substitution
+    ASSERT_TRUE(jsh::parsing::variable_substitution("abc${var}") == "abcval");
+
+    // beginning substitution
+    ASSERT_TRUE(jsh::parsing::variable_substitution("${var}abc") == "valabc");
+
+    // middle substitution
+    ASSERT_TRUE(jsh::parsing::variable_substitution("ab${var}c") == "abvalc");
+
+    // just substitution
+    ASSERT_TRUE(jsh::parsing::variable_substitution("${var}") == "val");
+
+    // no substitution
+    ASSERT_TRUE(jsh::parsing::variable_substitution("abc") == "abc");
+}

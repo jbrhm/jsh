@@ -2,6 +2,9 @@
 
 #include "pch.hpp"
 
+// JSH
+#include "environment.hpp"
+
 namespace jsh {
     class parsing {
     public:
