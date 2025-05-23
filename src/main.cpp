@@ -19,7 +19,7 @@ int main(int argc, char* argv[], char* envp[]){
         getline(std::cin, input);
         jsh::cout_logger.log(jsh::LOG_LEVEL::DEBUG, "Raw user input: ", input);
         input = jsh::parsing::variable_substitution(input);
-        jsh::cout_logger.log(jsh::LOG_LEVEL::DEBUG, "Raw user input: ", input);
+        jsh::cout_logger.log(jsh::LOG_LEVEL::DEBUG, "Substituted user input: ", input);
 
         // parse the command into different components
         std::stringstream ss(input);
