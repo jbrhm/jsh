@@ -61,3 +61,56 @@ TEST(TestParsing, TestSubstitutionBasic) {
     // no substitution
     ASSERT_TRUE(jsh::parsing::variable_substitution("abc") == "abc");
 }
+
+TEST(TestParsing, TestEnvironmentVariableSubstitutions){
+    // set the environment variable
+    jsh::environment::set_var("var", "val");
+    jsh::environment::set_var("var2", "${var}");
+
+    // end substitution
+    ASSERT_TRUE(jsh::parsing::variable_substitution("abc${var2}") == "abcval");
+
+    // beginning substitution
+    ASSERT_TRUE(jsh::parsing::variable_substitution("${var2}abc") == "valabc");
+
+    // middle substitution
+    ASSERT_TRUE(jsh::parsing::variable_substitution("ab${var2}c") == "abvalc");
+
+    // just substitution
+    ASSERT_TRUE(jsh::parsing::variable_substitution("${var2}") == "val");
+
+    // no substitution
+    ASSERT_TRUE(jsh::parsing::variable_substitution("abc") == "abc");
+}
+
+TEST(TestParsing, TestMaxSubstitutions){
+    // set the environment variable
+    jsh::environment::set_var("var", "${var2}");
+    jsh::environment::set_var("var2", "${var}");
+
+    // infinite looping
+    ASSERT_TRUE(jsh::parsing::variable_substitution("abc${var2}") == "abc${var2}");
+}
+
+TEST(TestParsing, TestMalformed){
+    // set the environment variable
+    jsh::environment::set_var("var", "val");
+
+    // test extra characters one
+    ASSERT_EQ(jsh::parsing::variable_substitution("${NOT SET}a$bc${var}"), "a$bcval");
+
+    // test extra characters two
+    ASSERT_EQ(jsh::parsing::variable_substitution("${NOT SET}a$${var}"), "a$val");
+
+    // test extra characters three
+    ASSERT_EQ(jsh::parsing::variable_substitution("${NOT SET}a${${var}"), "a");
+
+    // test extra characters four
+    ASSERT_EQ(jsh::parsing::variable_substitution("${NOT SET}a$a{${var}"), "a$a{val");
+
+    // test extra characters five
+    ASSERT_EQ(jsh::parsing::variable_substitution("${val"), "${val");
+
+    // test extra characters six
+    ASSERT_EQ(jsh::parsing::variable_substitution("${var}${var"), "val${var");
+}

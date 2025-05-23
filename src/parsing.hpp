@@ -7,6 +7,11 @@
 
 namespace jsh {
     class parsing {
+    private:
+        /**
+         * CONSTANT VARIABLES
+         */
+        static constexpr int MAX_SUBSTITUTIONS = 1000000;
     public:
         /**
          * peek_char: returns a the character of a string at a given index or std::nullopt if it is invalid (index is npos or index is out of bounds)

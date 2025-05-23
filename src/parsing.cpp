@@ -18,7 +18,7 @@ namespace jsh {
         std::size_t last_dollar_sign_location = 0;
 
         // while there exists a $ in the string perform substitutions
-        while(true){
+        for(std::size_t sub = 0; sub < MAX_SUBSTITUTIONS; ++sub){
             // location of the desired character
             std::size_t dollar_sign_location = std::string::npos;
             std::size_t open_brace_location = std::string::npos;
@@ -51,7 +51,7 @@ namespace jsh {
             // if we didn't find a { continue to the next substitution
             // beyond the current one
             if(open_brace_location == std::string::npos || dollar_sign_location + 1 != open_brace_location){
-                last_dollar_sign_location = dollar_sign_location;
+                last_dollar_sign_location = dollar_sign_location + 1;
                 continue;
             }
 
@@ -65,7 +65,7 @@ namespace jsh {
 
             // if we failed this substitution continue to the next one
             if(closed_brace_location == std::string::npos){
-                last_dollar_sign_location = dollar_sign_location;
+                last_dollar_sign_location = dollar_sign_location + 1;
                 continue;
             }
 
