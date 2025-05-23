@@ -5,14 +5,6 @@
 #include <environment.hpp>
 #include <macros.hpp>
 
-// STL
-#include <vector>
-#include <sstream>
-#include <string>
-
-// UNIX
-#include <unistd.h>
-
 TEST(TestEnvironment, EnvironmentSetGet) {
     // create the envp
     std::string var1 = "VAR1", var2 = "VAR2", var3 = "VAR3", var4 = "VAR4";

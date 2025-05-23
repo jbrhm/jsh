@@ -31,6 +31,7 @@ endif()
 # create jsh utils library (so both the executable and the tests can link against it)
 set(utils_sources
     src/environment.cpp
+    src/parsing.cpp
 )
 add_library(${PROJECT_NAME}_utils SHARED ${utils_sources})
 target_include_directories(${PROJECT_NAME}_utils PUBLIC src)
