@@ -55,7 +55,7 @@ namespace jsh {
                 continue;
             }
 
-            // find the last instance of the }
+            // find the first instance of the }
             for(std::size_t i = open_brace_location; i < output.size(); ++i){
                 if(auto c = peek_char(output, i); c && c.value() == '}'){
                     closed_brace_location = i;
