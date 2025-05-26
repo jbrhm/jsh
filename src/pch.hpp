@@ -7,6 +7,8 @@
 #include <cstring>
 #include <cstdlib>
 #include <optional>
+#include <variant>
+#include <memory>
 
 // OS
 #include <unistd.h>
