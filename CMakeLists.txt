@@ -8,6 +8,7 @@ project(jsh
         LANGUAGES C CXX
     )
 
+
 # export compile commands for nvim
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 

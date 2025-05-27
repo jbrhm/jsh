@@ -17,7 +17,8 @@ namespace jsh {
         COUNT
     };
 
-    inline static constexpr std::array<std::string, LOG_LEVEL::COUNT> log_level_strings = {"DEBUG", "WARN", "ERROR", "FATAL", "STATUS", ""};
+    inline static constexpr char const* log_level_strings[] = {"DEBUG", "WARN", "ERROR", "FATAL", "STATUS", ""};
+    
 
     inline char global_log_level = 0;
     inline void set_log_level(char level){

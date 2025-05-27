@@ -6,8 +6,8 @@ if test -d build; then
     echo "Build Directory Exists..."
 else
     cmake \
-        -DCMAKE_CXX_COMPILER=$(which g++) \
-        -DCMAKE_C_COMPILER=$(which gcc) \
+        -DCMAKE_CXX_COMPILER=$(which clang++-19) \
+        -DCMAKE_C_COMPILER=$(which clang-19) \
         . -B build -G Ninja
 fi
 cmake --build build
