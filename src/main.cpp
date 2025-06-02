@@ -11,7 +11,6 @@ int main(int argc, char* argv[], char* envp[]){
 
     std::string input;
     std::string arg;
-    std::vector<std::string> args_string;
     std::vector<char*> args_ptr;
     while(true){
         // get the command from the user
@@ -21,14 +20,7 @@ int main(int argc, char* argv[], char* envp[]){
         input = jsh::parsing::variable_substitution(input);
         jsh::cout_logger.log(jsh::LOG_LEVEL::DEBUG, "Substituted user input: ", input);
 
-        // parse the command into different components
-        std::stringstream ss(input);
-        args_string.clear();
         args_ptr.clear();
-        while(ss >> arg){
-            args_string.push_back(arg);
-        }
-
         // convert the args from std::string to char*
         for(auto const& a : args_string){
             args_ptr.push_back(const_cast<char*>(a.c_str()));
