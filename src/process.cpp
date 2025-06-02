@@ -5,13 +5,10 @@ namespace jsh {
     auto process::parse_process(std::string const& input) -> std::optional<std::unique_ptr<process_data>>{
         // TODO: find a way to prevent this from defaulting to export
         auto proc_data = std::make_unique<process_data>();
-        
-        // THIS IS NOT THREAD SAFE
-        // so it only is initialized once
-        static std::string arg;
-        static std::stringstream ss(input);
 
-        // do not statically allocate becasue this one will be moved later
+        // stack allocated variables
+        std::string arg;
+        std::stringstream ss(input);
         std::vector<std::string> args;
 
         // parse the command into different components
