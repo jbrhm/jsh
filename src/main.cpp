@@ -22,9 +22,11 @@ int main(int argc, char* argv[], char* envp[]){
 
         args_ptr.clear();
         // convert the args from std::string to char*
+        /*
         for(auto const& a : args_string){
             args_ptr.push_back(const_cast<char*>(a.c_str()));
         }
+        */
         args_ptr.push_back(nullptr);
 
         pid_t pid = fork();
