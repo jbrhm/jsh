@@ -27,14 +27,14 @@ namespace jsh {
 
             // find the variable name and value from the input
             // we should only have two items in the args list export and [variable name]=[value]
-            assert(args.size() == 2);
+            assert(args.size() >= 2);
 
             // find the equals
             // indexing into this at 1 is fine since we know the size is at least 2
             std::size_t it = args[1].find(EQUALS);
 
             // ensure there is an = in the string
-            if(it == std::string::npos || it + 1 >= args[1].size()){
+            if(it == std::string::npos || it + 1 >= args[1].size() || it == 0){
                 return std::nullopt;
             }
 
