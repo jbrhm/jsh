@@ -18,7 +18,8 @@ namespace jsh {
      * args: the arguments provided to the shell
      */
     struct export_data{
-        std::vector<std::string> args;
+        std::string name;
+        std::string val;
     };
 
     // typedef for a one command the user runs
@@ -30,6 +31,12 @@ namespace jsh {
          * CONSTANTS
          */
         static constexpr char const* EXPORT_BUILTIN = "export";
+        static constexpr char EQUALS = '=';
+
+        /**
+         * populate the binary with its data
+         */
+        static void populate_process_data(binary_data& data);
 
     public:
         /**
@@ -37,6 +44,6 @@ namespace jsh {
          *
          * input: the input command provided by the user to start the process
          */
-        [[nodiscard]] static auto parse_process(std::string const& input) -> std::unique_ptr<process_data>;
+        [[nodiscard]] static auto parse_process(std::string const& input) -> std::optional<std::unique_ptr<process_data>>;
     };
 } // namespace jsh
