@@ -27,7 +27,9 @@ namespace jsh {
 
             // find the variable name and value from the input
             // we should only have two items in the args list export and [variable name]=[value]
-            assert(args.size() >= 2);
+            if(args.size() < 2){
+                return std::nullopt;
+            }
 
             // find the equals
             // indexing into this at 1 is fine since we know the size is at least 2

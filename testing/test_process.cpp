@@ -70,6 +70,16 @@ TEST(TestProcess, TestMalformed3) {
     ASSERT_FALSE(proc_data.has_value());
 }
 
+TEST(TestProcess, TestMalformed4) {
+    // input from user
+    std::string input = "export";
+
+    auto proc_data = jsh::process::parse_process(input);
+
+    // we should have a value
+    ASSERT_FALSE(proc_data.has_value());
+}
+
 TEST(TestProcess, TestExtra) {
     // input from user
     std::string input = "export var=val awdasdawdsawd";
