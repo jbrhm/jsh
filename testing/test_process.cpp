@@ -4,7 +4,7 @@
 // JSH
 #include <process.hpp>
 
-TEST(TestProcess, TestBasic1) {
+TEST(TestProcess, TestExportBasic1) {
     // input from user
     std::string input = "export var=val";
 
@@ -22,7 +22,7 @@ TEST(TestProcess, TestBasic1) {
     ASSERT_STREQ(data.val.c_str(), "val");
 }
 
-TEST(TestProcess, TestBasic2) {
+TEST(TestProcess, TestExportBasic2) {
     // input from user
     std::string input = "export v=v";
 
