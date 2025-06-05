@@ -36,6 +36,7 @@ In the case where the environment variable does not exist, it will be substitute
 > `jsh` will use the next `}` after the `{` to use as closing brace for the substitution
 >
 > `jsh` supports 1000000 substitutions for one prompt
+> `jsh` does not allow the name of a environment variable to be `?`
 
 ## Operators:
 
