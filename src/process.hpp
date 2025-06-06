@@ -2,6 +2,9 @@
 
 #include "pch.hpp"
 
+// JSH
+#include "environment.hpp"
+
 namespace jsh {
     /**
      * structure to wrap all data necessary to run a process
@@ -45,5 +48,19 @@ namespace jsh {
          * input: the input command provided by the user to start the process
          */
         [[nodiscard]] static auto parse_process(std::string const& input) -> std::optional<std::unique_ptr<process_data>>;
+
+        /**
+         * execute_binary: performs the execution for binary
+         *
+         * data: the parsed input command from the user which is used to execute the binary
+         */
+        static void execute_process(binary_data& data);
+
+        /**
+         * execute_export: performs the execution for an export shell intrinsic
+         *
+         * data: the information necessary to perform the export
+         */
+        static void execute_process(export_data& data);
     };
 } // namespace jsh

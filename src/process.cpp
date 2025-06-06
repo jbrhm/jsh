@@ -56,4 +56,42 @@ namespace jsh {
 
         return proc_data;
     }
+    
+    void process::execute_process(binary_data& data){
+        // the array of pointers to the command line arguments
+        std::vector<char*> args_ptr;
+
+        // push back all of the pointers to the arguments
+        for(auto& arg : data.args){
+            args_ptr.push_back(arg.data());
+        }
+
+        // add the sentinal to the end of the arguments
+        args_ptr.push_back(nullptr);
+
+        // fork into another subprocess to execute the binary
+        pid_t pid = fork();
+        int status;
+        if(pid){ // parent
+            pid_t exit_code = waitpid(pid, &status, 0);
+
+            if(exit_code != pid){
+                jsh::cout_logger.log(jsh::LOG_LEVEL::ERROR, "Waiting on PID ", pid, " failed...");
+            }
+        }else{ // child
+            int exit_code = execvp(args_ptr[0], args_ptr.data());
+
+            // execvp only returns if there was an error
+            assert(exit_code == -1);
+
+            // log that this command was invalid
+            jsh::cout_logger.log(jsh::LOG_LEVEL::ERROR, "Executing command failed...");
+        }
+    }
+
+
+    void process::execute_process(export_data& data){
+        // perform the export
+        environment::set_var(data.name.c_str(), data.val.c_str());
+    }
 } // namespace jsh
