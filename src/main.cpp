@@ -28,10 +28,9 @@ int main(int argc, char* argv[], char* envp[]){
             continue;
         }
 
+        // perform the process' execution
         std::visit([](auto&& var){
                     jsh::process::execute_process(var);
                 }, *data.value());
-
-        // perform
     }
 }
