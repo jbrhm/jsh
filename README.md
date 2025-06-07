@@ -58,6 +58,6 @@ Output redirection can be achieved by appending the `>` character followed by th
 This file will then be populated with contents of standard out from the last process in the job.
 
 > [!IMPORTANT]  
-> Input and output redirection must be of the form `$[arg1][whitespace][arg2][whitespace]...[< or >][whitespace][filepath][whitespace][argn-1][whitespace][argn]`
+> Input and output redirection must be of the form `$[arg1][whitespace][arg2][whitespace]...[< or >][whitespace][filepath][whitespace]...[whitespace][argn-1][whitespace][argn]`
 >
 > `jsh` does not support redirecting for standard error currently
