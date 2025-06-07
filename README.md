@@ -16,6 +16,8 @@ Export commands must be of the form `$export[whitespace][variable name]=[value]`
 > Variable names cannot contain the `=` character
 > 
 > Variable names cannot contain the `{` or `}` character
+>
+> Variables and values cannot contain any whitespace
 
 `jsh` supports using environment variables through substitution using the `$` character.
 To achieve substitution, the substitution must be of the form `$[command part 1]${[environment variable name]}[command part 2]`.
