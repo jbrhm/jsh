@@ -57,3 +57,5 @@ This file will then be populated with contents of standard out from the last pro
 
 > [!IMPORTANT]  
 > Input and output redirection must be of the form `$[arg1][whitespace][arg2][whitespace]...[< or >][whitespace][filepath][whitespace][argn-1][whitespace][argn]`
+>
+> `jsh` does not support redirecting for standard error currently
