@@ -194,8 +194,6 @@ namespace jsh {
 
             // perform the export
             environment::set_var(data.name.c_str(), data.val.c_str());
-
-            std::cout << "hi" << std::endl;
         } // sir scope
     }
 
