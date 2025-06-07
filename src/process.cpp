@@ -2,7 +2,7 @@
 
 
 namespace jsh {
-    process::shell_internal_redirection::shell_internal_redirection(int stdout, int stdin, int stderr, bool restore) : new_stdout{stdout}, new_stdin{stdin}, new_stderr{stderr}, og_stdout{-1}, og_stdin{-1}, og_stderr{-1}, _restore{restore}{
+    process::shell_internal_redirection::shell_internal_redirection(int stdout, int stdin, int stderr, bool restore) : new_stdout{stdout}, new_stdin{stdin}, new_stderr{stderr}, og_stdout{STDOUT_FILENO}, og_stdin{STDIN_FILENO}, og_stderr{STDERR_FILENO}, _restore{restore}{
         // check for a different stdout
         if(new_stdout != STDOUT_FILENO){
             // this will essentially make STDOUT_FILENO point to the other file descriptor
