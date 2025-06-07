@@ -151,3 +151,21 @@ TEST(TestProcess, TestExecuteBinary) {
     // close the read fd for the pipe
     close(fds[0]);
 }
+
+TEST(TestProcess, TestExecuteExport) {
+    // create the export data structure
+    std::optional<std::unique_ptr<jsh::process_data>> export_var = std::make_optional<std::unique_ptr<jsh::process_data>>(std::make_unique<jsh::process_data>(jsh::export_data{}));
+
+    assert(std::holds_alternative<jsh::export_data>(*export_var.value()));
+
+    jsh::export_data& exp = std::get<jsh::export_data>(*export_var.value());
+
+    exp.name = "name";
+    exp.val = "val";
+
+    // run the export internal
+    jsh::process::execute(export_var);
+
+    // assert that the environment variable was properly exported
+    ASSERT_STREQ(jsh::environment::get_var("name"), "val");
+}
