@@ -120,7 +120,7 @@ namespace jsh {
                     cout_logger.log(LOG_LEVEL::ERROR, "Input file not specified...");
                     return std::nullopt;
                 }
-                stdin = open(filename.c_str(), O_RDWR | O_CREAT, 0777);
+                stdin = open(filename.c_str(), O_RDWR, 0777);
                 CHECK_OPEN(stdin);
                 
                 continue;

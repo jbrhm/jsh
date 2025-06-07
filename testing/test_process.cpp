@@ -170,20 +170,143 @@ TEST(TestProcess, TestExecuteExport) {
     ASSERT_STREQ(jsh::environment::get_var("name"), "val");
 }
 
-TEST(TestProcess, TestRestore) {
-    // create the export data structure
-    std::optional<std::unique_ptr<jsh::process_data>> export_var = std::make_optional<std::unique_ptr<jsh::process_data>>(std::make_unique<jsh::process_data>(jsh::export_data{}));
+TEST(TestProcess, TestInputRedirectionParsingBasic1){
+    std::string input = "grep hi < testing/tmp/file";
 
-    assert(std::holds_alternative<jsh::export_data>(*export_var.value()));
+    auto proc_data = jsh::process::parse_process(input);
+    
+    // make sure the command was valid
+    ASSERT_TRUE(proc_data.has_value());
 
-    jsh::export_data& exp = std::get<jsh::export_data>(*export_var.value());
+    // make sure it contains binary data
+    ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value()));
+    
+    // get reference to underlying data
+    auto& data = std::get<jsh::binary_data>(*proc_data.value());
+    ASSERT_NE(data.stdin, STDIN_FILENO);
+}
 
-    exp.name = "name";
-    exp.val = "val";
+TEST(TestProcess, TestInputRedirectionParsingBasic2){
+    std::string input = "echo hi hi < testing/tmp/file";
 
-    // run the export internal
-    jsh::process::execute(export_var);
+    auto proc_data = jsh::process::parse_process(input);
+    
+    // make sure the command was valid
+    ASSERT_TRUE(proc_data.has_value());
 
-    // assert that the environment variable was properly exported
-    ASSERT_STREQ(jsh::environment::get_var("name"), "val");
+    // make sure it contains binary data
+    ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value()));
+    
+    // get reference to underlying data
+    auto& data = std::get<jsh::binary_data>(*proc_data.value());
+    ASSERT_NE(data.stdin, STDIN_FILENO);
+}
+
+TEST(TestProcess, TestInputRedirectionParsingBasic3){
+    std::string input = "echo hi hi <\ttesting/tmp/file more args";
+
+    auto proc_data = jsh::process::parse_process(input);
+    
+    // make sure the command was valid
+    ASSERT_TRUE(proc_data.has_value());
+
+    // make sure it contains binary data
+    ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value()));
+    
+    // get reference to underlying data
+    auto& data = std::get<jsh::binary_data>(*proc_data.value());
+    ASSERT_NE(data.stdin, STDIN_FILENO);
+}
+
+TEST(TestProcess, TestInputRedirectionParsingMalformed1){
+    std::string input = "echo hi hi <";
+
+    auto proc_data = jsh::process::parse_process(input);
+    
+    // make sure the command was invalid
+    ASSERT_FALSE(proc_data.has_value());
+}
+
+TEST(TestProcess, TestInputRedirectionParsingMalformed2){
+    std::string input = "echo hi hi < def/not/a/path/to/a/file";
+
+    auto proc_data = jsh::process::parse_process(input);
+    
+    // make sure the command was invalid
+    ASSERT_FALSE(proc_data.has_value());
+}
+
+TEST(TestProcess, TestInputRedirectionParsingMalformed3){
+    std::string input = "echo hi hi < testing/tmp/not_real";
+
+    auto proc_data = jsh::process::parse_process(input);
+    
+    // make sure the command was invalid
+    ASSERT_FALSE(proc_data.has_value());
+}
+
+TEST(TestProcess, TestOutputRedirectionParsingBasic1){
+    std::string input = "grep hi > testing/tmp/file";
+
+    auto proc_data = jsh::process::parse_process(input);
+    
+    // make sure the command was valid
+    ASSERT_TRUE(proc_data.has_value());
+
+    // make sure it contains binary data
+    ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value()));
+    
+    // get reference to underlying data
+    auto& data = std::get<jsh::binary_data>(*proc_data.value());
+    ASSERT_NE(data.stdout, STDOUT_FILENO);
+}
+
+TEST(TestProcess, TestOutputRedirectionParsingBasic2){
+    std::string input = "echo hi hi > testing/tmp/file";
+
+    auto proc_data = jsh::process::parse_process(input);
+    
+    // make sure the command was valid
+    ASSERT_TRUE(proc_data.has_value());
+
+    // make sure it contains binary data
+    ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value()));
+    
+    // get reference to underlying data
+    auto& data = std::get<jsh::binary_data>(*proc_data.value());
+    ASSERT_NE(data.stdout, STDOUT_FILENO);
+}
+
+TEST(TestProcess, TestOutputRedirectionParsingBasic3){
+    std::string input = "echo hi hi >\ttesting/tmp/file more args";
+
+    auto proc_data = jsh::process::parse_process(input);
+    
+    // make sure the command was valid
+    ASSERT_TRUE(proc_data.has_value());
+
+    // make sure it contains binary data
+    ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value()));
+    
+    // get reference to underlying data
+    auto& data = std::get<jsh::binary_data>(*proc_data.value());
+    ASSERT_NE(data.stdout, STDOUT_FILENO);
+}
+
+TEST(TestProcess, TestOutputRedirectionParsingMalformed1){
+    std::string input = "echo hi hi >";
+
+    auto proc_data = jsh::process::parse_process(input);
+    
+    // make sure the command was invalid
+    ASSERT_FALSE(proc_data.has_value());
+}
+
+TEST(TestProcess, TestOutputRedirectionParsingMalformed2){
+    std::string input = "echo hi hi > def/not/a/path/to/a/file";
+
+    auto proc_data = jsh::process::parse_process(input);
+    
+    // make sure the command was invalid
+    ASSERT_FALSE(proc_data.has_value());
 }
