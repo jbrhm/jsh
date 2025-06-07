@@ -2,6 +2,20 @@
 
 #include "pch.hpp"
 
+#define CHECK_DUP(fd) \
+    if(fd == -1) { \
+        std::string err = strerror(errno); \
+        cout_logger.log(LOG_LEVEL::ERROR, err); \
+    } \
+    return;
+
+#define CHECK_CLOSE(status) \
+    if(status == -1) { \
+        std::string err = strerror(errno); \
+        cout_logger.log(LOG_LEVEL::ERROR, err); \
+    } \
+    return;
+
 template <typename T>
 concept printable = 
     requires(T t) {{std::cout << t};};

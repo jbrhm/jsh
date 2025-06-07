@@ -58,6 +58,50 @@ namespace jsh {
          */
         static void populate_process_data(binary_data& data);
 
+        /**
+         * shell_internal_redirection: RAII wrapper around setting stdout, stdin, and stderr for a given shell internal
+         */
+        class shell_internal_redirection {
+        private:
+            /**
+             * new_stdout: stdout fd for shell internal
+             */
+            int new_stdout;
+
+            /**
+             * new_stdin: stdin fd for shell internal
+             */
+            int new_stdin;
+
+            /**
+             * new_stderr: stderr fd for shell internal
+             */
+            int new_stderr;
+
+            /**
+             * og_stdout: stdout fd for shell internal
+             */
+            int og_stdout;
+
+            /**
+             * og_stdin: stdin fd for shell internal
+             */
+            int og_stdin;
+
+            /**
+             * og_stderr: stderr fd for shell internal
+             */
+            int og_stderr;
+
+            /**
+             * restore: indicates whether the file descriptors will be restored in the destructor
+             */
+            bool _restore;
+        public:
+            shell_internal_redirection(int stdout, int stdin, int stderr, [[maybe_unused]] bool restore = true);
+            ~shell_internal_redirection();
+        };
+
     public:
         /**
          * parse_process: parse an input into a process_data structure, or if a shell internal was called return the appropriate type

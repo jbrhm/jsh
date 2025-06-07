@@ -1,6 +1,100 @@
 #include "process.hpp"
 
+
 namespace jsh {
+    process::shell_internal_redirection::shell_internal_redirection(int stdout, int stdin, int stderr, bool restore) : new_stdout{stdout}, new_stdin{stdin}, new_stderr{stderr}, og_stdout{-1}, og_stdin{-1}, og_stderr{-1}, _restore{restore}{
+        // check for a different stdout
+        if(new_stdout != STDOUT_FILENO){
+            // this will essentially make STDOUT_FILENO point to the other file descriptor
+            // since according to the man page it will close STDOUT_FILENO since it already exists
+            if(_restore){
+                og_stdout = dup(STDOUT_FILENO);
+
+                // check to make sure dup succeeded
+                CHECK_DUP(og_stdout);
+            }
+
+            int status = dup2(new_stdout, STDOUT_FILENO);
+
+            // check to make sure dup succeeded
+            CHECK_DUP(status);
+
+            // close new fd
+            CHECK_CLOSE(close(new_stdout));
+        }
+
+        // check for a different stdin
+        if(new_stdin != STDIN_FILENO){
+            if(_restore){
+                og_stdin = dup(STDIN_FILENO);
+
+                // check to make sure dup succeeded
+                CHECK_DUP(og_stdin);
+            }
+
+            int status = dup2(new_stdin, STDIN_FILENO);
+
+            // check to make sure dup succeeded
+            CHECK_DUP(status);
+
+            // close new fd
+            CHECK_CLOSE(close(new_stdin));
+        }
+
+        // check for a different stderr
+        if(new_stderr != STDERR_FILENO){
+            if(_restore){
+                og_stderr = dup(STDERR_FILENO);
+
+                // check to make sure dup succeeded
+                CHECK_DUP(og_stderr);
+            }
+
+            int status = dup2(new_stderr, STDERR_FILENO);
+
+            // check to make sure dup succeeded
+            CHECK_DUP(status);
+
+            // close new fd
+            CHECK_CLOSE(close(new_stderr));
+        }
+    }
+
+    process::shell_internal_redirection::~shell_internal_redirection(){
+        if(_restore){
+            // check for a different stdout
+            if(og_stdout != STDOUT_FILENO){
+                int status = dup2(og_stdout, STDOUT_FILENO);
+                // check to make sure dup succeeded
+                CHECK_DUP(status);
+
+                // close og fd
+                CHECK_CLOSE(close(og_stdout));
+            }
+
+            // check for a different stdin
+            if(og_stdin != STDIN_FILENO){
+                int status = dup2(og_stdin, STDIN_FILENO);
+
+                // check to make sure dup succeeded
+                CHECK_DUP(status)
+
+                // close og fd
+                CHECK_CLOSE(close(og_stdin));
+            }
+
+            // check for a different stderr
+            if(new_stderr != STDERR_FILENO){
+                int status = dup2(og_stderr, STDERR_FILENO);
+
+                // check to make sure dup succeeded
+                CHECK_DUP(status);
+
+                // close og fd
+                CHECK_CLOSE(close(og_stderr));
+            }
+        }
+    }
 
     auto process::parse_process(std::string const& input) -> std::optional<std::unique_ptr<process_data>>{
         // TODO: find a way to prevent this from defaulting to export
@@ -79,29 +173,14 @@ namespace jsh {
                 jsh::cout_logger.log(jsh::LOG_LEVEL::ERROR, "Waiting on PID ", pid, " failed...");
             }
         }else{ // child
-            // check for a different stdout
-            if(data.stdout != STDOUT_FILENO){
-                // this will essentially make STDOUT_FILENO point to the other file descriptor
-                // since according to the man page it will close STDOUT_FILENO since it already exists
-                dup2(data.stdout, STDOUT_FILENO);
-                close(data.stdout);
-            }
+            { // sir scope
+                shell_internal_redirection sir(data.stdout, data.stdin, data.stderr, false);
 
-            // check for a different stdin
-            if(data.stdin != STDIN_FILENO){
-                dup2(data.stdin, STDIN_FILENO);
-                close(data.stdin);
-            }
-
-            // check for a different stderr
-            if(data.stderr != STDERR_FILENO){
-                dup2(data.stderr, STDERR_FILENO);
-                close(data.stderr);
-            }
                 int exit_code = execvp(args_ptr[0], args_ptr.data());
 
-            // execvp only returns if there was an error
-            assert(exit_code == -1);
+                // execvp only returns if there was an error
+                assert(exit_code == -1);
+            } // sir scope
 
             // log that this command was invalid
             jsh::cout_logger.log(jsh::LOG_LEVEL::ERROR, "Executing command failed...");
@@ -110,8 +189,14 @@ namespace jsh {
 
 
     void process::execute_process(export_data& data){
-        // perform the export
-        environment::set_var(data.name.c_str(), data.val.c_str());
+        { // sir scope
+            shell_internal_redirection sir(data.stdout, data.stdin, data.stderr);
+
+            // perform the export
+            environment::set_var(data.name.c_str(), data.val.c_str());
+
+            std::cout << "hi" << std::endl;
+        } // sir scope
     }
 
     void process::execute(std::optional<std::unique_ptr<process_data>>& data){
