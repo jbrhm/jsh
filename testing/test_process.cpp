@@ -116,4 +116,38 @@ TEST(TestProcess, TestExtra) {
     ASSERT_STREQ(data.val.c_str(), "val");
 }
 
+TEST(TestProcess, TestExecuteBinary) {
+    // make a fifo to store the output from standard out
+    int fds[2];
+    if(pipe(fds)){
+        char const* msg = strerror(errno);
+        jsh::cout_logger.log(jsh::LOG_LEVEL::FATAL, msg);
+        assert(false);
+    }
 
+    // create the command for the binary data
+    std::optional<std::unique_ptr<jsh::process_data>> binary_var = std::make_optional<std::unique_ptr<jsh::process_data>>(std::make_unique<jsh::process_data>(jsh::binary_data{}));
+
+    assert(std::holds_alternative<jsh::binary_data>(*binary_var.value()));
+
+    jsh::binary_data& binary = std::get<jsh::binary_data>(*binary_var.value());
+
+    binary.args = {"echo", "hi"};
+
+    // direct the stdout to be the fifo
+    binary.stdout = fds[1];
+
+    // run the binary
+    jsh::process::execute(binary_var);
+
+    // read the contents of the pipe
+    char data[2];
+    read(fds[0], data, sizeof(data));
+
+    // the pipe and buffer should now contain hi
+    ASSERT_EQ(data[0], 'h');
+    ASSERT_EQ(data[1], 'i');
+
+    // close the read fd for the pipe
+    close(fds[0]);
+}

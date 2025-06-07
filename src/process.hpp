@@ -7,20 +7,37 @@
 
 namespace jsh {
     /**
+     * structure to define process agnostic information
+     *
+     * stdout: the file descriptor which standard out will be directed towards
+     *
+     * stdin: the file descriptor which standard in will be directed towards
+     *
+     * stderr: the file descriptor which standard error will be directed towards
+     */
+    struct default_data {
+        int stdout = STDOUT_FILENO;
+        int stdin = STDIN_FILENO;
+        int stderr = STDERR_FILENO;
+    };
+
+    /**
      * structure to wrap all data necessary to run a process
      *
      * args: the arguments provided to the shell
      */
-    struct binary_data{
+    struct binary_data : default_data {
         std::vector<std::string> args;
     };
 
     /**
      * structure to wrap all of the necessary data to perform an export operation
      *
-     * args: the arguments provided to the shell
+     * name: the name of the variable which will be exported
+     *
+     * val: the value that will be associated with this environment variable
      */
-    struct export_data{
+    struct export_data : default_data {
         std::string name;
         std::string val;
     };
@@ -62,5 +79,12 @@ namespace jsh {
          * data: the information necessary to perform the export
          */
         static void execute_process(export_data& data);
+
+        /**
+         * execute: determines which type of process should be executed
+         *
+         * data: variant of data to be executed upon
+         */
+        static void execute(std::optional<std::unique_ptr<process_data>>& data);
     };
 } // namespace jsh

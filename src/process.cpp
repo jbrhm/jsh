@@ -79,7 +79,26 @@ namespace jsh {
                 jsh::cout_logger.log(jsh::LOG_LEVEL::ERROR, "Waiting on PID ", pid, " failed...");
             }
         }else{ // child
-            int exit_code = execvp(args_ptr[0], args_ptr.data());
+            // check for a different stdout
+            if(data.stdout != STDOUT_FILENO){
+                // this will essentially make STDOUT_FILENO point to the other file descriptor
+                // since according to the man page it will close STDOUT_FILENO since it already exists
+                dup2(data.stdout, STDOUT_FILENO);
+                close(data.stdout);
+            }
+
+            // check for a different stdin
+            if(data.stdin != STDIN_FILENO){
+                dup2(data.stdin, STDIN_FILENO);
+                close(data.stdin);
+            }
+
+            // check for a different stderr
+            if(data.stderr != STDERR_FILENO){
+                dup2(data.stderr, STDERR_FILENO);
+                close(data.stderr);
+            }
+                int exit_code = execvp(args_ptr[0], args_ptr.data());
 
             // execvp only returns if there was an error
             assert(exit_code == -1);
@@ -93,5 +112,12 @@ namespace jsh {
     void process::execute_process(export_data& data){
         // perform the export
         environment::set_var(data.name.c_str(), data.val.c_str());
+    }
+
+    void process::execute(std::optional<std::unique_ptr<process_data>>& data){
+        // execute on the given data
+        std::visit([](auto&& var){
+                    jsh::process::execute_process(var);
+                }, *data.value());
     }
 } // namespace jsh

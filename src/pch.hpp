@@ -13,6 +13,8 @@
 // OS
 #include <unistd.h>
 #include <sys/wait.h>
+#include <fcntl.h>
+#include <sys/stat.h>
 
 // JSH
 #include "macros.hpp"
