@@ -105,8 +105,38 @@ namespace jsh {
         std::stringstream ss(input);
         std::vector<std::string> args;
 
+        // IO file descriptors
+        int stdout = STDOUT_FILENO;
+        int stdin = STDIN_FILENO;
+        int stderr = STDERR_FILENO;
+
         // parse the command into different components
         while(ss >> arg){
+            // search for input and output redirection
+            std::string filename;
+            if(arg.size() == 1 && arg[0] == INPUT_REDIRECTION){
+                // get the input file descriptor
+                if(!(ss >> filename)){
+                    cout_logger.log(LOG_LEVEL::ERROR, "Input file not specified...");
+                    return std::nullopt;
+                }
+                stdin = open(filename.c_str(), O_RDWR | O_CREAT, 0777);
+                CHECK_OPEN(stdin);
+                
+                continue;
+            }
+
+            if(arg.size() == 1 && arg[0] == OUTPUT_REDIRECTION){
+                // get the output file descriptor
+                if(!(ss >> filename)){
+                    cout_logger.log(LOG_LEVEL::ERROR, "Output file not specified...");
+                    return std::nullopt;
+                }
+                stdout = open(filename.c_str(), O_RDWR | O_CREAT, 0777);
+                CHECK_OPEN(stdout);
+
+                continue;
+            }
             args.push_back(arg);
         }
 
@@ -118,6 +148,11 @@ namespace jsh {
             assert(std::holds_alternative<export_data>(*proc_data));
 
             export_data& data = std::get<export_data>(*proc_data);
+
+            // set IO redirection
+            data.stdout = stdout;
+            data.stdin = stdin;
+            data.stderr = stderr;
 
             // find the variable name and value from the input
             // we should only have two items in the args list export and [variable name]=[value]
@@ -143,6 +178,11 @@ namespace jsh {
             assert(std::holds_alternative<binary_data>(*proc_data));
 
             binary_data& data = std::get<binary_data>(*proc_data);
+
+            // set IO redirection
+            data.stdout = stdout;
+            data.stdin = stdin;
+            data.stderr = stderr;
 
             // give the variant ownership of the arguments
             data.args = std::move(args);

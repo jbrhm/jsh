@@ -52,6 +52,8 @@ namespace jsh {
          */
         static constexpr char const* EXPORT_BUILTIN = "export";
         static constexpr char EQUALS = '=';
+        static constexpr char INPUT_REDIRECTION = '<';
+        static constexpr char OUTPUT_REDIRECTION = '>';
 
         /**
          * populate the binary with its data

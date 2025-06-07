@@ -29,5 +29,6 @@ int main(int argc, char* argv[], char* envp[]){
         }
 
         // perform the process' execution
+        jsh::process::execute(data);
     }
 }

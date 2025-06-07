@@ -6,15 +6,22 @@
     if(fd == -1) { \
         std::string err = strerror(errno); \
         cout_logger.log(LOG_LEVEL::ERROR, err); \
-    } \
-    return;
+        return; \
+    }
 
 #define CHECK_CLOSE(status) \
     if(status == -1) { \
         std::string err = strerror(errno); \
         cout_logger.log(LOG_LEVEL::ERROR, err); \
-    } \
-    return;
+        return; \
+    }
+
+#define CHECK_OPEN(status) \
+    if(status == -1) { \
+        std::string err = strerror(errno); \
+        cout_logger.log(LOG_LEVEL::ERROR, err); \
+        return std::nullopt; \
+    } 
 
 template <typename T>
 concept printable = 
