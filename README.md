@@ -61,3 +61,5 @@ This file will then be populated with contents of standard out from the last pro
 > Input and output redirection must be of the form `$[arg1][whitespace][arg2][whitespace]...[< or >][whitespace][filepath][whitespace]...[whitespace][argn-1][whitespace][argn]`
 >
 > `jsh` does not support redirecting for standard error currently
+>
+> In `jsh` pipes have precedence for IO redirection over redirection, such that if both redirection and pipes are utilized, the pipe will be written to instead of the file.

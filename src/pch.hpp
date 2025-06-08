@@ -9,6 +9,7 @@
 #include <optional>
 #include <variant>
 #include <memory>
+#include <list>
 
 // OS
 #include <unistd.h>
