@@ -137,6 +137,8 @@ namespace jsh {
 
                 continue;
             }
+
+            // if not IO redirection push back as command line arg
             args.push_back(arg);
         }
 
