@@ -17,6 +17,7 @@ namespace jsh {
         auto find_operators = [&](OPERATOR op){
             op_data op_d;
             op_d.op = op;
+            op_d.index = 0;
             while(true) {
                 // find the first instance of the operator
                 op_d.index = input.find(OPERATOR_STR[op], op_d.index);
@@ -34,6 +35,9 @@ namespace jsh {
 
                 // add index
                 indices.push_back(op_d);
+
+                // increment beyond operator
+                op_d.index += OPERATOR_LENGTH[op];
             }
 
             return;
