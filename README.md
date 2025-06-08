@@ -16,6 +16,8 @@ Export commands must be of the form `$export[whitespace][variable name]=[value]`
 > Variable names cannot contain the `=` character
 > 
 > Variable names cannot contain the `{` or `}` character
+>
+> Variables and values cannot contain any whitespace
 
 `jsh` supports using environment variables through substitution using the `$` character.
 To achieve substitution, the substitution must be of the form `$[command part 1]${[environment variable name]}[command part 2]`.
@@ -56,6 +58,6 @@ Output redirection can be achieved by appending the `>` character followed by th
 This file will then be populated with contents of standard out from the last process in the job.
 
 > [!IMPORTANT]  
-> Input and output redirection must be of the form `$[arg1][whitespace][arg2][whitespace]...[< or >][whitespace][filepath][whitespace][argn-1][whitespace][argn]`
+> Input and output redirection must be of the form `$[arg1][whitespace][arg2][whitespace]...[< or >][whitespace][filepath][whitespace]...[whitespace][argn-1][whitespace][argn]`
 >
 > `jsh` does not support redirecting for standard error currently
