@@ -15,7 +15,7 @@ namespace jsh {
          *
          * input: the users input which will be split by process
          */
-        static auto parse_job(std::string const& input) -> std::unique_ptr<job_data>;
+        [[nodiscard]] static auto parse_job(std::string const& input) -> std::unique_ptr<job_data>;
 
         /**
          * execute_job: executes a job

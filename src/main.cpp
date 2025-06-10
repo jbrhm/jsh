@@ -22,7 +22,9 @@ int main(int argc, char* argv[], char* envp[]){
         jsh::cout_logger.log(jsh::LOG_LEVEL::DEBUG, "Substituted user input: ", input);
 
         // parse the job
-        jsh::job::parse_job(input);
+        auto job_data = jsh::job::parse_job(input);
 
+        // execute the job
+        jsh::job::execute_job(job_data);
     }
 }
