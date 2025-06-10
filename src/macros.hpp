@@ -2,25 +2,32 @@
 
 #include "pch.hpp"
 
-#define CHECK_DUP(fd) \
+#define CHECK_DUP(fd, ret) \
     if(fd == -1) { \
         std::string err = strerror(errno); \
         cout_logger.log(LOG_LEVEL::ERROR, err); \
         return; \
     }
 
-#define CHECK_CLOSE(status) \
+#define CHECK_CLOSE(status, ret) \
     if(status == -1) { \
         std::string err = strerror(errno); \
         cout_logger.log(LOG_LEVEL::ERROR, err); \
-        return; \
+        return ret; \
     }
 
-#define CHECK_OPEN(status) \
+#define CHECK_OPEN(status, ret) \
     if(status == -1) { \
         std::string err = strerror(errno); \
         cout_logger.log(LOG_LEVEL::ERROR, err); \
-        return std::nullopt; \
+        return ret; \
+    } 
+
+#define CHECK_PIPE(status, ret) \
+    if(status == -1) { \
+        std::string err = strerror(errno); \
+        cout_logger.log(LOG_LEVEL::ERROR, err); \
+        return ret; \
     } 
 
 template <typename T>

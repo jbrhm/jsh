@@ -11,16 +11,16 @@ namespace jsh {
                 og_stdout = dup(STDOUT_FILENO);
 
                 // check to make sure dup succeeded
-                CHECK_DUP(og_stdout);
+                CHECK_DUP(og_stdout,);
             }
 
             int status = dup2(new_stdout, STDOUT_FILENO);
 
             // check to make sure dup succeeded
-            CHECK_DUP(status);
+            CHECK_DUP(status,);
 
             // close new fd
-            CHECK_CLOSE(close(new_stdout));
+            CHECK_CLOSE(close(new_stdout),);
         }
 
         // check for a different stdin
@@ -29,16 +29,16 @@ namespace jsh {
                 og_stdin = dup(STDIN_FILENO);
 
                 // check to make sure dup succeeded
-                CHECK_DUP(og_stdin);
+                CHECK_DUP(og_stdin,);
             }
 
             int status = dup2(new_stdin, STDIN_FILENO);
 
             // check to make sure dup succeeded
-            CHECK_DUP(status);
+            CHECK_DUP(status,);
 
             // close new fd
-            CHECK_CLOSE(close(new_stdin));
+            CHECK_CLOSE(close(new_stdin),);
         }
 
         // check for a different stderr
@@ -47,16 +47,16 @@ namespace jsh {
                 og_stderr = dup(STDERR_FILENO);
 
                 // check to make sure dup succeeded
-                CHECK_DUP(og_stderr);
+                CHECK_DUP(og_stderr,);
             }
 
             int status = dup2(new_stderr, STDERR_FILENO);
 
             // check to make sure dup succeeded
-            CHECK_DUP(status);
+            CHECK_DUP(status,);
 
             // close new fd
-            CHECK_CLOSE(close(new_stderr));
+            CHECK_CLOSE(close(new_stderr),);
         }
     }
 
@@ -66,10 +66,10 @@ namespace jsh {
             if(og_stdout != STDOUT_FILENO){
                 int status = dup2(og_stdout, STDOUT_FILENO);
                 // check to make sure dup succeeded
-                CHECK_DUP(status);
+                CHECK_DUP(status,);
 
                 // close og fd
-                CHECK_CLOSE(close(og_stdout));
+                CHECK_CLOSE(close(og_stdout),);
             }
 
             // check for a different stdin
@@ -77,10 +77,10 @@ namespace jsh {
                 int status = dup2(og_stdin, STDIN_FILENO);
 
                 // check to make sure dup succeeded
-                CHECK_DUP(status)
+                CHECK_DUP(status,)
 
                 // close og fd
-                CHECK_CLOSE(close(og_stdin));
+                CHECK_CLOSE(close(og_stdin),);
             }
 
             // check for a different stderr
@@ -88,10 +88,10 @@ namespace jsh {
                 int status = dup2(og_stderr, STDERR_FILENO);
 
                 // check to make sure dup succeeded
-                CHECK_DUP(status);
+                CHECK_DUP(status,);
 
                 // close og fd
-                CHECK_CLOSE(close(og_stderr));
+                CHECK_CLOSE(close(og_stderr),);
             }
         }
     }
@@ -121,7 +121,7 @@ namespace jsh {
                     return std::nullopt;
                 }
                 stdin = open(filename.c_str(), O_RDWR, 0777);
-                CHECK_OPEN(stdin);
+                CHECK_OPEN(stdin, std::nullopt);
                 
                 continue;
             }
@@ -133,7 +133,7 @@ namespace jsh {
                     return std::nullopt;
                 }
                 stdout = open(filename.c_str(), O_RDWR | O_CREAT, 0777);
-                CHECK_OPEN(stdout);
+                CHECK_OPEN(stdout, std::nullopt);
 
                 continue;
             }
@@ -211,6 +211,18 @@ namespace jsh {
         if(pid){ // parent
             pid_t exit_code = waitpid(pid, &status, 0);
 
+            // close non-default fds
+            if(data.stdout != STDOUT_FILENO){
+                CHECK_CLOSE(close(data.stdout),);
+            }
+            if(data.stdin != STDIN_FILENO){
+                CHECK_CLOSE(close(data.stdin),);
+            }
+            if(data.stderr != STDERR_FILENO){
+                CHECK_CLOSE(close(data.stderr),);
+            }
+
+            // check for errors
             if(exit_code != pid){
                 jsh::cout_logger.log(jsh::LOG_LEVEL::ERROR, "Waiting on PID ", pid, " failed...");
             }

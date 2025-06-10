@@ -100,9 +100,30 @@ namespace jsh {
 
         // perform the process' execution
         assert(data->input_seq.size() == data->process_seq.size());
+        assert(data->input_seq.size() == data->operator_seq.size() + 1);
         for(std::size_t i = 0; i < data->process_seq.size(); ++i){
             // get a reference to the process_data
             std::unique_ptr<process_data>& proc_data = data->process_seq[i];
+
+            // if on last command dont do any checks
+            if(i + 1 != data->process_seq.size()){
+                // we should not have any invalid operators at this point
+                assert(data->operator_seq[i] < OPERATOR::COUNT);
+
+                // Check if the current process' output is being piped somewhere else
+                if(data->operator_seq[i] == OPERATOR::PIPE){
+                    // create the pipe
+                    int pipe_fds[2];
+                    CHECK_PIPE(pipe(pipe_fds),);
+
+                    // set the current output and the next input to read from the pipe
+                    std::visit([&](auto&& var){var.stdout = pipe_fds[1];}, *proc_data);
+                    // there will always be another process since this is being piped somewhere else
+                    assert(data->process_seq.size() > i);
+                    std::visit([&](auto&& var){var.stdin = pipe_fds[0];}, *data->process_seq[i+1]);
+                }
+            }
+
             // execute the process
             jsh::process::execute(proc_data);
         }
