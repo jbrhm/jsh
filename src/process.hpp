@@ -131,6 +131,6 @@ namespace jsh {
          *
          * data: variant of data to be executed upon
          */
-        static void execute(std::optional<std::unique_ptr<process_data>>& data);
+        static void execute(std::unique_ptr<process_data>& data);
     };
 } // namespace jsh

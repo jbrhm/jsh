@@ -54,7 +54,7 @@ namespace jsh {
 
         // resize job vectors
         j_data->input_seq.reserve(indices.size() + 1);
-        j_data->process_seq.resize(indices.size() + 1);
+        j_data->process_seq.reserve(indices.size() + 1);
         j_data->operator_seq.reserve(indices.size());
 
         // split the strings based on processes
@@ -77,8 +77,34 @@ namespace jsh {
 
         // make sure all of the sequences are appropriately sized
         assert(j_data->operator_seq.size() == j_data->input_seq.size() - 1);
-        assert(j_data->input_seq.size() == j_data->process_seq.size());
 
         return j_data;
+    }
+
+    void job::execute_job(std::unique_ptr<job_data>& data){
+        // parse all of the individual process inputs
+        for(std::string const& input : data->input_seq){
+            // parse the users input into a data describing a specific process
+            std::optional<std::unique_ptr<jsh::process_data>> proc_data = jsh::process::parse_process(input);
+
+            // check the to see if the input was valid
+            if(!proc_data.has_value()){ // invalid
+                cout_logger.log(LOG_LEVEL::ERROR, "Error Parsing Process...");
+                return;
+            }
+
+            // move the data from the optional into the vector
+            assert(proc_data.has_value());
+            data->process_seq.emplace_back(std::move(proc_data.value()));
+        }
+
+        // perform the process' execution
+        assert(data->input_seq.size() == data->process_seq.size());
+        for(std::size_t i = 0; i < data->process_seq.size(); ++i){
+            // get a reference to the process_data
+            std::unique_ptr<process_data>& proc_data = data->process_seq[i];
+            // execute the process
+            jsh::process::execute(proc_data);
+        }
     }
 }// namespace jsh

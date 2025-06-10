@@ -126,11 +126,11 @@ TEST(TestProcess, TestExecuteBinary) {
     }
 
     // create the command for the binary data
-    std::optional<std::unique_ptr<jsh::process_data>> binary_var = std::make_optional<std::unique_ptr<jsh::process_data>>(std::make_unique<jsh::process_data>(jsh::binary_data{}));
+    std::unique_ptr<jsh::process_data> binary_var = std::make_unique<jsh::process_data>(jsh::binary_data{});
 
-    assert(std::holds_alternative<jsh::binary_data>(*binary_var.value()));
+    assert(std::holds_alternative<jsh::binary_data>(*binary_var));
 
-    jsh::binary_data& binary = std::get<jsh::binary_data>(*binary_var.value());
+    jsh::binary_data& binary = std::get<jsh::binary_data>(*binary_var);
 
     binary.args = {"echo", "hi"};
 
@@ -154,11 +154,11 @@ TEST(TestProcess, TestExecuteBinary) {
 
 TEST(TestProcess, TestExecuteExport) {
     // create the export data structure
-    std::optional<std::unique_ptr<jsh::process_data>> export_var = std::make_optional<std::unique_ptr<jsh::process_data>>(std::make_unique<jsh::process_data>(jsh::export_data{}));
+    std::unique_ptr<jsh::process_data> export_var = std::make_unique<jsh::process_data>(jsh::export_data{});
 
-    assert(std::holds_alternative<jsh::export_data>(*export_var.value()));
+    assert(std::holds_alternative<jsh::export_data>(*export_var));
 
-    jsh::export_data& exp = std::get<jsh::export_data>(*export_var.value());
+    jsh::export_data& exp = std::get<jsh::export_data>(*export_var);
 
     exp.name = "name";
     exp.val = "val";

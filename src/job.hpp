@@ -18,6 +18,13 @@ namespace jsh {
         static auto parse_job(std::string const& input) -> std::unique_ptr<job_data>;
 
         /**
+         * execute_job: executes a job
+         *
+         * data: job_data structure which describes how to execute the job
+         */
+        static void execute_job(std::unique_ptr<job_data>& data);
+
+        /**
          * OPERATOR: enum which describes what operator is used to chain together a series of processes
          */
         enum OPERATOR : char {
@@ -57,6 +64,6 @@ namespace jsh {
         /**
          * process_seq: the sequence of processes which make up a job
          */
-        std::vector<process_data> process_seq;
+        std::vector<std::unique_ptr<process_data>> process_seq;
     };
 } // namespace jsh

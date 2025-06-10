@@ -11,7 +11,7 @@ TEST(TestJob, TestParseJobNoOperators){
     auto j = jsh::job::parse_job(input);
 
     // ensure correct sizing
-    ASSERT_TRUE(j->process_seq.size() == 1);
+    ASSERT_TRUE(j->process_seq.size() == 0);
     ASSERT_TRUE(j->input_seq.size() == 1);
     ASSERT_TRUE(j->operator_seq.size() == 0);
 
@@ -26,7 +26,7 @@ TEST(TestJob, TestParseJobAndBasic1){
     auto j = jsh::job::parse_job(input);
 
     // ensure correct sizing
-    ASSERT_TRUE(j->process_seq.size() == 2);
+    ASSERT_TRUE(j->process_seq.size() == 0);
     ASSERT_TRUE(j->input_seq.size() == 2);
     ASSERT_TRUE(j->operator_seq.size() == 1);
 
@@ -43,7 +43,7 @@ TEST(TestJob, TestParseJobAndBasic2){
     auto j = jsh::job::parse_job(input);
 
     // ensure correct sizing
-    ASSERT_TRUE(j->process_seq.size() == 2);
+    ASSERT_TRUE(j->process_seq.size() == 0);
     ASSERT_TRUE(j->input_seq.size() == 2);
     ASSERT_TRUE(j->operator_seq.size() == 1);
 
@@ -60,7 +60,7 @@ TEST(TestJob, TestParseJobAndBasic3){
     auto j = jsh::job::parse_job(input);
 
     // ensure correct sizing
-    ASSERT_TRUE(j->process_seq.size() == 2);
+    ASSERT_TRUE(j->process_seq.size() == 0);
     ASSERT_TRUE(j->input_seq.size() == 2);
     ASSERT_TRUE(j->operator_seq.size() == 1);
 
@@ -77,7 +77,7 @@ TEST(TestJob, TestParseJobAndBasic4){
     auto j = jsh::job::parse_job(input);
 
     // ensure correct sizing
-    ASSERT_TRUE(j->process_seq.size() == 2);
+    ASSERT_TRUE(j->process_seq.size() == 0);
     ASSERT_TRUE(j->input_seq.size() == 2);
     ASSERT_TRUE(j->operator_seq.size() == 1);
 
@@ -94,7 +94,7 @@ TEST(TestJob, TestParseJobAndEdge1){
     auto j = jsh::job::parse_job(input);
 
     // ensure correct sizing
-    ASSERT_TRUE(j->process_seq.size() == 2);
+    ASSERT_TRUE(j->process_seq.size() == 0);
     ASSERT_TRUE(j->input_seq.size() == 2);
     ASSERT_TRUE(j->operator_seq.size() == 1);
 
@@ -111,7 +111,7 @@ TEST(TestJob, TestParseJobAndEdge2){
     auto j = jsh::job::parse_job(input);
 
     // ensure correct sizing
-    ASSERT_TRUE(j->process_seq.size() == 2);
+    ASSERT_TRUE(j->process_seq.size() == 0);
     ASSERT_TRUE(j->input_seq.size() == 2);
     ASSERT_TRUE(j->operator_seq.size() == 1);
 
@@ -128,7 +128,7 @@ TEST(TestJob, TestParseJobAndEdge3){
     auto j = jsh::job::parse_job(input);
 
     // ensure correct sizing
-    ASSERT_TRUE(j->process_seq.size() == 3);
+    ASSERT_TRUE(j->process_seq.size() == 0);
     ASSERT_TRUE(j->input_seq.size() == 3);
     ASSERT_TRUE(j->operator_seq.size() == 2);
 
@@ -147,7 +147,7 @@ TEST(TestJob, TestParseJobAndEdge4){
     auto j = jsh::job::parse_job(input);
 
     // ensure correct sizing
-    ASSERT_TRUE(j->process_seq.size() == 3);
+    ASSERT_TRUE(j->process_seq.size() == 0);
     ASSERT_TRUE(j->input_seq.size() == 3);
     ASSERT_TRUE(j->operator_seq.size() == 2);
 
@@ -166,7 +166,7 @@ TEST(TestJob, TestParseJobAndEdge5){
     auto j = jsh::job::parse_job(input);
 
     // ensure correct sizing
-    ASSERT_TRUE(j->process_seq.size() == 2);
+    ASSERT_TRUE(j->process_seq.size() == 0);
     ASSERT_TRUE(j->input_seq.size() == 2);
     ASSERT_TRUE(j->operator_seq.size() == 1);
 
@@ -183,7 +183,7 @@ TEST(TestJob, TestParseJobPipeBasic1){
     auto j = jsh::job::parse_job(input);
 
     // ensure correct sizing
-    ASSERT_TRUE(j->process_seq.size() == 2);
+    ASSERT_TRUE(j->process_seq.size() == 0);
     ASSERT_TRUE(j->input_seq.size() == 2);
     ASSERT_TRUE(j->operator_seq.size() == 1);
 
@@ -200,7 +200,7 @@ TEST(TestJob, TestParseJobPipeBasic2){
     auto j = jsh::job::parse_job(input);
 
     // ensure correct sizing
-    ASSERT_TRUE(j->process_seq.size() == 2);
+    ASSERT_TRUE(j->process_seq.size() == 0);
     ASSERT_TRUE(j->input_seq.size() == 2);
     ASSERT_TRUE(j->operator_seq.size() == 1);
 
@@ -217,7 +217,7 @@ TEST(TestJob, TestParseJobPipeBasic3){
     auto j = jsh::job::parse_job(input);
 
     // ensure correct sizing
-    ASSERT_TRUE(j->process_seq.size() == 2);
+    ASSERT_TRUE(j->process_seq.size() == 0);
     ASSERT_TRUE(j->input_seq.size() == 2);
     ASSERT_TRUE(j->operator_seq.size() == 1);
 
@@ -234,7 +234,7 @@ TEST(TestJob, TestParseJobPipeBasic4){
     auto j = jsh::job::parse_job(input);
 
     // ensure correct sizing
-    ASSERT_TRUE(j->process_seq.size() == 2);
+    ASSERT_TRUE(j->process_seq.size() == 0);
     ASSERT_TRUE(j->input_seq.size() == 2);
     ASSERT_TRUE(j->operator_seq.size() == 1);
 
@@ -251,7 +251,7 @@ TEST(TestJob, TestParseJobPipeEdge1){
     auto j = jsh::job::parse_job(input);
 
     // ensure correct sizing
-    ASSERT_TRUE(j->process_seq.size() == 2);
+    ASSERT_TRUE(j->process_seq.size() == 0);
     ASSERT_TRUE(j->input_seq.size() == 2);
     ASSERT_TRUE(j->operator_seq.size() == 1);
 
@@ -269,7 +269,7 @@ TEST(TestJob, TestParseJobPipeEdge2){
     auto j = jsh::job::parse_job(input);
 
     // ensure correct sizing
-    ASSERT_TRUE(j->process_seq.size() == 3);
+    ASSERT_TRUE(j->process_seq.size() == 0);
     ASSERT_TRUE(j->input_seq.size() == 3);
     ASSERT_TRUE(j->operator_seq.size() == 2);
 
@@ -288,7 +288,7 @@ TEST(TestJob, TestParseJobPipeEdge3){
     auto j = jsh::job::parse_job(input);
 
     // ensure correct sizing
-    ASSERT_TRUE(j->process_seq.size() == 3);
+    ASSERT_TRUE(j->process_seq.size() == 0);
     ASSERT_TRUE(j->input_seq.size() == 3);
     ASSERT_TRUE(j->operator_seq.size() == 2);
 
@@ -307,7 +307,7 @@ TEST(TestJob, TestParseJobPipeEdge4){
     auto j = jsh::job::parse_job(input);
 
     // ensure correct sizing
-    ASSERT_TRUE(j->process_seq.size() == 2);
+    ASSERT_TRUE(j->process_seq.size() == 0);
     ASSERT_TRUE(j->input_seq.size() == 2);
     ASSERT_TRUE(j->operator_seq.size() == 1);
 

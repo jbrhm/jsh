@@ -239,10 +239,10 @@ namespace jsh {
         } // sir scope
     }
 
-    void process::execute(std::optional<std::unique_ptr<process_data>>& data){
+    void process::execute(std::unique_ptr<process_data>& data){
         // execute on the given data
         std::visit([](auto&& var){
                     jsh::process::execute_process(var);
-                }, *data.value());
+                }, *data);
     }
 } // namespace jsh
