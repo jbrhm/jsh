@@ -5,28 +5,28 @@
 #define CHECK_DUP(fd, ret) \
     if(fd == -1) { \
         std::string err = strerror(errno); \
-        cout_logger.log(LOG_LEVEL::ERROR, err); \
+        jsh::cout_logger.log(jsh::LOG_LEVEL::ERROR, err); \
         return; \
     }
 
 #define CHECK_CLOSE(status, ret) \
     if(status == -1) { \
         std::string err = strerror(errno); \
-        cout_logger.log(LOG_LEVEL::ERROR, err); \
+        jsh::cout_logger.log(jsh::LOG_LEVEL::ERROR, err); \
         return ret; \
     }
 
 #define CHECK_OPEN(status, ret) \
     if(status == -1) { \
         std::string err = strerror(errno); \
-        cout_logger.log(LOG_LEVEL::ERROR, err); \
+        jsh::cout_logger.log(jsh::LOG_LEVEL::ERROR, err); \
         return ret; \
     } 
 
 #define CHECK_PIPE(status, ret) \
     if(status == -1) { \
         std::string err = strerror(errno); \
-        cout_logger.log(LOG_LEVEL::ERROR, err); \
+        jsh::cout_logger.log(jsh::LOG_LEVEL::ERROR, err); \
         return ret; \
     } 
 

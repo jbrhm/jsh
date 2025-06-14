@@ -316,3 +316,28 @@ TEST(TestJob, TestParseJobPipeEdge4){
     ASSERT_STREQ(j->input_seq[1].c_str(), " command");
     ASSERT_EQ(j->operator_seq[0], jsh::job::OPERATOR::PIPE);
 }
+
+TEST(TestJob, TestExecuteJobBasic){
+    // create job data
+    auto j = std::make_unique<jsh::job_data>();
+
+    // binary arguments
+    static constexpr std::array<std::string, 2> args{"echo", "test"};
+
+    // pipe for output checking
+    int fds[2];
+    CHECK_PIPE(pipe(fds),);
+
+    // populate the processes that we want to execute
+    auto p = std::make_unique<jsh::process_data>();
+    *p = jsh::binary_data();
+    assert(std::holds_alternative<jsh::binary_data>(*p));
+    auto proc_data = std::get<jsh::binary_data>(*p);
+
+
+
+    proc_data.args(args.data(), )
+
+    // push back this process
+    j->process_seq.emplace_back(std::move(p));
+}
