@@ -339,6 +339,9 @@ TEST(TestJob, TestExecuteJobBasic){
 
     // push back this process
     j->process_seq.emplace_back(std::move(p));
+    j->input_seq.emplace_back("");
+
+    std::cout << j->input_seq.size() << j->process_seq.size() << '\n';
 
     // execute the job
     jsh::job::execute_job(j);
