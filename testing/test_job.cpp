@@ -322,7 +322,7 @@ TEST(TestJob, TestExecuteJobBasic){
     auto j = std::make_unique<jsh::job_data>();
 
     // binary arguments
-    static constexpr std::array<std::string, 2> args{"echo", "test"};
+    std::vector<std::string> args{"echo", "test"};
 
     // pipe for output checking
     int fds[2];
@@ -334,10 +334,12 @@ TEST(TestJob, TestExecuteJobBasic){
     assert(std::holds_alternative<jsh::binary_data>(*p));
     auto proc_data = std::get<jsh::binary_data>(*p);
 
-
-
-    proc_data.args(args.data(), )
+    //proc_data.stdout = fds[1];
+    proc_data.args = std::move(args);
 
     // push back this process
     j->process_seq.emplace_back(std::move(p));
+
+    // execute the job
+    jsh::job::execute_job(j);
 }
