@@ -49,7 +49,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_utils)
 # use google test for regression suite
 find_package(GTest REQUIRED)
 
-file(GLOB_RECURSE tests CONFIGURE_DEPENDS testing/*.cpp)
+file(GLOB tests CONFIGURE_DEPENDS testing/*.cpp)
 
 enable_testing()
 
