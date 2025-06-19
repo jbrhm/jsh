@@ -29,6 +29,9 @@ if(FOUND_CCACHE)
     set(CMAKE_C_COMPILER_LAUNCHER ccache)
 endif()
 
+# add testing utils subdirectory
+add_subdirectory("testing/utils")
+
 # create jsh utils library (so both the executable and the tests can link against it)
 set(utils_sources
     src/environment.cpp
