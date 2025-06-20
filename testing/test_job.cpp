@@ -3,6 +3,7 @@
 
 // JSH
 #include <job.hpp>
+#include <posix_wrappers.hpp>
 
 TEST(TestJob, TestParseJobNoOperators){
     // input
@@ -321,28 +322,39 @@ TEST(TestJob, TestExecuteJobBasic){
     // create job data
     auto j = std::make_unique<jsh::job_data>();
 
-    // binary arguments
-    std::vector<std::string> args{"echo", "test"};
+    // pipe name
+    static constexpr char const* PIPE_NAME = "output";
 
-    // pipe for output checking
-    int fds[2];
-    CHECK_PIPE(pipe(fds),);
+    // create the pipe
+    auto npw = jsh::named_pipe_wrapper(PIPE_NAME);
 
-    // populate the processes that we want to execute
-    auto p = std::make_unique<jsh::process_data>();
-    *p = jsh::binary_data();
-    assert(std::holds_alternative<jsh::binary_data>(*p));
-    auto proc_data = std::get<jsh::binary_data>(*p);
+    // open a read file descriptor for the named pipe
+    mode_t perms = 0666;
+    int fd = open(PIPE_NAME, O_RDONLY, perms);
 
-    //proc_data.stdout = fds[1];
-    proc_data.args = std::move(args);
+    // check for success
+    if(fd == -1){
+        std::cout << "Error opening pipe: " << strerror(errno) << '\n';
+        return;
+    }
 
     // push back this process
-    j->process_seq.emplace_back(std::move(p));
-    j->input_seq.emplace_back("");
-
-    std::cout << j->input_seq.size() << j->process_seq.size() << '\n';
+    j->input_seq.emplace_back("echo hi | build/testing/utils/write_pipe --name output");
 
     // execute the job
     jsh::job::execute_job(j);
+
+    // read from the pipe
+    ssize_t num_bytes_read = 1;
+    while(num_bytes_read != 0){
+        char c = '\0';
+        num_bytes_read = read(fd, &c, sizeof(c));
+
+        if(num_bytes_read == -1){
+            std::cout << "Error reading from pipe: " << strerror(errno) << '\n';
+            return;
+        }
+
+        std::cout << c << '\n';
+    }
 }

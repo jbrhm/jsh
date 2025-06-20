@@ -14,7 +14,7 @@
 int main(int argc, char** argv){
     std::string pipe_name;
 
-    int c;
+    int opt_char;
     while(true){
         int option = 0;
         static constexpr struct option options[] = {
@@ -24,12 +24,12 @@ int main(int argc, char** argv){
 
         int indx = 0;
 
-        c = getopt_long(argc, argv, "n:", options, &indx);
+        opt_char = getopt_long(argc, argv, "n:", options, &indx);
 
-        if(c == -1)
+        if(opt_char == -1)
             break;
 
-        switch(c){
+        switch(opt_char){
             case 0: {
                 assert(false);
                 break;
@@ -46,57 +46,46 @@ int main(int argc, char** argv){
 
     std::cout << pipe_name << '\n';
 
-    // define pipe params
-    static constexpr mode_t perms = 0666;
-
-    // create the pipe
-    if(mkfifo(pipe_name.c_str(), perms) == -1){
-        std::cout << "Error making pipe: " << strerror(errno) << '\n';
-        return 1;
-    }
 
     // open the pipe and write to it
-    int fd = open(pipe_name.c_str(), O_CREAT | O_RDWR);
+    int fd = open(pipe_name.c_str(), O_CREAT | O_WRONLY);
     if(fd == -1){
         std::cout << "Error opening pipe: " << strerror(errno) << '\n';
         return 1;
     }
 
-    // read in from stdin
-    // TODO: REDO this portion
-    assert(false);
-    std::string str;
-    while(std::cin >> str){
-        int num_bytes_written = 0;
+    while(true){
+        char c = '\0';
+        ssize_t num_bytes_read = read(STDIN_FILENO, &c, sizeof(c));
 
-        // write the string to the pipe
-        while(num_bytes_written != str.size()){
-            ssize_t num_written = write(fd, str.c_str(), str.size());
+        std::cout << c << '\n';
 
-            if(num_written == -1){
+        if(num_bytes_read == -1){ // error occurred
+            std::cout << "Error reading from pipe: " << strerror(errno) << '\n';
+            return 1;
+        }
+
+        if(num_bytes_read == 0){ // read EOF 
+            break;
+        }
+
+        // we should only be able to read one byte
+        assert(num_bytes_read == 1);
+
+        // write the char out to the pipe
+        ssize_t num_bytes_wrote = 0;
+        while(num_bytes_wrote == 0){
+            num_bytes_wrote = write(fd, &c, sizeof(c));
+
+            if(num_bytes_wrote == -1){ // error occurred
                 std::cout << "Error writing to pipe: " << strerror(errno) << '\n';
                 return 1;
             }
-
-            num_bytes_written += static_cast<int>(num_written);
         }
-
-        int num_bytes_read = 0;
-
-        // write the string to the pipe
-        while(num_bytes_read != str.size()){
-            ssize_t num_read = read(fd, str.data(), str.size());
-
-            if(num_read == -1){
-                std::cout << "Error reading from pipe: " << strerror(errno) << '\n';
-                return 1;
-            }
-
-            num_bytes_read += static_cast<int>(num_read);
-        }
-
-        std::cout << str << '\n';
     }
+
+    // close the fd
+    close(fd);
 
     return 0;
 }
