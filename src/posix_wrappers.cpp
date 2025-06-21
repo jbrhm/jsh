@@ -16,4 +16,29 @@ namespace jsh {
             }
         }
     }
+
+    ///// FILE DESCRIPTOR WRAPPER /////
+
+    file_descriptor_wrapper::file_descriptor_wrapper(file_descriptor_wrapper&& other) noexcept : _fides{other._fides}{
+        // set the other fdw to invalid
+        other._fides = -1;
+    }
+    auto file_descriptor_wrapper::operator=(file_descriptor_wrapper&& other) noexcept -> file_descriptor_wrapper&{
+        // ensure we are nove being moved into ourselves
+        if(this != &other){
+            _fides = other._fides;
+            other._fides = -1;
+        }
+        
+        // return current object
+        return *this;
+    }
+
+    file_descriptor_wrapper::file_descriptor_wrapper(int fides) : _fides{fides}{
+
+    }
+
+    ~file_descriptor_wrapper();
+
+    ///// FILE DESCRIPTOR WRAPPER /////
 } // namespace jsh
