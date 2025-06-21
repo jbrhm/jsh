@@ -319,22 +319,19 @@ TEST(TestJob, TestParseJobPipeEdge4){
 }
 
 TEST(TestJob, TestExecuteJobBasic1){
-    // create job data
-    auto job = std::make_unique<jsh::job_data>();
-
-    // output file name
+    // Test Constants
     static constexpr char const* file = "testing/tmp/file";
     static constexpr char const* cmd = "echo hi > testing/tmp/file";
     static constexpr char const* corr = "hi\n";
 
-    // push back this process
-    job->input_seq.emplace_back(cmd);
+    // parse the command
+    auto job = jsh::job::parse_job(cmd);
 
     // execute the job
     jsh::job::execute_job(job);
 
     // open the file
-    int fides = open(file, O_RDONLY);
+    int fides = open(file, O_RDONLY | O_CREAT);
 
     // check to see if open succeeded
     if(fides == -1){
@@ -360,22 +357,19 @@ TEST(TestJob, TestExecuteJobBasic1){
 }
 
 TEST(TestJob, TestExecuteJobBasic2){
-    // create job data
-    auto job = std::make_unique<jsh::job_data>();
-
-    // output file name
+    // Test constants
     static constexpr char const* file = "testing/tmp/file";
     static constexpr char const* cmd = "echo hi yo | grep -i hi> testing/tmp/file";
     static constexpr char const* corr = "hi\n";
 
-    // push back this process
-    job->input_seq.emplace_back(cmd);
+    // create a job
+    auto job = jsh::job::parse_job(cmd);
 
     // execute the job
     jsh::job::execute_job(job);
 
     // open the file
-    int fides = open(file, O_RDONLY);
+    int fides = open(file, O_RDONLY | O_CREAT);
 
     // check to see if open succeeded
     if(fides == -1){
@@ -401,24 +395,21 @@ TEST(TestJob, TestExecuteJobBasic2){
 }
 
 TEST(TestJob, TestExecuteJobBasic3){
-    // create job data
-    auto job = std::make_unique<jsh::job_data>();
-
-    // output file name
+    // Test constants
     static constexpr char const* file = "testing/tmp/file";
     static constexpr char const* file2 = "testing/tmp/file2";
     static constexpr char const* cmd = "echo linux > testing/tmp/file2 && echo hi yo | grep -i hi> testing/tmp/file";
     static constexpr char const* corr = "hi\n";
-    static constexpr char const* corr2 = "linux ";
+    static constexpr char const* corr2 = "linux\n";
 
-    // push back this process
-    job->input_seq.emplace_back(cmd);
+    // parse job
+    auto job = jsh::job::parse_job(cmd);
 
     // execute the job
     jsh::job::execute_job(job);
 
     // open the file
-    int fides = open(file, O_RDONLY);
+    int fides = open(file, O_RDONLY | O_CREAT);
 
     // check to see if open succeeded
     if(fides == -1){
@@ -445,7 +436,7 @@ TEST(TestJob, TestExecuteJobBasic3){
     close(fides);
 
     // open the file
-    fides = open(file2, O_RDONLY);
+    fides = open(file2, O_RDONLY | O_CREAT);
 
     // check to see if open succeeded
     if(fides == -1){

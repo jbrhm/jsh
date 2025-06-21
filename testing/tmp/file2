@@ -1,1 +1,1 @@
-linux && echo hi yo | grep -i hi> testing/tmp/file
+linux
