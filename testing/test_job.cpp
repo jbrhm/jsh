@@ -318,43 +318,154 @@ TEST(TestJob, TestParseJobPipeEdge4){
     ASSERT_EQ(j->operator_seq[0], jsh::job::OPERATOR::PIPE);
 }
 
-TEST(TestJob, TestExecuteJobBasic){
+TEST(TestJob, TestExecuteJobBasic1){
     // create job data
-    auto j = std::make_unique<jsh::job_data>();
+    auto job = std::make_unique<jsh::job_data>();
 
-    // pipe name
-    static constexpr char const* PIPE_NAME = "output";
+    // output file name
+    static constexpr char const* file = "testing/tmp/file";
+    static constexpr char const* cmd = "echo hi > testing/tmp/file";
+    static constexpr char const* corr = "hi\n";
 
-    // create the pipe
-    auto npw = jsh::named_pipe_wrapper(PIPE_NAME);
+    // push back this process
+    job->input_seq.emplace_back(cmd);
 
-    // open a read file descriptor for the named pipe
-    mode_t perms = 0666;
-    int fd = open(PIPE_NAME, O_RDONLY, perms);
+    // execute the job
+    jsh::job::execute_job(job);
 
-    // check for success
-    if(fd == -1){
-        std::cout << "Error opening pipe: " << strerror(errno) << '\n';
+    // open the file
+    int fides = open(file, O_RDONLY);
+
+    // check to see if open succeeded
+    if(fides == -1){
+        std::cout << "Error opening file: " << strerror(errno) << '\n';
         return;
     }
 
-    // push back this process
-    j->input_seq.emplace_back("echo hi | build/testing/utils/write_pipe --name output");
-
-    // execute the job
-    jsh::job::execute_job(j);
-
     // read from the pipe
     ssize_t num_bytes_read = 1;
-    while(num_bytes_read != 0){
-        char c = '\0';
-        num_bytes_read = read(fd, &c, sizeof(c));
+    for(std::size_t i = 0; num_bytes_read != 0; ++i){
+        char chr = '\0';
+        num_bytes_read = read(fides, &chr, sizeof(chr));
 
         if(num_bytes_read == -1){
             std::cout << "Error reading from pipe: " << strerror(errno) << '\n';
             return;
         }
+        
+        ASSERT_TRUE(i < std::strlen(corr) + 1);
+        std::cout << i << " " << chr << " " << corr[i] << '\n';
+        ASSERT_TRUE(chr == corr[i]);
+    }
+}
 
-        std::cout << c << '\n';
+TEST(TestJob, TestExecuteJobBasic2){
+    // create job data
+    auto job = std::make_unique<jsh::job_data>();
+
+    // output file name
+    static constexpr char const* file = "testing/tmp/file";
+    static constexpr char const* cmd = "echo hi yo | grep -i hi> testing/tmp/file";
+    static constexpr char const* corr = "hi\n";
+
+    // push back this process
+    job->input_seq.emplace_back(cmd);
+
+    // execute the job
+    jsh::job::execute_job(job);
+
+    // open the file
+    int fides = open(file, O_RDONLY);
+
+    // check to see if open succeeded
+    if(fides == -1){
+        std::cout << "Error opening file: " << strerror(errno) << '\n';
+        return;
+    }
+
+    // read from the pipe
+    ssize_t num_bytes_read = 1;
+    for(std::size_t i = 0; num_bytes_read != 0; ++i){
+        char chr = '\0';
+        num_bytes_read = read(fides, &chr, sizeof(chr));
+
+        if(num_bytes_read == -1){
+            std::cout << "Error reading from pipe: " << strerror(errno) << '\n';
+            return;
+        }
+        
+        ASSERT_TRUE(i < std::strlen(corr) + 1);
+        std::cout << i << " " << chr << " " << corr[i] << '\n';
+        ASSERT_TRUE(chr == corr[i]);
+    }
+}
+
+TEST(TestJob, TestExecuteJobBasic3){
+    // create job data
+    auto job = std::make_unique<jsh::job_data>();
+
+    // output file name
+    static constexpr char const* file = "testing/tmp/file";
+    static constexpr char const* file2 = "testing/tmp/file2";
+    static constexpr char const* cmd = "echo linux > testing/tmp/file2 && echo hi yo | grep -i hi> testing/tmp/file";
+    static constexpr char const* corr = "hi\n";
+    static constexpr char const* corr2 = "linux ";
+
+    // push back this process
+    job->input_seq.emplace_back(cmd);
+
+    // execute the job
+    jsh::job::execute_job(job);
+
+    // open the file
+    int fides = open(file, O_RDONLY);
+
+    // check to see if open succeeded
+    if(fides == -1){
+        std::cout << "Error opening file: " << strerror(errno) << '\n';
+        return;
+    }
+
+    // read from the pipe
+    ssize_t num_bytes_read = 1;
+    for(std::size_t i = 0; num_bytes_read != 0; ++i){
+        char chr = '\0';
+        num_bytes_read = read(fides, &chr, sizeof(chr));
+
+        if(num_bytes_read == -1){
+            std::cout << "Error reading from pipe: " << strerror(errno) << '\n';
+            return;
+        }
+        
+        ASSERT_TRUE(i < std::strlen(corr) + 1);
+        std::cout << i << " " << chr << " " << corr[i] << '\n';
+        ASSERT_TRUE(chr == corr[i]);
+    }
+
+    close(fides);
+
+    // open the file
+    fides = open(file2, O_RDONLY);
+
+    // check to see if open succeeded
+    if(fides == -1){
+        std::cout << "Error opening file: " << strerror(errno) << '\n';
+        return;
+    }
+
+    // read from the pipe
+    num_bytes_read = 1;
+    for(std::size_t i = 0; num_bytes_read != 0; ++i){
+        char chr = '\0';
+        num_bytes_read = read(fides, &chr, sizeof(chr));
+
+        if(num_bytes_read == -1){
+            std::cout << "Error reading from pipe: " << strerror(errno) << '\n';
+            return;
+        }
+        
+        ASSERT_TRUE(i < std::strlen(corr2) + 1);
+        std::cout << i << " " << chr << " " << corr2[i] << '\n';
+        ASSERT_TRUE(chr == corr2[i]);
     }
 }
