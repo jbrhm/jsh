@@ -38,7 +38,7 @@ namespace jsh {
 
     }
 
-    ~file_descriptor_wrapper();
+    file_descriptor_wrapper::~file_descriptor_wrapper()
 
     ///// FILE DESCRIPTOR WRAPPER /////
 } // namespace jsh

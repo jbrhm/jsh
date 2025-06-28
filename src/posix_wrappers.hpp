@@ -81,4 +81,15 @@ namespace jsh {
          */
         ~file_descriptor_wrapper();
     };
+
+    /**
+     * syscall_wrapper: a class full of static functions which safely wrap all the C-style syscalls
+     */
+    class syscall_wrapper {
+    public:
+        /**
+         * open_wrapper: a wrapper around the open syscall in order to interface properly with the file_descriptor_wrapper
+         */
+        auto open_wrapper() -> std::array<file_descriptor_wrapper, 2>;
+    };
 } // namespace jsh
