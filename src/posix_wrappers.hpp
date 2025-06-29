@@ -1,13 +1,8 @@
 #pragma once
 
-// UNIX
-#include <sys/stat.h>
+// JSH
+#include "macros.hpp"
 #include <unistd.h>
-
-// STL
-#include <string>
-#include <string.h>
-#include <iostream>
 
 namespace jsh {
     /**
@@ -45,6 +40,7 @@ namespace jsh {
     /**
      * file_descriptor_wrapper uses RAII to ensure that all file descriptors are closed
      */
+    class syscall_wrapper;
     class file_descriptor_wrapper {
     private:
         /**
@@ -61,7 +57,7 @@ namespace jsh {
          *
          * note: the reason this constructor was made private was to prevent non-friend classes from creating file descriptor wrappers
          */
-        explicit file_descriptor_wrapper(int fides);
+        explicit file_descriptor_wrapper(int fides) noexcept;
 
     public:
         /**
@@ -80,7 +76,14 @@ namespace jsh {
          * close file descriptors
          */
         ~file_descriptor_wrapper();
+
+
+        friend syscall_wrapper;
     };
+    /**
+     * definitions for stdout, stdin, stderr file_descriptor_wrappers
+     */
+    static file_descriptor_wrapper STDOUT_FILE_DESCRIPTOR = file_descriptor_wrapper(STDOUT_FILENO);
 
     /**
      * syscall_wrapper: a class full of static functions which safely wrap all the C-style syscalls
@@ -90,6 +93,11 @@ namespace jsh {
         /**
          * open_wrapper: a wrapper around the open syscall in order to interface properly with the file_descriptor_wrapper
          */
-        auto open_wrapper() -> std::array<file_descriptor_wrapper, 2>;
+        static auto open_wrapper(std::string const& file, int flags, mode_t perms) -> std::optional<file_descriptor_wrapper>;
+
+        /**
+         * dup_wrapper: a wrapper around the dup syscall in order to interface properly with the file_descriptor_wrapper
+         */
+        static auto dup_wrapper();
     };
 } // namespace jsh

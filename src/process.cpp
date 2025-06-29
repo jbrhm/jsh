@@ -1,10 +1,12 @@
 #include "process.hpp"
+#include "posix_wrappers.hpp"
+#include <optional>
 
 
 namespace jsh {
-    process::shell_internal_redirection::shell_internal_redirection(int stdout, int stdin, int stderr, bool restore) : new_stdout{stdout}, new_stdin{stdin}, new_stderr{stderr}, og_stdout{STDOUT_FILENO}, og_stdin{STDIN_FILENO}, og_stderr{STDERR_FILENO}, _restore{restore}{
+    process::shell_internal_redirection::shell_internal_redirection(std::optional<file_descriptor_wrapper> stdout, std::optional<file_descriptor_wrapper> stdin, std::optional<file_descriptor_wrapper> stderr, bool restore) : new_stdout{std::move(stdout)}, new_stdin{std::move(stdin)}, new_stderr{std::move(stderr)}, og_stdout{std::nullopt}, og_stdin{std::nullopt}, og_stderr{std::nullopt}, _restore{restore}{
         // check for a different stdout
-        if(new_stdout != STDOUT_FILENO){
+        if(new_stdout.has_value()){
             // this will essentially make STDOUT_FILENO point to the other file descriptor
             // since according to the man page it will close STDOUT_FILENO since it already exists
             if(_restore){
@@ -24,7 +26,7 @@ namespace jsh {
         }
 
         // check for a different stdin
-        if(new_stdin != STDIN_FILENO){
+        if(new_stdin.has_value()){
             if(_restore){
                 og_stdin = dup(STDIN_FILENO);
 
@@ -42,7 +44,7 @@ namespace jsh {
         }
 
         // check for a different stderr
-        if(new_stderr != STDERR_FILENO){
+        if(new_stderr.has_value()){
             if(_restore){
                 og_stderr = dup(STDERR_FILENO);
 
@@ -120,7 +122,7 @@ namespace jsh {
                     cout_logger.log(LOG_LEVEL::ERROR, "Input file not specified...");
                     return std::nullopt;
                 }
-                stdin = open(filename.c_str(), O_RDWR, 0777);
+                stdin = open_wra(filename.c_str(), O_RDWR, 0777);
                 CHECK_OPEN(stdin, std::nullopt);
                 
                 continue;

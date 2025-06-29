@@ -4,6 +4,7 @@
 
 // JSH
 #include "environment.hpp"
+#include "posix_wrappers.hpp"
 
 namespace jsh {
     /**
@@ -68,39 +69,39 @@ namespace jsh {
             /**
              * new_stdout: stdout fd for shell internal
              */
-            int new_stdout;
+            std::optional<file_descriptor_wrapper> new_stdout;
 
             /**
              * new_stdin: stdin fd for shell internal
              */
-            int new_stdin;
+            std::optional<file_descriptor_wrapper> new_stdin;
 
             /**
              * new_stderr: stderr fd for shell internal
              */
-            int new_stderr;
+            std::optional<file_descriptor_wrapper> new_stderr;
 
             /**
              * og_stdout: stdout fd for shell internal
              */
-            int og_stdout;
+            std::optional<file_descriptor_wrapper> og_stdout;
 
             /**
              * og_stdin: stdin fd for shell internal
              */
-            int og_stdin;
+            std::optional<file_descriptor_wrapper> og_stdin;
 
             /**
              * og_stderr: stderr fd for shell internal
              */
-            int og_stderr;
+            std::optional<file_descriptor_wrapper> og_stderr;
 
             /**
              * restore: indicates whether the file descriptors will be restored in the destructor
              */
             bool _restore;
         public:
-            shell_internal_redirection(int stdout, int stdin, int stderr, [[maybe_unused]] bool restore = true);
+            shell_internal_redirection(std::optional<file_descriptor_wrapper> stdout, std::optional<file_descriptor_wrapper> stdin, std::optional<file_descriptor_wrapper> stderr, [[maybe_unused]] bool restore = true);
             ~shell_internal_redirection();
         };
 

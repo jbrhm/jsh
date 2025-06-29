@@ -5,6 +5,9 @@
 // JSH
 #include "process.hpp"
 
+// STL
+#include <algorithm>
+
 namespace jsh {
     struct job_data;
 

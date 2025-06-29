@@ -34,11 +34,34 @@ namespace jsh {
         return *this;
     }
 
-    file_descriptor_wrapper::file_descriptor_wrapper(int fides) : _fides{fides}{
+    file_descriptor_wrapper::file_descriptor_wrapper(int fides) : _fides{fides}{}
+
+    file_descriptor_wrapper::~file_descriptor_wrapper(){
+        // close the file descriptor
+        int status = close(_fides);
+
+        // check the status on close
+        if(status == -1){
+            cout_logger.log(LOG_LEVEL::ERROR, "Error occurred while closing file: ", strerror(errno));
+        }
+    }
+    ///// FILE DESCRIPTOR WRAPPER /////
+
+    auto syscall_wrapper::open_wrapper(std::string const& file, int flags, mode_t perms) -> std::optional<file_descriptor_wrapper>{
+        // open the file
+        int fides = open(file.c_str(), flags, perms);
+
+        // check for errors
+        if(fides == -1){
+            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Error occurred while opening file ", file, ": ", strerror(errno));
+            return std::nullopt;
+        }
+
+        // create the file descriptor wrapper using the valid file descriptor
+        file_descriptor_wrapper fdw(fides);
+
+        // create RAII wrapper
+        return std::make_optional<file_descriptor_wrapper>(std::move(fdw));
 
     }
-
-    file_descriptor_wrapper::~file_descriptor_wrapper()
-
-    ///// FILE DESCRIPTOR WRAPPER /////
 } // namespace jsh
