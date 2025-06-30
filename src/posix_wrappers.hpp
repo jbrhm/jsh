@@ -96,11 +96,16 @@ namespace jsh {
         /**
          * open_wrapper: a wrapper around the open syscall in order to interface properly with the file_descriptor_wrapper
          */
-        static auto open_wrapper(std::string const& file, int flags, mode_t perms) -> std::optional<file_descriptor_wrapper>;
+        [[nodiscard]] static auto open_wrapper(std::string const& file, int flags, mode_t perms) -> std::optional<file_descriptor_wrapper>;
 
         /**
          * dup_wrapper: a wrapper around the dup syscall in order to interface properly with the file_descriptor_wrapper
          */
-        static auto dup_wrapper(file_descriptor_wrapper const& fides) -> std::optional<file_descriptor_wrapper>;
+        [[nodiscard]] static auto dup_wrapper(file_descriptor_wrapper const& fides) -> std::optional<file_descriptor_wrapper>;
+
+        /**
+         * dup2_wrapper: a wrapper around the dup2 syscall in order to interface properly with the file_descriptor_wrapper
+         */
+        [[nodiscard]] static auto dup2_wrapper(file_descriptor_wrapper const& fides1, file_descriptor_wrapper const& fides2) -> bool;
     };
 } // namespace jsh

@@ -78,4 +78,18 @@ namespace jsh {
         // create the new file descriptor
         return std::make_optional<file_descriptor_wrapper>(file_descriptor_wrapper(new_fides));
     }
+
+    auto syscall_wrapper::dup2_wrapper(file_descriptor_wrapper const& fides1, file_descriptor_wrapper const& fides2) -> bool{
+        // make the dup2 syscall
+        int status = dup2(fides1._fides, fides2._fides);
+
+        // check to see if there was an error
+        if(status == -1){
+            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Error occurred while duplicating2 a file descriptor: ", strerror(errno));
+            return false;
+        }
+        
+        // success
+        return true;
+    }
 } // namespace jsh

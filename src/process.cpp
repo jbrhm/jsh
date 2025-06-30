@@ -13,84 +13,87 @@ namespace jsh {
                 og_stdout = syscall_wrapper::dup_wrapper(syscall_wrapper::STDOUT_FILE_DESCRIPTOR);
             }
 
-            int status = dup2(new_stdout, STDOUT_FILENO);
+            // we should have a value at this point
+            assert(new_stdout.has_value());
+            bool status = syscall_wrapper::dup2_wrapper(new_stdout.value(), syscall_wrapper::STDOUT_FILE_DESCRIPTOR);
 
             // check to make sure dup succeeded
-            CHECK_DUP(status,);
+            if(!status){
+                return;
+            }
 
             // close new fd
-            CHECK_CLOSE(close(new_stdout),);
+            new_stdout = std::nullopt;
         }
 
         // check for a different stdin
         if(new_stdin.has_value()){
             if(_restore){
-                og_stdin = dup(STDIN_FILENO);
-
-                // check to make sure dup succeeded
-                CHECK_DUP(og_stdin,);
+                og_stdin = syscall_wrapper::dup_wrapper(syscall_wrapper::STDIN_FILE_DESCRIPTOR);
             }
 
-            int status = dup2(new_stdin, STDIN_FILENO);
+            // we should have a value at this point
+            assert(new_stdin.has_value());
+            bool status = syscall_wrapper::dup2_wrapper(new_stdin.value(), syscall_wrapper::STDIN_FILE_DESCRIPTOR);
 
             // check to make sure dup succeeded
-            CHECK_DUP(status,);
+            if(!status){
+                return;
+            }
 
             // close new fd
-            CHECK_CLOSE(close(new_stdin),);
+            new_stdin = std::nullopt;
         }
 
         // check for a different stderr
         if(new_stderr.has_value()){
             if(_restore){
-                og_stderr = dup(STDERR_FILENO);
-
-                // check to make sure dup succeeded
-                CHECK_DUP(og_stderr,);
+                og_stderr = syscall_wrapper::dup_wrapper(syscall_wrapper::STDERR_FILE_DESCRIPTOR);
             }
 
-            int status = dup2(new_stderr, STDERR_FILENO);
+            // we should have a value at this point
+            assert(new_stderr.has_value());
+            bool status = syscall_wrapper::dup2_wrapper(new_stderr.value(), syscall_wrapper::STDERR_FILE_DESCRIPTOR);
 
             // check to make sure dup succeeded
-            CHECK_DUP(status,);
+            if(!status){
+                return;
+            }
 
             // close new fd
-            CHECK_CLOSE(close(new_stderr),);
+            new_stderr = std::nullopt;
         }
     }
 
     process::shell_internal_redirection::~shell_internal_redirection(){
         if(_restore){
             // check for a different stdout
-            if(og_stdout != STDOUT_FILENO){
-                int status = dup2(og_stdout, STDOUT_FILENO);
+            if(og_stdout.has_value()){
+                bool status = syscall_wrapper::dup2_wrapper(og_stdout.value(), syscall_wrapper::STDOUT_FILE_DESCRIPTOR);
                 // check to make sure dup succeeded
-                CHECK_DUP(status,);
-
-                // close og fd
-                CHECK_CLOSE(close(og_stdout),);
+                if(!status){
+                    return;
+                }
             }
 
             // check for a different stdin
-            if(og_stdin != STDIN_FILENO){
-                int status = dup2(og_stdin, STDIN_FILENO);
+            if(og_stdin.has_value()){
+                bool status = syscall_wrapper::dup2_wrapper(og_stdin.value(), syscall_wrapper::STDIN_FILE_DESCRIPTOR);
 
                 // check to make sure dup succeeded
-                CHECK_DUP(status,)
-
-                // close og fd
-                CHECK_CLOSE(close(og_stdin),);
+                if(!status){
+                    return;
+                }
             }
 
             // check for a different stderr
-            if(new_stderr != STDERR_FILENO){
-                int status = dup2(og_stderr, STDERR_FILENO);
+            if(new_stderr.has_value()){
+                bool status = syscall_wrapper::dup2_wrapper(og_stderr.value(), syscall_wrapper::STDERR_FILE_DESCRIPTOR);
 
                 // check to make sure dup succeeded
-                CHECK_DUP(status,);
-
-                // close og fd
-                CHECK_CLOSE(close(og_stderr),);
+                if(!status){
+                    return;
+                }
             }
         }
     }
