@@ -80,16 +80,19 @@ namespace jsh {
 
         friend syscall_wrapper;
     };
-    /**
-     * definitions for stdout, stdin, stderr file_descriptor_wrappers
-     */
-    static file_descriptor_wrapper STDOUT_FILE_DESCRIPTOR = file_descriptor_wrapper(STDOUT_FILENO);
 
     /**
      * syscall_wrapper: a class full of static functions which safely wrap all the C-style syscalls
      */
     class syscall_wrapper {
     public:
+        /**
+         * definitions for stdout, stdin, stderr file_descriptor_wrappers
+         */
+        inline static file_descriptor_wrapper STDOUT_FILE_DESCRIPTOR = file_descriptor_wrapper(STDOUT_FILENO);
+        inline static file_descriptor_wrapper STDIN_FILE_DESCRIPTOR = file_descriptor_wrapper(STDIN_FILENO);
+        inline static file_descriptor_wrapper STDERR_FILE_DESCRIPTOR = file_descriptor_wrapper(STDERR_FILENO);
+
         /**
          * open_wrapper: a wrapper around the open syscall in order to interface properly with the file_descriptor_wrapper
          */
@@ -98,6 +101,6 @@ namespace jsh {
         /**
          * dup_wrapper: a wrapper around the dup syscall in order to interface properly with the file_descriptor_wrapper
          */
-        static auto dup_wrapper();
+        static auto dup_wrapper(file_descriptor_wrapper const& fides) -> std::optional<file_descriptor_wrapper>;
     };
 } // namespace jsh

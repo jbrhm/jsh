@@ -37,12 +37,13 @@ namespace jsh {
     file_descriptor_wrapper::file_descriptor_wrapper(int fides) : _fides{fides}{}
 
     file_descriptor_wrapper::~file_descriptor_wrapper(){
-        // close the file descriptor
-        int status = close(_fides);
-
-        // check the status on close
-        if(status == -1){
-            cout_logger.log(LOG_LEVEL::ERROR, "Error occurred while closing file: ", strerror(errno));
+        // close the file descriptor (not stdout, stdin, or stderr)
+        if(_fides != STDOUT_FILENO && _fides != STDIN_FILENO && _fides != STDERR_FILENO){
+            int status = close(_fides);
+            // check the status on close
+            if(status == -1){
+                cout_logger.log(LOG_LEVEL::ERROR, "Error occurred while closing file: ", strerror(errno));
+            }
         }
     }
     ///// FILE DESCRIPTOR WRAPPER /////
@@ -62,6 +63,19 @@ namespace jsh {
 
         // create RAII wrapper
         return std::make_optional<file_descriptor_wrapper>(std::move(fdw));
+    }
 
+    auto syscall_wrapper::dup_wrapper(file_descriptor_wrapper const& fides) -> std::optional<file_descriptor_wrapper>{
+        // call dup on the current file descriptor
+        int new_fides = dup(fides._fides);
+
+        // check to see if there was an error
+        if(new_fides == -1){
+            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Error occurred while duplicating a file descriptor: ", strerror(errno));
+            return std::nullopt;
+        }
+
+        // create the new file descriptor
+        return std::make_optional<file_descriptor_wrapper>(file_descriptor_wrapper(new_fides));
     }
 } // namespace jsh

@@ -10,10 +10,7 @@ namespace jsh {
             // this will essentially make STDOUT_FILENO point to the other file descriptor
             // since according to the man page it will close STDOUT_FILENO since it already exists
             if(_restore){
-                og_stdout = dup(STDOUT_FILENO);
-
-                // check to make sure dup succeeded
-                CHECK_DUP(og_stdout,);
+                og_stdout = syscall_wrapper::dup_wrapper(syscall_wrapper::STDOUT_FILE_DESCRIPTOR);
             }
 
             int status = dup2(new_stdout, STDOUT_FILENO);
