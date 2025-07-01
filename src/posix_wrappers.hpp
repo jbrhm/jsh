@@ -60,6 +60,13 @@ namespace jsh {
         explicit file_descriptor_wrapper(int fides) noexcept;
 
     public:
+
+        /**
+         * equality operators for assertions
+         */
+        auto operator!=(file_descriptor_wrapper const& other) const -> bool;
+        auto operator==(file_descriptor_wrapper const& other) const -> bool;
+
         /**
          * delete copy and assignment operator
          */
@@ -109,8 +116,13 @@ namespace jsh {
         [[nodiscard]] static auto dup2_wrapper(file_descriptor_wrapper const& fides1, file_descriptor_wrapper const& fides2) -> bool;
 
         /**
-         * pipe: a wrapper around the pipe syscall in order to interface properly with the file_descriptor_wrapper
+         * pipe_wrapper: a wrapper around the pipe syscall in order to interface properly with the file_descriptor_wrapper
          */
         [[nodiscard]] static auto pipe_wrapper() -> std::optional<std::array<file_descriptor_wrapper, 2>>;
+
+        /**
+         * read: a wrapper around the read syscall in order to interface properly with the file_descriptor_wrapper
+         */
+        [[nodiscard]] static auto read_wrapper(file_descriptor_wrapper const& fides, void* buf, std::size_t count) -> bool;
     };
 } // namespace jsh

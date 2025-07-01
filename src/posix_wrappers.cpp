@@ -34,7 +34,7 @@ namespace jsh {
         return *this;
     }
 
-    file_descriptor_wrapper::file_descriptor_wrapper(int fides) : _fides{fides}{}
+    file_descriptor_wrapper::file_descriptor_wrapper(int fides) noexcept : _fides{fides}{}
 
     file_descriptor_wrapper::~file_descriptor_wrapper(){
         // close the file descriptor (not stdout, stdin, or stderr)
@@ -46,6 +46,15 @@ namespace jsh {
             }
         }
     }
+
+    auto file_descriptor_wrapper::operator!=(file_descriptor_wrapper const& other) const -> bool{
+        return _fides != other._fides;
+    }
+
+    auto file_descriptor_wrapper::operator==(file_descriptor_wrapper const& other) const -> bool{
+        return _fides == other._fides;
+    }
+
     ///// FILE DESCRIPTOR WRAPPER /////
 
     auto syscall_wrapper::open_wrapper(std::string const& file, int flags, mode_t perms) -> std::optional<file_descriptor_wrapper>{
@@ -108,5 +117,19 @@ namespace jsh {
         std::array<file_descriptor_wrapper, 2> fides_wrappers{file_descriptor_wrapper(fides[0]), file_descriptor_wrapper(fides[1])};
 
         return std::make_optional<std::array<file_descriptor_wrapper, 2>>(std::move(fides_wrappers));
+    }
+    
+    auto syscall_wrapper::read_wrapper(file_descriptor_wrapper const& fides, void* buf, std::size_t count) -> bool{
+        // perform the read
+        ssize_t status = read(fides._fides, buf, count);
+
+        // error handle
+        if(status == -1){
+            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Error while reading file descriptor: ", strerror(errno));
+            return false;
+        }
+
+        // success
+        return true;
     }
 } // namespace jsh

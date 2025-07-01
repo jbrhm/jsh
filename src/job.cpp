@@ -113,14 +113,22 @@ namespace jsh {
                 // Check if the current process' output is being piped somewhere else
                 if(data->operator_seq[i] == OPERATOR::PIPE){
                     // create the pipe
-                    int pipe_fds[2];
-                    CHECK_PIPE(pipe(pipe_fds),);
+                    std::optional<std::array<file_descriptor_wrapper, 2>> pipe_fds_op = syscall_wrapper::pipe_wrapper();
+
+                    // error handle
+                    if(!pipe_fds_op.has_value()){
+                        return;
+                    }
+
+                    // get pipe fds
+                    assert(pipe_fds_op.has_value());
+                    std::array<file_descriptor_wrapper, 2> pipe_fds = std::move(pipe_fds_op.value());
 
                     // set the current output and the next input to read from the pipe
-                    std::visit([&](auto&& var){var.stdout = pipe_fds[1];}, *proc_data);
+                    std::visit([&](auto&& var){var.stdout = std::move(pipe_fds[1]);}, *proc_data);
                     // there will always be another process since this is being piped somewhere else
                     assert(data->process_seq.size() > i);
-                    std::visit([&](auto&& var){var.stdin = pipe_fds[0];}, *data->process_seq[i+1]);
+                    std::visit([&](auto&& var){var.stdin = std::move(pipe_fds[0]);}, *data->process_seq[i+1]);
                 }
             }
 
