@@ -92,4 +92,21 @@ namespace jsh {
         // success
         return true;
     }
+
+    auto syscall_wrapper::pipe_wrapper() -> std::optional<std::array<file_descriptor_wrapper, 2>>{
+        // pipe fds
+        std::array<int, 2> fides{};
+        int status = pipe(fides.data());
+
+        // check for errors
+        if(status == -1){
+            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Creating a anonymous pipe: ", strerror(errno));
+            return std::nullopt;
+        }
+
+        // create the fides wrappers
+        std::array<file_descriptor_wrapper, 2> fides_wrappers{file_descriptor_wrapper(fides[0]), file_descriptor_wrapper(fides[1])};
+
+        return std::make_optional<std::array<file_descriptor_wrapper, 2>>(std::move(fides_wrappers));
+    }
 } // namespace jsh

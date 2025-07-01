@@ -107,5 +107,10 @@ namespace jsh {
          * dup2_wrapper: a wrapper around the dup2 syscall in order to interface properly with the file_descriptor_wrapper
          */
         [[nodiscard]] static auto dup2_wrapper(file_descriptor_wrapper const& fides1, file_descriptor_wrapper const& fides2) -> bool;
+
+        /**
+         * pipe: a wrapper around the pipe syscall in order to interface properly with the file_descriptor_wrapper
+         */
+        [[nodiscard]] static auto pipe_wrapper() -> std::optional<std::array<file_descriptor_wrapper, 2>>;
     };
 } // namespace jsh
