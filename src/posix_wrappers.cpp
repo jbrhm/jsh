@@ -38,7 +38,7 @@ namespace jsh {
 
     file_descriptor_wrapper::~file_descriptor_wrapper(){
         // close the file descriptor (not stdout, stdin, or stderr)
-        if(_fides != STDOUT_FILENO && _fides != STDIN_FILENO && _fides != STDERR_FILENO){
+        if(_fides != STDOUT_FILENO && _fides != STDIN_FILENO && _fides != STDERR_FILENO && _fides != -1){
             int status = close(_fides);
             // check the status on close
             if(status == -1){

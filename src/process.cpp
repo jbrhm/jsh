@@ -137,7 +137,7 @@ namespace jsh {
                     cout_logger.log(LOG_LEVEL::ERROR, "Output file not specified...");
                     return std::nullopt;
                 }
-                proc_stdout = syscall_wrapper::open_wrapper(filename, O_RDWR | O_CREAT, 0777);
+                proc_stdout = syscall_wrapper::open_wrapper(filename, O_RDWR | O_CREAT | O_TRUNC, 0777);
 
                 if(!proc_stdout.has_value()){
                     return std::nullopt;
