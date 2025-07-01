@@ -107,10 +107,10 @@ namespace jsh {
         std::stringstream ss(input);
         std::vector<std::string> args;
 
-        // IO file descriptors
-        int stdout = STDOUT_FILENO;
-        int stdin = STDIN_FILENO;
-        int stderr = STDERR_FILENO;
+        // file descriptors
+        std::optional<file_descriptor_wrapper> proc_stdout = std::nullopt;
+        std::optional<file_descriptor_wrapper> proc_stdin = std::nullopt;
+        std::optional<file_descriptor_wrapper> proc_stderr = std::nullopt;
 
         // parse the command into different components
         while(ss >> arg){
@@ -122,8 +122,11 @@ namespace jsh {
                     cout_logger.log(LOG_LEVEL::ERROR, "Input file not specified...");
                     return std::nullopt;
                 }
-                stdin = open_wra(filename.c_str(), O_RDWR, 0777);
-                CHECK_OPEN(stdin, std::nullopt);
+                proc_stdin = syscall_wrapper::open_wrapper(filename, O_RDWR, 0777);
+
+                if(!proc_stdin.has_value()){
+                    return std::nullopt;
+                }
                 
                 continue;
             }
@@ -134,8 +137,11 @@ namespace jsh {
                     cout_logger.log(LOG_LEVEL::ERROR, "Output file not specified...");
                     return std::nullopt;
                 }
-                stdout = open(filename.c_str(), O_RDWR | O_CREAT, 0777);
-                CHECK_OPEN(stdout, std::nullopt);
+                proc_stdout = syscall_wrapper::open_wrapper(filename, O_RDWR | O_CREAT, 0777);
+
+                if(!proc_stdout.has_value()){
+                    return std::nullopt;
+                }
 
                 continue;
             }
@@ -154,9 +160,9 @@ namespace jsh {
             export_data& data = std::get<export_data>(*proc_data);
 
             // set IO redirection
-            data.stdout = stdout;
-            data.stdin = stdin;
-            data.stderr = stderr;
+            data.stdout = std::move(proc_stdout);
+            data.stdin = std::move(proc_stdin);
+            data.stderr = std::move(proc_stderr);
 
             // find the variable name and value from the input
             // we should only have two items in the args list export and [variable name]=[value]
@@ -184,9 +190,9 @@ namespace jsh {
             binary_data& data = std::get<binary_data>(*proc_data);
 
             // set IO redirection
-            data.stdout = stdout;
-            data.stdin = stdin;
-            data.stderr = stderr;
+            data.stdout = std::move(proc_stdout);
+            data.stdin = std::move(proc_stdin);
+            data.stderr = std::move(proc_stderr);
 
             // give the variant ownership of the arguments
             data.args = std::move(args);
@@ -213,24 +219,13 @@ namespace jsh {
         if(pid){ // parent
             pid_t exit_code = waitpid(pid, &status, 0);
 
-            // close non-default fds
-            if(data.stdout != STDOUT_FILENO){
-                CHECK_CLOSE(close(data.stdout),);
-            }
-            if(data.stdin != STDIN_FILENO){
-                CHECK_CLOSE(close(data.stdin),);
-            }
-            if(data.stderr != STDERR_FILENO){
-                CHECK_CLOSE(close(data.stderr),);
-            }
-
             // check for errors
             if(exit_code != pid){
                 jsh::cout_logger.log(jsh::LOG_LEVEL::ERROR, "Waiting on PID ", pid, " failed...");
             }
         }else{ // child
             { // sir scope
-                shell_internal_redirection sir(data.stdout, data.stdin, data.stderr, false);
+                shell_internal_redirection sir(std::move(data.stdout), std::move(data.stdin), std::move(data.stderr), false);
 
                 int exit_code = execvp(args_ptr[0], args_ptr.data());
 
@@ -246,7 +241,7 @@ namespace jsh {
 
     void process::execute_process(export_data& data){
         { // sir scope
-            shell_internal_redirection sir(data.stdout, data.stdin, data.stderr);
+            shell_internal_redirection sir(std::move(data.stdout), std::move(data.stdin), std::move(data.stderr));
 
             // perform the export
             environment::set_var(data.name.c_str(), data.val.c_str());

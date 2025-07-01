@@ -17,9 +17,9 @@ namespace jsh {
      * stderr: the file descriptor which standard error will be directed towards
      */
     struct default_data {
-        int stdout = STDOUT_FILENO;
-        int stdin = STDIN_FILENO;
-        int stderr = STDERR_FILENO;
+        std::optional<file_descriptor_wrapper> stdout = std::nullopt;
+        std::optional<file_descriptor_wrapper> stdin = std::nullopt;
+        std::optional<file_descriptor_wrapper> stderr = std::nullopt;
     };
 
     /**
