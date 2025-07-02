@@ -119,17 +119,17 @@ namespace jsh {
         return std::make_optional<std::array<file_descriptor_wrapper, 2>>(std::move(fides_wrappers));
     }
     
-    auto syscall_wrapper::read_wrapper(file_descriptor_wrapper const& fides, void* buf, std::size_t count) -> bool{
+    auto syscall_wrapper::read_wrapper(file_descriptor_wrapper const& fides, void* buf, std::size_t count) -> std::optional<ssize_t>{
         // perform the read
         ssize_t status = read(fides._fides, buf, count);
 
         // error handle
         if(status == -1){
             cout_logger.log(jsh::LOG_LEVEL::ERROR, "Error while reading file descriptor: ", strerror(errno));
-            return false;
+            return std::nullopt;
         }
 
         // success
-        return true;
+        return std::make_optional<ssize_t>(status);
     }
 } // namespace jsh

@@ -140,8 +140,16 @@ TEST(TestProcess, TestExecuteBinary) {
 
     // read the contents of the pipe
     char data[2];
-    bool status = jsh::syscall_wrapper::read_wrapper(pipe_fds[0], &data[0], sizeof(data));
-    ASSERT_TRUE(status);
+    int total_read = 0;
+    while(total_read != sizeof(data)){
+        std::optional<ssize_t> rea = jsh::syscall_wrapper::read_wrapper(pipe_fds[0], &data[0], sizeof(data));
+
+        // read should've succeeded
+        ASSERT_TRUE(rea.has_value());
+
+        // add the number of bytes read
+        total_read += static_cast<int>(rea.value());
+    }
 
     // the pipe and buffer should now contain hi
     ASSERT_EQ(data[0], 'h');

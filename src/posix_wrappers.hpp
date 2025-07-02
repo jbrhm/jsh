@@ -123,6 +123,6 @@ namespace jsh {
         /**
          * read: a wrapper around the read syscall in order to interface properly with the file_descriptor_wrapper
          */
-        [[nodiscard]] static auto read_wrapper(file_descriptor_wrapper const& fides, void* buf, std::size_t count) -> bool;
+        [[nodiscard]] static auto read_wrapper(file_descriptor_wrapper const& fides, void* buf, std::size_t count) -> std::optional<ssize_t>;
     };
 } // namespace jsh

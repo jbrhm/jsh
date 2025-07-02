@@ -331,27 +331,23 @@ TEST(TestJob, TestExecuteJobBasic1){
     jsh::job::execute_job(job);
 
     // open the file
-    int fides = open(file, O_RDONLY | O_CREAT);
+    std::optional<jsh::file_descriptor_wrapper> fides = jsh::syscall_wrapper::open_wrapper(file, O_RDONLY | O_CREAT, 0777);
 
     // check to see if open succeeded
-    if(fides == -1){
-        std::cout << "Error opening file: " << strerror(errno) << '\n';
-        return;
-    }
+    ASSERT_TRUE(fides.has_value());
 
     // read from the pipe
-    ssize_t num_bytes_read = 1;
-    for(std::size_t i = 0; num_bytes_read != 0; ++i){
+    std::optional<ssize_t> num_bytes_read = std::make_optional<ssize_t>(1);
+    for(std::size_t i = 0; num_bytes_read.has_value() && num_bytes_read.value() != 0; ++i){
         char chr = '\0';
-        num_bytes_read = read(fides, &chr, sizeof(chr));
+        num_bytes_read = jsh::syscall_wrapper::read_wrapper(fides.value(), &chr, sizeof(chr));
 
-        if(num_bytes_read == -1){
-            std::cout << "Error reading from pipe: " << strerror(errno) << '\n';
+        // check for success
+        if(!num_bytes_read.has_value()){
             return;
         }
         
         ASSERT_TRUE(i < std::strlen(corr) + 1);
-        std::cout << i << " " << chr << " " << corr[i] << '\n';
         ASSERT_TRUE(chr == corr[i]);
     }
 }
@@ -369,27 +365,23 @@ TEST(TestJob, TestExecuteJobBasic2){
     jsh::job::execute_job(job);
 
     // open the file
-    int fides = open(file, O_RDONLY | O_CREAT);
+    std::optional<jsh::file_descriptor_wrapper> fides = jsh::syscall_wrapper::open_wrapper(file, O_RDONLY | O_CREAT, 0777);
 
     // check to see if open succeeded
-    if(fides == -1){
-        std::cout << "Error opening file: " << strerror(errno) << '\n';
-        return;
-    }
+    ASSERT_TRUE(fides.has_value());
 
     // read from the pipe
-    ssize_t num_bytes_read = 1;
-    for(std::size_t i = 0; num_bytes_read != 0; ++i){
+    std::optional<ssize_t> num_bytes_read = std::make_optional<ssize_t>(1);
+    for(std::size_t i = 0; num_bytes_read.has_value() && num_bytes_read.value() != 0; ++i){
         char chr = '\0';
-        num_bytes_read = read(fides, &chr, sizeof(chr));
+        num_bytes_read = jsh::syscall_wrapper::read_wrapper(fides.value(), &chr, sizeof(chr));
 
-        if(num_bytes_read == -1){
-            std::cout << "Error reading from pipe: " << strerror(errno) << '\n';
+        // check for success
+        if(!num_bytes_read.has_value()){
             return;
         }
         
         ASSERT_TRUE(i < std::strlen(corr) + 1);
-        std::cout << i << " " << chr << " " << corr[i] << '\n';
         ASSERT_TRUE(chr == corr[i]);
     }
 }
@@ -408,55 +400,49 @@ TEST(TestJob, TestExecuteJobBasic3){
     // execute the job
     jsh::job::execute_job(job);
 
-    // open the file
-    int fides = open(file, O_RDONLY | O_CREAT);
+    { // fides wrapper
+        // open the file
+        std::optional<jsh::file_descriptor_wrapper> fides = jsh::syscall_wrapper::open_wrapper(file, O_RDONLY | O_CREAT, 0777);
 
-    // check to see if open succeeded
-    if(fides == -1){
-        std::cout << "Error opening file: " << strerror(errno) << '\n';
-        return;
-    }
+        // check to see if open succeeded
+        ASSERT_TRUE(fides.has_value());
 
-    // read from the pipe
-    ssize_t num_bytes_read = 1;
-    for(std::size_t i = 0; num_bytes_read != 0; ++i){
-        char chr = '\0';
-        num_bytes_read = read(fides, &chr, sizeof(chr));
+        // read from the pipe
+        std::optional<ssize_t> num_bytes_read = std::make_optional<ssize_t>(1);
+        for(std::size_t i = 0; num_bytes_read.has_value() && num_bytes_read.value() != 0; ++i){
+            char chr = '\0';
+            num_bytes_read = jsh::syscall_wrapper::read_wrapper(fides.value(), &chr, sizeof(chr));
 
-        if(num_bytes_read == -1){
-            std::cout << "Error reading from pipe: " << strerror(errno) << '\n';
-            return;
+            // check for success
+            if(!num_bytes_read.has_value()){
+                return;
+            }
+            
+            ASSERT_TRUE(i < std::strlen(corr) + 1);
+            ASSERT_TRUE(chr == corr[i]);
         }
-        
-        ASSERT_TRUE(i < std::strlen(corr) + 1);
-        std::cout << i << " " << chr << " " << corr[i] << '\n';
-        ASSERT_TRUE(chr == corr[i]);
     }
 
-    close(fides);
+    { // fides wrapper
+        // open the file
+        std::optional<jsh::file_descriptor_wrapper> fides = jsh::syscall_wrapper::open_wrapper(file2, O_RDONLY | O_CREAT, 0777);
 
-    // open the file
-    fides = open(file2, O_RDONLY | O_CREAT);
+        // check to see if open succeeded
+        ASSERT_TRUE(fides.has_value());
 
-    // check to see if open succeeded
-    if(fides == -1){
-        std::cout << "Error opening file: " << strerror(errno) << '\n';
-        return;
-    }
+        // read from the pipe
+        std::optional<ssize_t> num_bytes_read = std::make_optional<ssize_t>(1);
+        for(std::size_t i = 0; num_bytes_read.has_value() && num_bytes_read.value() != 0; ++i){
+            char chr = '\0';
+            num_bytes_read = jsh::syscall_wrapper::read_wrapper(fides.value(), &chr, sizeof(chr));
 
-    // read from the pipe
-    num_bytes_read = 1;
-    for(std::size_t i = 0; num_bytes_read != 0; ++i){
-        char chr = '\0';
-        num_bytes_read = read(fides, &chr, sizeof(chr));
-
-        if(num_bytes_read == -1){
-            std::cout << "Error reading from pipe: " << strerror(errno) << '\n';
-            return;
+            // check for success
+            if(!num_bytes_read.has_value()){
+                return;
+            }
+            
+            ASSERT_TRUE(i < std::strlen(corr2) + 1);
+            ASSERT_TRUE(chr == corr2[i]);
         }
-        
-        ASSERT_TRUE(i < std::strlen(corr2) + 1);
-        std::cout << i << " " << chr << " " << corr2[i] << '\n';
-        ASSERT_TRUE(chr == corr2[i]);
     }
 }
