@@ -219,6 +219,11 @@ namespace jsh {
         if(pid){ // parent
             pid_t exit_code = waitpid(pid, &status, 0);
 
+            // close all of the older file descriptors
+            data.stdout = std::nullopt;
+            data.stdin = std::nullopt;
+            data.stderr = std::nullopt;
+
             // check for errors
             if(exit_code != pid){
                 jsh::cout_logger.log(jsh::LOG_LEVEL::ERROR, "Waiting on PID ", pid, " failed...");
