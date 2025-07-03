@@ -134,5 +134,10 @@ namespace jsh {
          * tcgetpgrp: a wrapper which safely handles errors for the tgetpgrp function
          */
         [[nodiscard]] static auto tcgetpgrp_wrapper(file_descriptor_wrapper const& fides) -> std::optional<pid_t>;
+
+        /**
+         * getpgrp_wrapper: a wrapper around getpgrp which handles errors and interfaces with the file descriptor wrapper properly
+         */
+        [[nodiscard]] static auto getpgrp_wrapper() -> std::optional<pid_t>;
     };
 } // namespace jsh

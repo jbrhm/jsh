@@ -163,4 +163,18 @@ namespace jsh {
         // success
         return std::make_optional<pid_t>(tc_grp_pid);
     }
+
+    auto syscall_wrapper::getpgrp_wrapper() -> std::optional<pid_t>{
+        // run function
+        pid_t pgrp_id = getpgrp();
+
+        // error handle
+        if(pgrp_id == -1){
+            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to get the process group id: ", strerror(errno));
+            return std::nullopt;
+        }
+
+        // success
+        return std::make_optional<pid_t>(pgrp_id);
+    }
 } // namespace jsh

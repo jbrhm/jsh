@@ -23,6 +23,26 @@ int main(int argc, char* argv[], char* envp[]){
         while(true){
             // get the process group id controlling the terminal
             std::optional<pid_t> tc_grp_pid = jsh::syscall_wrapper::tcgetpgrp_wrapper(jsh::syscall_wrapper::STDOUT_FILE_DESCRIPTOR);
+
+            // get the current process' group id
+            std::optional<pid_t> cur_grp_pid = jsh::syscall_wrapper::getpgrp_wrapper();
+
+            // error handle
+            if(!tc_grp_pid.has_value() || !cur_grp_pid.has_value()){
+                continue;
+            }
+
+            // no more errors
+            assert(tc_grp_pid.has_value());
+            assert(cur_grp_pid.has_value());
+
+            // we are the process in the foreground of the terminal
+            if(tc_grp_pid.value() == cur_grp_pid.value()){
+                break;
+            }
+
+            // try and kill the process controlling the terminal
+            kill(-cur_grp_pid.value(), SIGTTIN);
         }
     }
 
