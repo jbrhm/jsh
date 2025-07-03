@@ -135,4 +135,32 @@ namespace jsh {
         // success
         return std::make_optional<ssize_t>(status);
     }
+
+    auto syscall_wrapper::isatty_wrapper(file_descriptor_wrapper const& fides) -> bool{
+        // check if jsh is a terminal
+        int status = isatty(fides._fides);
+
+        // error handle
+        if(status != 1){
+            cout_logger.log(jsh::LOG_LEVEL::WARN, "JSH is not running as a terminal: ", strerror(errno));
+            return false;
+        }
+
+        // success
+        return true;
+    }
+
+    auto syscall_wrapper::tcgetpgrp_wrapper(file_descriptor_wrapper const& fides) -> std::optional<pid_t>{
+        // run
+        pid_t tc_grp_pid = tcgetpgrp(fides._fides);
+
+        // check for errors
+        if(tc_grp_pid == -1){
+            cout_logger.log(jsh::LOG_LEVEL::WARN, "Failed to get the process group controlling the terminal: ", strerror(errno));
+            return std::nullopt;
+        }
+
+        // success
+        return std::make_optional<pid_t>(tc_grp_pid);
+    }
 } // namespace jsh

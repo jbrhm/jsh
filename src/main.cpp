@@ -13,6 +13,21 @@ int main(int argc, char* argv[], char* envp[]){
 
     std::string input;
     std::string arg;
+
+    // check to see if jsh is interactive
+    bool is_interactive = jsh::syscall_wrapper::isatty_wrapper(jsh::syscall_wrapper::STDOUT_FILE_DESCRIPTOR);
+
+    // interactive shell setup
+    if(is_interactive){
+        // loop until jsh is in the foreground
+        while(true){
+            // get the process group id controlling the terminal
+            std::optional<pid_t> tc_grp_pid = jsh::syscall_wrapper::tcgetpgrp_wrapper(jsh::syscall_wrapper::STDOUT_FILE_DESCRIPTOR);
+        }
+    }
+
+    std::cout << is_interactive << '\n';
+
     while(true){
         // get the command from the user
         jsh::cout_logger.log(jsh::LOG_LEVEL::SILENT, "prompt:");

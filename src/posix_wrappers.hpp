@@ -124,5 +124,15 @@ namespace jsh {
          * read: a wrapper around the read syscall in order to interface properly with the file_descriptor_wrapper
          */
         [[nodiscard]] static auto read_wrapper(file_descriptor_wrapper const& fides, void* buf, std::size_t count) -> std::optional<ssize_t>;
+
+        /**
+         * isatty_wrapper: a wrapper which allows for error handling on the isatty sycall
+         */
+        [[nodiscard]] static auto isatty_wrapper(file_descriptor_wrapper const& fides) -> bool;
+
+        /**
+         * tcgetpgrp: a wrapper which safely handles errors for the tgetpgrp function
+         */
+        [[nodiscard]] static auto tcgetpgrp_wrapper(file_descriptor_wrapper const& fides) -> std::optional<pid_t>;
     };
 } // namespace jsh
