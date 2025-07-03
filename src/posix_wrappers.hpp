@@ -118,7 +118,7 @@ namespace jsh {
         /**
          * pipe_wrapper: a wrapper around the pipe syscall in order to interface properly with the file_descriptor_wrapper
          */
-        [[nodiscard]] static auto pipe_wrapper() -> std::optional<std::array<file_descriptor_wrapper, 2>>;
+        [[nodiscard]] static auto pipe_wrapper() -> std::optional<std::vector<file_descriptor_wrapper>>;
 
         /**
          * read: a wrapper around the read syscall in order to interface properly with the file_descriptor_wrapper

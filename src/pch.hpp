@@ -1,5 +1,6 @@
 // STL
 #include <iostream>
+#include <array>
 #include <sstream>
 #include <vector>
 #include <string>

@@ -119,9 +119,11 @@ TEST(TestProcess, TestExtra) {
 
 TEST(TestProcess, TestExecuteBinary) {
     // make a fifo to store the output from standard out
-    std::optional<std::array<jsh::file_descriptor_wrapper, 2>> pipe_fds_op = jsh::syscall_wrapper::pipe_wrapper();
+    std::optional<std::vector<jsh::file_descriptor_wrapper>> pipe_fds_op = jsh::syscall_wrapper::pipe_wrapper();
     ASSERT_TRUE(pipe_fds_op.has_value());
-    std::array<jsh::file_descriptor_wrapper, 2> pipe_fds = std::move(pipe_fds_op.value());
+    ASSERT_TRUE(pipe_fds_op.value().size() == 2);
+    std::vector<jsh::file_descriptor_wrapper> pipe_fds = std::move(pipe_fds_op.value());
+    ASSERT_TRUE(pipe_fds.size() == 2);
 
     // create the command for the binary data
     std::unique_ptr<jsh::process_data> binary_var = std::make_unique<jsh::process_data>(jsh::binary_data{});
