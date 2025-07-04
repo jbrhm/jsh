@@ -226,7 +226,7 @@ namespace jsh {
 
             // check for errors
             if(exit_code != pid){
-                jsh::cout_logger.log(jsh::LOG_LEVEL::ERROR, "Waiting on PID ", pid, " failed...");
+                jsh::cout_logger.log(jsh::LOG_LEVEL::ERROR, "Waiting on PID ", pid, " failed: ", strerror(errno), '\n');
             }
         }else{ // child
             { // sir scope

@@ -177,4 +177,51 @@ namespace jsh {
         // success
         return std::make_optional<pid_t>(pgrp_id);
     }
+    
+    auto syscall_wrapper::getpid_wrapper() -> std::optional<pid_t>{
+        // according to the man pages this function never failes
+        // I just want a common interface
+        return std::make_optional<pid_t>(getpid());
+    }
+
+    auto syscall_wrapper::setpgid_wrapper(pid_t pid, pid_t pgid)-> bool{
+        // try and set pgid
+        int status = setpgid(pid, pgid);
+
+        // error handle
+        if(status == -1){
+            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to set the process' process group id: ", strerror(errno));
+            return false;
+        }
+
+        // success
+        return true;
+    }
+
+    auto syscall_wrapper::tcsetpgrp_wrapper(file_descriptor_wrapper const& term_fides, pid_t shell_pid) -> bool{
+        // get control over the terminal
+        int status = tcsetpgrp(term_fides._fides, shell_pid);
+
+        // error hangle
+        if(status == -1){
+            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to set the terminal's controlling process group: ", strerror(errno));
+            return false;
+        }
+
+        // success
+        return true;
+    }
+
+    auto syscall_wrapper::tcgetattr_wrapper(file_descriptor_wrapper const& term_fides, std::shared_ptr<termios> term_if) -> bool{
+        // get the interface
+        int status = tcgetattr(term_fides._fides, term_if.get());
+
+        if(status == -1){
+            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to get the terminal's interface: ", strerror(errno));
+            return false;
+        }
+
+        // success
+        return true;
+    }
 } // namespace jsh

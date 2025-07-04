@@ -139,5 +139,25 @@ namespace jsh {
          * getpgrp_wrapper: a wrapper around getpgrp which handles errors and interfaces with the file descriptor wrapper properly
          */
         [[nodiscard]] static auto getpgrp_wrapper() -> std::optional<pid_t>;
+
+        /**
+         * getpid: a wrapper around the getpid syscall
+         */
+        [[nodiscard]] static auto getpid_wrapper() -> std::optional<pid_t>;
+
+        /**
+         * setpgid_wrapper: a wrapper around the setpgid syscall in order to handle errors properly
+         */
+        [[nodiscard]] static auto setpgid_wrapper(pid_t pid, pid_t pgid)-> bool;
+
+        /**
+         * tcsetpgrp: wrapper around the tcsetpgrp syscall in order to interface with wrappers while grabbing control of the terminal
+         */
+        [[nodiscard]] static auto tcsetpgrp_wrapper(file_descriptor_wrapper const& term_fides, pid_t shell_pid) -> bool;
+
+        /**
+         * tcgetattr: wrapper around getting the terminal interface
+         */
+        [[nodiscard]] static auto tcgetattr_wrapper(file_descriptor_wrapper const& term_fides, std::shared_ptr<termios> term_if) -> bool;
     };
 } // namespace jsh
