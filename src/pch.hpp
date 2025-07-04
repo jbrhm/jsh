@@ -11,6 +11,7 @@
 #include <variant>
 #include <memory>
 #include <list>
+#include <exception>
 
 // OS
 #include <unistd.h>

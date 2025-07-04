@@ -36,6 +36,7 @@ set(utils_sources
     src/process.cpp
     src/job.cpp
     src/posix_wrappers.cpp
+    src/shell.cpp
 )
 add_library(${PROJECT_NAME}_utils SHARED ${utils_sources})
 target_include_directories(${PROJECT_NAME}_utils PUBLIC src)
