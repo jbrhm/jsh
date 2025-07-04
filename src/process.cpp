@@ -251,7 +251,6 @@ namespace jsh {
             signal(SIGTSTP, SIG_DFL);
             signal(SIGTTIN, SIG_DFL);
             signal(SIGTTOU, SIG_DFL);
-            signal(SIGCHLD, SIG_DFL);
 
             { // sir scope
                 shell_internal_redirection sir(std::move(data.stdout), std::move(data.stdin), std::move(data.stderr), false);
