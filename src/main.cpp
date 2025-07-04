@@ -8,9 +8,6 @@ int main(int argc, char* argv[], char* envp[]){
 
     jsh::cout_logger.log(jsh::LOG_LEVEL::SILENT, "Welcome to John's Shell\n");
 
-    std::string input;
-    std::string arg;
-
     try{
         // this can throw an exception so it must be wrapped in a try and catch
         jsh::shell jsh;
