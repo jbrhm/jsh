@@ -229,6 +229,30 @@ namespace jsh {
                 jsh::cout_logger.log(jsh::LOG_LEVEL::ERROR, "Waiting on PID ", pid, " failed: ", strerror(errno), '\n');
             }
         }else{ // child
+            // add the child to the same process group as the parent
+            std::optional<pid_t> cur_pid = syscall_wrapper::getpid_wrapper();
+            assert(cur_pid.has_value());
+
+            // we havent given a process group to this process
+            if(data.pgid == -1){
+                data.pgid = cur_pid.value();
+            }
+
+            // set the current process' process group id
+            bool status = syscall_wrapper::setpgid_wrapper(cur_pid.value(), data.pgid);
+
+            // error handle
+            if(!status){
+                return;
+            }
+
+            signal(SIGINT, SIG_DFL); // termination requests
+            signal(SIGQUIT, SIG_DFL);
+            signal(SIGTSTP, SIG_DFL);
+            signal(SIGTTIN, SIG_DFL);
+            signal(SIGTTOU, SIG_DFL);
+            signal(SIGCHLD, SIG_DFL);
+
             { // sir scope
                 shell_internal_redirection sir(std::move(data.stdout), std::move(data.stdin), std::move(data.stderr), false);
 

@@ -132,8 +132,12 @@ namespace jsh {
                     // there will always be another process since this is being piped somewhere else
                     assert(data->process_seq.size() > i);
                     std::visit([&](auto&& var){var.stdin = std::move(pipe_fds[0]);}, *data->process_seq[i+1]);
+
                 }
             }
+            
+            // update the process group id
+            std::visit([&](auto&& var){var.pgid = syscall_wrapper::getpid_wrapper().value();}, *data->process_seq[i]);
 
             // execute the process
             jsh::process::execute(proc_data);

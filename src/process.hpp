@@ -15,11 +15,15 @@ namespace jsh {
      * stdin: the file descriptor which standard in will be directed towards
      *
      * stderr: the file descriptor which standard error will be directed towards
+     *
+     * pgid: the current process group id the process should be put in
      */
     struct default_data {
         std::optional<file_descriptor_wrapper> stdout = std::nullopt;
         std::optional<file_descriptor_wrapper> stdin = std::nullopt;
         std::optional<file_descriptor_wrapper> stderr = std::nullopt;
+
+        pid_t pgid = -1;
     };
 
     /**

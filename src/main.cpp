@@ -73,9 +73,10 @@ int main(int argc, char* argv[], char* envp[]){
         if(!jsh::syscall_wrapper::tcgetattr_wrapper(jsh::syscall_wrapper::STDOUT_FILE_DESCRIPTOR, term_if)){
             return 1;
         }
+    }else{
+        jsh::cout_logger.log(jsh::LOG_LEVEL::ERROR, "JSH must run interactively...");
+        return 1;
     }
-
-    std::cout << is_interactive << '\n';
 
     while(true){
         // get the command from the user
