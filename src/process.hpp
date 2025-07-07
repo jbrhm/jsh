@@ -16,14 +16,14 @@ namespace jsh {
      *
      * stderr: the file descriptor which standard error will be directed towards
      *
-     * pgid: the current process group id the process should be put in
+     * pgid: the current process group id the process should be put in, note: this information is redundant to the pgid in the job structure, however instead of passing on the stack, we add a member to this structure
      */
     struct default_data {
         std::optional<file_descriptor_wrapper> stdout = std::nullopt;
         std::optional<file_descriptor_wrapper> stdin = std::nullopt;
         std::optional<file_descriptor_wrapper> stderr = std::nullopt;
 
-        pid_t pgid = -1;
+        std::shared_ptr<pid_t> pgid;
     };
 
     /**

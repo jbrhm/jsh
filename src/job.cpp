@@ -98,6 +98,8 @@ namespace jsh {
             data->process_seq.emplace_back(std::move(proc_data.value()));
         }
 
+        // if the job is running in the forground, relinquish control of the terminal
+
         // perform the process' execution
         assert(data->input_seq.size() == data->process_seq.size());
         assert(data->input_seq.size() == data->operator_seq.size() + 1);
@@ -122,22 +124,21 @@ namespace jsh {
 
                     // get pipe fds
                     assert(pipe_fds_op.has_value());
-		    assert(pipe_fds_op.value().size() == 2);
+            assert(pipe_fds_op.value().size() == 2);
                     std::vector<file_descriptor_wrapper> pipe_fds = std::move(pipe_fds_op.value());
-		    assert(pipe_fds.size() == 2);
-
+            assert(pipe_fds.size() == 2);
 
                     // set the current output and the next input to read from the pipe
                     std::visit([&](auto&& var){var.stdout = std::move(pipe_fds[1]);}, *proc_data);
                     // there will always be another process since this is being piped somewhere else
                     assert(data->process_seq.size() > i);
                     std::visit([&](auto&& var){var.stdin = std::move(pipe_fds[0]);}, *data->process_seq[i+1]);
-
                 }
             }
             
-            // update the process group id
-            std::visit([&](auto&& var){var.pgid = syscall_wrapper::getpid_wrapper().value();}, *data->process_seq[i]);
+            // set the process group id ptr to be the process group id ptr for the job
+            assert((i == 0) ? data->pgid.get() == nullptr : data->pgid.get() != nullptr);
+            std::visit([&](auto&& var){var.pgid = data->pgid;}, *data->process_seq[i]);
 
             // execute the process
             jsh::process::execute(proc_data);

@@ -215,9 +215,23 @@ namespace jsh {
 
         // fork into another subprocess to execute the binary
         pid_t pid = fork();
-        int status;
         if(pid){ // parent
-            pid_t exit_code = waitpid(pid, &status, 0);
+            // update the process id for the new process if it is the first one/its pointer is nullptr
+            if(data.pgid.get() == nullptr){
+                data.pgid = std::make_shared<pid_t>(pid);
+            }
+
+            // set the child process' process group id in parent to prevent race conditions
+            bool status = syscall_wrapper::setpgid_wrapper(pid, *data.pgid);
+
+            // error handle
+            if(!status){
+                return;
+            }
+
+            // wait for the process to complete
+            int wait_status;
+            pid_t exit_code = waitpid(pid, &wait_status, 0);
 
             // close all of the older file descriptors
             data.stdout = std::nullopt;
@@ -229,23 +243,26 @@ namespace jsh {
                 jsh::cout_logger.log(jsh::LOG_LEVEL::ERROR, "Waiting on PID ", pid, " failed: ", strerror(errno), '\n');
             }
         }else{ // child
-            // add the child to the same process group as the parent
+            // get the current PID
             std::optional<pid_t> cur_pid = syscall_wrapper::getpid_wrapper();
-            assert(cur_pid.has_value());
+            assert(cur_pid.has_value()); // this should always pass since it getpid shouldn't fail
 
-            // we havent given a process group to this process
-            if(data.pgid == -1){
-                data.pgid = cur_pid.value();
+            // if the pgid is nullptr, then this is the first process and we should make its PID the 
+            // PGID since it will be the process leader
+            if(data.pgid.get() == nullptr){
+                *data.pgid = cur_pid.value();
             }
 
             // set the current process' process group id
-            bool status = syscall_wrapper::setpgid_wrapper(cur_pid.value(), data.pgid);
+            // if this is the first process being launched then it will be the process leader and cur_pid.value() == data.pgid
+            bool status = syscall_wrapper::setpgid_wrapper(cur_pid.value(), *data.pgid);
 
             // error handle
             if(!status){
                 return;
             }
 
+            // listen to job control signals
             signal(SIGINT, SIG_DFL); // termination requests
             signal(SIGQUIT, SIG_DFL);
             signal(SIGTSTP, SIG_DFL);

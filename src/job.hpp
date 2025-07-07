@@ -68,5 +68,15 @@ namespace jsh {
          * process_seq: the sequence of processes which make up a job
          */
         std::vector<std::unique_ptr<process_data>> process_seq;
+
+        /**
+         * is_foreground: indicates whether the job will be executing in the foreground or background
+         */
+        bool is_foreground = true;
+
+        /**
+         * pgid: the process group id for the job
+         */
+        std::shared_ptr<pid_t> pgid;
     };
 } // namespace jsh
