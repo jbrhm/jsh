@@ -233,7 +233,7 @@ namespace jsh {
             // set the child process to control the terminal
             assert(data.is_foreground); // we onlt support foreground jobs
             if(data.is_foreground){
-                status = syscall_wrapper::tcsetpgrp_wrapper(syscall_wrapper::STDOUT_FILE_DESCRIPTOR, *data.pgid);
+                status = syscall_wrapper::tcsetpgrp_wrapper(syscall_wrapper::STDIN_FILE_DESCRIPTOR, *data.pgid);
 
                 if(!status){
                     return;
@@ -250,7 +250,7 @@ namespace jsh {
             // wait for the process to complete
             // TODO: I cannot wait everytime there is a command executed if we are going to support background tasks
             int wait_status;
-            pid_t exit_code = waitpid(pid, &wait_status, 0);
+            pid_t exit_code = waitpid(pid, &wait_status, WUNTRACED);
 
             // close all of the older file descriptors
             data.stdout = std::nullopt;
@@ -268,7 +268,7 @@ namespace jsh {
             if(data.is_foreground){
                 std::optional<pid_t> cur_pgid = syscall_wrapper::getpid_wrapper();
                 assert(cur_pgid.has_value());
-                status = syscall_wrapper::tcsetpgrp_wrapper(syscall_wrapper::STDOUT_FILE_DESCRIPTOR, cur_pgid.value());
+                status = syscall_wrapper::tcsetpgrp_wrapper(syscall_wrapper::STDIN_FILE_DESCRIPTOR, cur_pgid.value());
 
                 // error handle
                 if(!status){
@@ -286,7 +286,7 @@ namespace jsh {
 
             // send job cont signal
             assert(shll_ptr.has_value());
-            status = syscall_wrapper::tcsetattr_wrapper(syscall_wrapper::STDOUT_FILE_DESCRIPTOR, TCSADRAIN, shll_ptr.value()->get_term_if());
+            status = syscall_wrapper::tcsetattr_wrapper(syscall_wrapper::STDIN_FILE_DESCRIPTOR, TCSADRAIN, shll_ptr.value()->get_term_if());
 
             if(!status){
                 return;
@@ -314,7 +314,7 @@ namespace jsh {
             // if the process is running in the foreground, then it gets access to the terminal
             assert(data.is_foreground); // we only support foreground jobs
             if(data.is_foreground){
-                status = syscall_wrapper::tcsetpgrp_wrapper(syscall_wrapper::STDOUT_FILE_DESCRIPTOR, *data.pgid);
+                status = syscall_wrapper::tcsetpgrp_wrapper(syscall_wrapper::STDIN_FILE_DESCRIPTOR, *data.pgid);
                 
                 // error handle
                 if(!status){

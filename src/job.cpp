@@ -139,7 +139,7 @@ namespace jsh {
             // set the process group id ptr to be the process group id ptr for the job
             assert((i == 0) ? data->pgid.get() == nullptr : data->pgid.get() != nullptr);
             assert(data->is_foreground);// since we don't support background jobs
-            std::visit([&](auto&& var){var.pgid = std::make_shared<pid_t>(syscall_wrapper::getpid_wrapper().value());var.is_foreground = data->is_foreground;}, *data->process_seq[i]);
+            std::visit([&](auto&& var){var.pgid = data->pgid/*std::make_shared<pid_t>(syscall_wrapper::getpid_wrapper().value())*/;var.is_foreground = data->is_foreground;}, *data->process_seq[i]);
 
             // execute the process
             jsh::process::execute(proc_data);

@@ -5,7 +5,7 @@ namespace jsh {
 
     shell::shell(){
         // check to see if jsh is interactive
-        is_interactive = syscall_wrapper::isatty_wrapper(syscall_wrapper::STDOUT_FILE_DESCRIPTOR);
+        is_interactive = syscall_wrapper::isatty_wrapper(syscall_wrapper::STDIN_FILE_DESCRIPTOR);
         std::optional<pid_t> cur_grp_pid = std::nullopt;
         term_if = std::make_shared<termios>(); // structure describing the terminal interface
 
@@ -14,7 +14,7 @@ namespace jsh {
             // loop until jsh is in the foreground
             while(true){
                 // get the process group id controlling the terminal
-                std::optional<pid_t> tc_grp_pid = syscall_wrapper::tcgetpgrp_wrapper(syscall_wrapper::STDOUT_FILE_DESCRIPTOR);
+                std::optional<pid_t> tc_grp_pid = syscall_wrapper::tcgetpgrp_wrapper(syscall_wrapper::STDIN_FILE_DESCRIPTOR);
 
                 // get the current process' group id
                 cur_grp_pid = syscall_wrapper::getpgrp_wrapper();
@@ -54,12 +54,12 @@ namespace jsh {
             }
 
             // try and grab control of the shell
-            if(!syscall_wrapper::tcsetpgrp_wrapper(syscall_wrapper::STDOUT_FILE_DESCRIPTOR, cur_grp_pid.value())){
+            if(!syscall_wrapper::tcsetpgrp_wrapper(syscall_wrapper::STDIN_FILE_DESCRIPTOR, cur_grp_pid.value())){
                 throw std::runtime_error("Failed to grab control of terminal shell...");
             }
 
             // get the shell attributes
-            if(!syscall_wrapper::tcgetattr_wrapper(syscall_wrapper::STDOUT_FILE_DESCRIPTOR, term_if)){
+            if(!syscall_wrapper::tcgetattr_wrapper(syscall_wrapper::STDIN_FILE_DESCRIPTOR, term_if)){
                 throw std::runtime_error("Failed to get shell attributes...");
             }
         }else{
