@@ -1,6 +1,8 @@
 #include "shell.hpp"
 
 namespace jsh {
+    std::shared_ptr<shell> shell::shell_ptr;
+
     shell::shell(){
         // check to see if jsh is interactive
         is_interactive = syscall_wrapper::isatty_wrapper(syscall_wrapper::STDOUT_FILE_DESCRIPTOR);
@@ -66,6 +68,25 @@ namespace jsh {
         }
     }
 
+    auto shell::get() -> std::optional<std::shared_ptr<shell>>{
+        // creating the shell instance may throw an exception
+        try{
+            // check to see if we need to make the singleton instance
+            if(shell_ptr.get() == nullptr){
+                // create the singleton instance
+                shell_ptr = std::make_shared<shell>();
+            }
+        }catch(std::runtime_error const& err){
+            // print error
+            jsh::cout_logger.log(jsh::LOG_LEVEL::ERROR, err.what(), '\n');
+            return std::nullopt;
+        }
+
+        // we should never return a nullptr, since the shell should always be valid
+        assert(shell_ptr.get() != nullptr);
+        return std::make_optional<std::shared_ptr<shell>>(shell_ptr);
+    }
+
     auto shell::execute_command() -> bool{
         // stack vars
         std::string input;
@@ -89,6 +110,10 @@ namespace jsh {
 
         // success
         return true;
+    }
+
+    auto shell::get_term_if() -> std::shared_ptr<termios>{
+        return term_if;
     }
 
     shell::~shell(){

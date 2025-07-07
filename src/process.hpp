@@ -17,6 +17,8 @@ namespace jsh {
      * stderr: the file descriptor which standard error will be directed towards
      *
      * pgid: the current process group id the process should be put in, note: this information is redundant to the pgid in the job structure, however instead of passing on the stack, we add a member to this structure
+     *
+     * is_foreground: indicates whether the process will run in the foreground of the shell
      */
     struct default_data {
         std::optional<file_descriptor_wrapper> stdout = std::nullopt;
@@ -24,6 +26,8 @@ namespace jsh {
         std::optional<file_descriptor_wrapper> stderr = std::nullopt;
 
         std::shared_ptr<pid_t> pgid;
+
+        bool is_foreground;
     };
 
     /**

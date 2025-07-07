@@ -151,13 +151,23 @@ namespace jsh {
         [[nodiscard]] static auto setpgid_wrapper(pid_t pid, pid_t pgid)-> bool;
 
         /**
-         * tcsetpgrp: wrapper around the tcsetpgrp syscall in order to interface with wrappers while grabbing control of the terminal
+         * tcsetpgrp_wrapper: wrapper around the tcsetpgrp syscall in order to interface with wrappers while grabbing control of the terminal
          */
         [[nodiscard]] static auto tcsetpgrp_wrapper(file_descriptor_wrapper const& term_fides, pid_t shell_pid) -> bool;
 
         /**
-         * tcgetattr: wrapper around getting the terminal interface
+         * tcgetattr_wrapper: wrapper around getting the terminal interface
          */
         [[nodiscard]] static auto tcgetattr_wrapper(file_descriptor_wrapper const& term_fides, std::shared_ptr<termios> term_if) -> bool;
+
+        /**
+         * tcsetattr_wrapper: wrapper around setting the terminal interace
+         */
+        [[nodiscard]] static auto tcsetattr_wrapper(file_descriptor_wrapper const& term_fides, int opts, std::shared_ptr<termios> const& term_if) -> bool;
+
+        /**
+         * kill_wrapper: wrapper around the kill syscall
+         */
+        [[nodiscard]] static auto kill_wrapper(pid_t pid, int sig) -> bool;
     };
 } // namespace jsh

@@ -8,23 +8,28 @@ int main(int argc, char* argv[], char* envp[]){
 
     jsh::cout_logger.log(jsh::LOG_LEVEL::SILENT, "Welcome to John's Shell\n");
 
-    try{
-        // this can throw an exception so it must be wrapped in a try and catch
-        jsh::shell jsh;
+    // this can throw an exception so it must be wrapped in a try and catch
+    std::optional<std::shared_ptr<jsh::shell>> jsh_op = jsh::shell::get();
 
-        while(true){
-            // execute the user input
-            bool status = jsh.execute_command();
-
-            if(!status){
-                return 0;
-            }
-        }
-    }catch(std::runtime_error const& err){
-        // print error
-        jsh::cout_logger.log(jsh::LOG_LEVEL::ERROR, err.what(), '\n');
+    // error handle
+    if(!jsh_op.has_value()){
+        jsh::cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to create shell singleton...\n");
+        return 1;
     }
 
-    // if we reach this point there was an error
+    // grab the singleton pointer
+    assert(jsh_op.has_value());
+    std::shared_ptr<jsh::shell> jsh = jsh_op.value();
+
+    // loop through user input
+    while(true){
+        // execute the user input
+        bool status = jsh->execute_command();
+
+        if(!status){
+            return 0;
+        }
+    }
+
     return 1;
 }

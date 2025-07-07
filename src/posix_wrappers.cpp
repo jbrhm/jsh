@@ -217,11 +217,38 @@ namespace jsh {
         int status = tcgetattr(term_fides._fides, term_if.get());
 
         if(status == -1){
-            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to get the terminal's interface: ", strerror(errno));
+            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to get the terminal's interface attribute: ", strerror(errno));
             return false;
         }
 
         // success
+        return true;
+    }
+
+    auto syscall_wrapper::tcsetattr_wrapper(file_descriptor_wrapper const& term_fides, int opts, std::shared_ptr<termios> const& term_if) -> bool{
+        // set the interface
+        int status = tcsetattr(term_fides._fides, opts, term_if.get());
+
+        // error handle
+        if(status == -1){
+            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to set the terminal's interface attribute: ", strerror(errno));
+            return false;
+        }
+
+        // success
+        return true;
+    }
+
+    auto syscall_wrapper::kill_wrapper(pid_t pid, int sig) -> bool{
+        // send signal
+        int status = kill(pid, sig);
+
+        // error handle
+        if(status == -1){
+            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to snd signal: ", strerror(errno));
+            return false;
+        }
+
         return true;
     }
 } // namespace jsh
