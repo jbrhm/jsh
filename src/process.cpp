@@ -203,6 +203,9 @@ namespace jsh {
     }
     
     void process::execute_process(binary_data& data){
+        // we should not accept any nullptrs to this function
+        assert(data.pgid != nullptr);
+
         // the array of pointers to the command line arguments
         std::vector<char*> args_ptr;
 
@@ -216,10 +219,10 @@ namespace jsh {
 
         // fork into another subprocess to execute the binary
         pid_t pid = fork();
-        if(pid){ // parent
+        if(static_cast<bool>(pid)){ // parent
             // update the process id for the new process if it is the first one/its pointer is nullptr
-            if(data.pgid == nullptr){
-                data.pgid = std::make_shared<pid_t>(pid);
+            if(*data.pgid == -1){
+                *data.pgid = pid;
             }
 
             // set the child process' process group id in parent to prevent race conditions
@@ -298,8 +301,8 @@ namespace jsh {
 
             // if the pgid is nullptr, then this is the first process and we should make its PID the 
             // PGID since it will be the process leader
-            if(data.pgid == nullptr){
-                data.pgid = std::make_shared<pid_t>(cur_pid.value());
+            if(*data.pgid == -1){
+                *data.pgid = cur_pid.value();
             }
 
             // set the current process' process group id

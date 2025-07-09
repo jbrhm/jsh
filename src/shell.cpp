@@ -103,7 +103,7 @@ namespace jsh {
         // creating the shell instance may throw an exception
         try{
             // check to see if we need to make the singleton instance
-            if(shell_ptr.get() == nullptr){
+            if(shell_ptr == nullptr){
                 // create the singleton instance
                 shell_ptr = std::make_shared<shell>();
             }
@@ -114,7 +114,7 @@ namespace jsh {
         }
 
         // we should never return a nullptr, since the shell should always be valid
-        assert(shell_ptr.get() != nullptr);
+        assert(shell_ptr != nullptr);
         return std::make_optional<std::shared_ptr<shell>>(shell_ptr);
     }
 

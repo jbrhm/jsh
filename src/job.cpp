@@ -100,6 +100,10 @@ namespace jsh {
 
         // if the job is running in the forground, relinquish control of the terminal
 
+        // create the process control group
+        data->pgid = std::make_shared<pid_t>(-1);
+        assert(data->pgid != nullptr); // we should not have a nullptr
+
         // perform the process' execution
         assert(data->input_seq.size() == data->process_seq.size());
         assert(data->input_seq.size() == data->operator_seq.size() + 1);
@@ -124,9 +128,9 @@ namespace jsh {
 
                     // get pipe fds
                     assert(pipe_fds_op.has_value());
-            assert(pipe_fds_op.value().size() == 2);
+                    assert(pipe_fds_op.value().size() == 2);
                     std::vector<file_descriptor_wrapper> pipe_fds = std::move(pipe_fds_op.value());
-            assert(pipe_fds.size() == 2);
+                    assert(pipe_fds.size() == 2);
 
                     // set the current output and the next input to read from the pipe
                     std::visit([&](auto&& var){var.stdout = std::move(pipe_fds[1]);}, *proc_data);
@@ -137,7 +141,7 @@ namespace jsh {
             }
             
             // set the process group id ptr to be the process group id ptr for the job
-            assert((i == 0) ? data->pgid.get() == nullptr : data->pgid.get() != nullptr);
+            assert((i == 0) ? *data->pgid == -1 : *data->pgid != -1);
             assert(data->is_foreground);// since we don't support background jobs
             std::visit([&](auto&& var){var.pgid = data->pgid/*std::make_shared<pid_t>(syscall_wrapper::getpid_wrapper().value())*/;var.is_foreground = data->is_foreground;}, *data->process_seq[i]);
 
