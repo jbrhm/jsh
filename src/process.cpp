@@ -218,7 +218,7 @@ namespace jsh {
         pid_t pid = fork();
         if(pid){ // parent
             // update the process id for the new process if it is the first one/its pointer is nullptr
-            if(data.pgid.get() == nullptr){
+            if(data.pgid == nullptr){
                 data.pgid = std::make_shared<pid_t>(pid);
             }
 
@@ -298,8 +298,8 @@ namespace jsh {
 
             // if the pgid is nullptr, then this is the first process and we should make its PID the 
             // PGID since it will be the process leader
-            if(data.pgid.get() == nullptr){
-                *data.pgid = cur_pid.value();
+            if(data.pgid == nullptr){
+                data.pgid = std::make_shared<pid_t>(cur_pid.value());
             }
 
             // set the current process' process group id
