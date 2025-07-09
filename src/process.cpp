@@ -323,11 +323,41 @@ namespace jsh {
             }
 
             // listen to job control signals
-            signal(SIGINT, SIG_DFL); // termination requests
-            signal(SIGQUIT, SIG_DFL);
-            signal(SIGTSTP, SIG_DFL);
-            signal(SIGTTIN, SIG_DFL);
-            signal(SIGTTOU, SIG_DFL);
+            std::optional<std::function<void(int)>> sig_status;
+            sig_status = syscall_wrapper::signal_wrapper(SIGINT, SIG_DFL); // termination requests
+            
+            // error handle
+            if(!sig_status.has_value()){
+                return;
+            }
+
+            sig_status = syscall_wrapper::signal_wrapper(SIGQUIT, SIG_DFL);
+
+            // error handle
+            if(!sig_status.has_value()){
+                return;
+            }
+
+            sig_status = syscall_wrapper::signal_wrapper(SIGTSTP, SIG_DFL);
+
+            // error handle
+            if(!sig_status.has_value()){
+                return;
+            }
+
+            sig_status = syscall_wrapper::signal_wrapper(SIGTTIN, SIG_DFL);
+
+            // error handle
+            if(!sig_status.has_value()){
+                return;
+            }
+
+            sig_status = syscall_wrapper::signal_wrapper(SIGTTOU, SIG_DFL);
+
+            // error handle
+            if(!sig_status.has_value()){
+                return;
+            }
 
             { // sir scope
                 shell_internal_redirection sir(std::move(data.stdout), std::move(data.stdin), std::move(data.stderr), false);

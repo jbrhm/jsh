@@ -245,10 +245,22 @@ namespace jsh {
 
         // error handle
         if(status == -1){
-            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to snd signal: ", strerror(errno));
+            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to send signal: ", strerror(errno));
             return false;
         }
 
         return true;
+    }
+
+    auto syscall_wrapper::signal_wrapper(int sig, void(*func)(int)) -> std::optional<std::function<void(int)>>{
+        // set the signal handler
+        void(*ret)(int) = signal(sig, func);
+
+        // error handle
+        if(ret == SIG_ERR){
+            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to set signal handler: ", strerror(errno));
+            return std::nullopt;
+        }
+        return std::make_optional<std::function<void(int)>>(ret);
     }
 } // namespace jsh

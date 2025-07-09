@@ -12,6 +12,7 @@
 #include <memory>
 #include <list>
 #include <exception>
+#include <functional>
 
 // OS
 #include <unistd.h>

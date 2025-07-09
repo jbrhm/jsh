@@ -38,11 +38,42 @@ namespace jsh {
             }
 
             // ignore all of the job control signals
-            signal(SIGINT, SIG_IGN); // termination requests
-            signal(SIGQUIT, SIG_IGN);
-            signal(SIGTSTP, SIG_IGN);
-            signal(SIGTTIN, SIG_IGN);
-            signal(SIGTTOU, SIG_IGN);
+            std::optional<std::function<void(int)>> sig_status;
+            sig_status = syscall_wrapper::signal_wrapper(SIGINT, SIG_IGN); // termination requests
+
+            // error handle
+            if(!sig_status.has_value()){
+                return;
+            }
+
+            sig_status = syscall_wrapper::signal_wrapper(SIGQUIT, SIG_IGN);
+
+            // error handle
+            if(!sig_status.has_value()){
+                return;
+            }
+
+            sig_status = syscall_wrapper::signal_wrapper(SIGTSTP, SIG_IGN);
+
+            // error handle
+            if(!sig_status.has_value()){
+                return;
+            }
+
+            sig_status = syscall_wrapper::signal_wrapper(SIGTTIN, SIG_IGN);
+
+            // error handle
+            if(!sig_status.has_value()){
+                return;
+            }
+
+            sig_status = syscall_wrapper::signal_wrapper(SIGTTOU, SIG_IGN);
+
+            // error handle
+            if(!sig_status.has_value()){
+                return;
+            }
+
 
             // create a process group for the shell
             cur_grp_pid = syscall_wrapper::getpid_wrapper();

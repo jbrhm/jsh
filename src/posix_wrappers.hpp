@@ -169,5 +169,10 @@ namespace jsh {
          * kill_wrapper: wrapper around the kill syscall
          */
         [[nodiscard]] static auto kill_wrapper(pid_t pid, int sig) -> bool;
+
+        /**
+         * signal_wrapper: wrapper around the signal syscall
+         */
+        [[nodiscard]] static auto signal_wrapper(int sig, void(*func)(int)) -> std::optional<std::function<void(int)>>;
     };
 } // namespace jsh
