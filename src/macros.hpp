@@ -43,10 +43,12 @@ namespace jsh {
         inline void log(LOG_LEVEL log_level, T... arg){
             if(log_level == LOG_LEVEL::SILENT){
                 (_os << ... << arg);
+                _os << std::flush;
             }else if(log_level >= global_log_level){
                 _os << log_level_strings[log_level] << ": ";
                 (_os << ... << arg);
                 _os << '\n';
+                _os << std::flush;
             }
         }
     };

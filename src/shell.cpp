@@ -138,23 +138,31 @@ namespace jsh {
         int sigfd = signalfd(-1, &sigs, 0);
 
         // poll the file descriptors
-        pollfd pfds[1];
+        pollfd pfds[2];
 
         pfds[0].fd = sigfd;
         pfds[0].events = 0;
         pfds[0].events |= POLLIN;
 
-        int status = poll(pfds, 1, -1);
+        pfds[1].fd = STDIN_FILENO;
+        pfds[1].events = 0;
+        pfds[1].events |= POLLIN;
 
-        struct signalfd_siginfo sigfdinfo;
+        int status = poll(pfds, 2, -1);
 
-        int s = read(sigfd, &sigfdinfo, sizeof(sigfdinfo));
+        if(pfds[0].revents){
+            struct signalfd_siginfo sigfdinfo;
 
-        if(sigfdinfo.ssi_signo == SIGINT){
-            std::cout << "got int\n";
+            int s = read(sigfd, &sigfdinfo, sizeof(sigfdinfo));
+
+            // we should only ever recieve a SIGINT
+            assert(sigfdinfo.ssi_signo == SIGINT);
+
+            // add new return
+            jsh::cout_logger.log(jsh::LOG_LEVEL::SILENT, '\n');
+        }else if(pfds[1].revents){
+            getline(std::cin, input);
         }
-
-
 
         jsh::cout_logger.log(jsh::LOG_LEVEL::DEBUG, "Raw user input: ", input);
         input = jsh::parsing::variable_substitution(input);
