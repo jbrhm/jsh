@@ -13,6 +13,10 @@ namespace jsh {
     class shell{
     private:
         /**
+         *
+         */
+        static constexpr char const* PROMPT_MESSAGE = "prompt:";
+        /**
          * is_interactice: indicates whether the shell is running in interactive mode
          */
         bool is_interactive;
@@ -52,5 +56,10 @@ namespace jsh {
          * get_term_if: returns the terminal interface pointer
          */
         [[nodiscard]] auto get_term_if() -> std::shared_ptr<termios>;
+
+        /**
+         * ctrl_c_signal_handler: handles the ctrl+c input to print a new line
+         */
+        static void ctrl_c_signal_handler(int sig);
     };
 } // namespace jsh

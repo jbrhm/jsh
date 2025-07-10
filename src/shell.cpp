@@ -39,7 +39,7 @@ namespace jsh {
 
             // ignore all of the job control signals
             std::optional<std::function<void(int)>> sig_status;
-            sig_status = syscall_wrapper::signal_wrapper(SIGINT, SIG_IGN); // termination requests
+            sig_status = syscall_wrapper::signal_wrapper(SIGINT, &shell::ctrl_c_signal_handler); // termination requests
 
             // error handle
             if(!sig_status.has_value()){
@@ -124,7 +124,7 @@ namespace jsh {
         std::string arg;
 
         // get the command from the user
-        jsh::cout_logger.log(jsh::LOG_LEVEL::SILENT, "prompt:");
+        jsh::cout_logger.log(jsh::LOG_LEVEL::SILENT, PROMPT_MESSAGE);
         getline(std::cin, input);
         jsh::cout_logger.log(jsh::LOG_LEVEL::DEBUG, "Raw user input: ", input);
         input = jsh::parsing::variable_substitution(input);
@@ -147,7 +147,18 @@ namespace jsh {
         return term_if;
     }
 
-    shell::~shell(){
+    void shell::ctrl_c_signal_handler(int sig){
+        // this handler should only ever run for ctrl+c
+        assert(sig == SIGINT);
 
+        // reprint the prompt message
+        std::cout << "hi\n";
+        jsh::cout_logger.log(jsh::LOG_LEVEL::SILENT, '\n');
+        jsh::cout_logger.log(jsh::LOG_LEVEL::SILENT, PROMPT_MESSAGE);
+
+        // clear the previous input
+        
     }
+
+    shell::~shell() = default;
 } // namespace jsh
