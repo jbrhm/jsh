@@ -125,13 +125,44 @@ namespace jsh {
 
         // get the command from the user
         jsh::cout_logger.log(jsh::LOG_LEVEL::SILENT, PROMPT_MESSAGE);
-        getline(std::cin, input);
+
+        // create the signal file descriptor for SIGINT
+        sigset_t sigs;
+        sigemptyset(&sigs);
+        sigaddset(&sigs, SIGINT);
+
+        // block the signal handlers
+        sigprocmask(SIG_BLOCK, &sigs, nullptr);
+
+        // create signal fd
+        int sigfd = signalfd(-1, &sigs, 0);
+
+        // poll the file descriptors
+        pollfd pfds[1];
+
+        pfds[0].fd = sigfd;
+        pfds[0].events = 0;
+        pfds[0].events |= POLLIN;
+
+        int status = poll(pfds, 1, -1);
+
+        struct signalfd_siginfo sigfdinfo;
+
+        int s = read(sigfd, &sigfdinfo, sizeof(sigfdinfo));
+
+        if(sigfdinfo.ssi_signo == SIGINT){
+            std::cout << "got int\n";
+        }
+
+
+
         jsh::cout_logger.log(jsh::LOG_LEVEL::DEBUG, "Raw user input: ", input);
         input = jsh::parsing::variable_substitution(input);
         jsh::cout_logger.log(jsh::LOG_LEVEL::DEBUG, "Substituted user input: ", input);
 
-        if(input == "exit")
+        if(input == "exit"){
             return false;
+        }
 
         // parse the job
         auto job_data = jsh::job::parse_job(input);
@@ -152,12 +183,7 @@ namespace jsh {
         assert(sig == SIGINT);
 
         // reprint the prompt message
-        std::cout << "hi\n";
-        jsh::cout_logger.log(jsh::LOG_LEVEL::SILENT, '\n');
-        jsh::cout_logger.log(jsh::LOG_LEVEL::SILENT, PROMPT_MESSAGE);
-
-        // clear the previous input
-        
+        std::cout << PROMPT_MESSAGE;
     }
 
     shell::~shell() = default;
