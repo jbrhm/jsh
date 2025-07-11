@@ -352,7 +352,6 @@ TEST(TestJob, TestExecuteJobBasic1){
         }
         
         ASSERT_TRUE(i < std::strlen(corr) + 1);
-        std::cout << chr << " " << corr[i] << static_cast<int>(chr) << " " << static_cast<int>(corr[i]) << '\n';
         EXPECT_TRUE(chr == corr[i]);
     }
     ASSERT_EQ(i, std::strlen(corr) + 1);
@@ -392,7 +391,6 @@ TEST(TestJob, TestExecuteJobBasic2){
         }
         
         ASSERT_TRUE(i < std::strlen(corr) + 1);
-        std::cout << chr << " " << corr[i] << static_cast<int>(chr) << " " << static_cast<int>(corr[i]) << '\n';
         EXPECT_EQ(chr, corr[i]);
     }
     ASSERT_EQ(i, std::strlen(corr) + 1);
@@ -435,7 +433,6 @@ TEST(TestJob, TestExecuteJobBasic3){
             }
             
             ASSERT_TRUE(i < std::strlen(corr) + 1);
-            std::cout << chr << " " << corr[i] << static_cast<int>(chr) << " " << static_cast<int>(corr[i]) << '\n';
 	    ASSERT_EQ(chr, corr[i]);
         }
 
@@ -461,7 +458,6 @@ TEST(TestJob, TestExecuteJobBasic3){
             }
             
             ASSERT_TRUE(i < std::strlen(corr2) + 1);
-            std::cout << chr << " " << corr2[i] << static_cast<int>(chr) << " " << static_cast<int>(corr2[i]) << '\n';
             EXPECT_EQ(chr, corr2[i]);
         }
     }

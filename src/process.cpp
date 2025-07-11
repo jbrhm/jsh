@@ -218,7 +218,6 @@ namespace jsh {
         args_ptr.push_back(nullptr);
 
         // fork into another subprocess to execute the binary
-	std::cout << "forking\n";
         pid_t pid = fork();
         if(static_cast<bool>(pid)){ // parent
             // update the process id for the new process if it is the first one/its pointer is nullptr

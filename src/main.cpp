@@ -4,7 +4,7 @@
 #include "shell.hpp"
 
 int main(){
-    jsh::set_log_level(jsh::LOG_LEVEL::DEBUG);
+    jsh::set_log_level(jsh::LOG_LEVEL::WARN);
 
     jsh::cout_logger.log(jsh::LOG_LEVEL::SILENT, "Welcome to John's Shell\n");
 
