@@ -186,7 +186,7 @@ namespace jsh {
             // add new return
             jsh::cout_logger.log(jsh::LOG_LEVEL::SILENT, '\n');
         }else if(pfds[1].revents != 0){
-            getline(std::cin, input);
+            std::getline(std::cin, input);
         }
 
         jsh::cout_logger.log(jsh::LOG_LEVEL::DEBUG, "Raw user input: ", input);
