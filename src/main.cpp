@@ -3,8 +3,8 @@
 // JSH
 #include "shell.hpp"
 
-int main(int argc, char* argv[], char* envp[]){
-    jsh::set_log_level(1);
+int main(){
+    jsh::set_log_level(jsh::LOG_LEVEL::WARN);
 
     jsh::cout_logger.log(jsh::LOG_LEVEL::SILENT, "Welcome to John's Shell\n");
 
