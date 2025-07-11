@@ -99,6 +99,32 @@ namespace jsh {
         inline static file_descriptor_wrapper STDOUT_FILE_DESCRIPTOR = file_descriptor_wrapper(STDOUT_FILENO);
         inline static file_descriptor_wrapper STDIN_FILE_DESCRIPTOR = file_descriptor_wrapper(STDIN_FILENO);
         inline static file_descriptor_wrapper STDERR_FILE_DESCRIPTOR = file_descriptor_wrapper(STDERR_FILENO);
+        inline static file_descriptor_wrapper INVALID_FILE_DESCRIPTOR = file_descriptor_wrapper(-1);
+
+        /**
+         * pollfd_wrapper: wrapper around the pollfd structure
+         */
+        struct pollfd_wrapper{
+            /**
+             * fides: the file descriptor
+             */
+            file_descriptor_wrapper const& fides; // default
+
+            /**
+             * events: the events the pollfd is listening for
+             */
+            short events;
+
+            /**
+             * revents: the events that get returned out
+             */
+            short revents;
+
+            /**
+             * constructor since this structure holds a reference
+             */
+            explicit pollfd_wrapper(file_descriptor_wrapper const& fid, short evnts, short rvnts) : fides{fid}, events{evnts}, revents{rvnts}{};
+        };
 
         /**
          * open_wrapper: a wrapper around the open syscall in order to interface properly with the file_descriptor_wrapper
@@ -174,5 +200,30 @@ namespace jsh {
          * signal_wrapper: wrapper around the signal syscall
          */
         [[nodiscard]] static auto signal_wrapper(int sig, void(*func)(int)) -> std::optional<std::function<void(int)>>;
+
+        /**
+         * sigemptyset_wrapper: wrapper around the sigemptyset syscall
+         */
+        [[nodiscard]] static auto sigemptyset_wrapper(sigset_t& sigset) -> bool;
+
+        /**
+         * sigaddset_wrapper: wrapper around the sigaddset syscall
+         */
+        [[nodiscard]] static auto sigaddset_wrapper(sigset_t& sigset, int signo) -> bool;
+
+        /**
+         * sigprocmask_wrapper: wrapper around the sigprocmask syscall
+         */
+        [[nodiscard]] static auto sigprocmask_wrapper(int how, sigset_t& set) -> bool;
+
+        /**
+         * signalfd_wrapper: wrapper around the signalfd syscall
+         */
+        [[nodiscard]] static auto signalfd_wrapper(file_descriptor_wrapper const& fides, sigset_t& set, int flags) -> std::optional<file_descriptor_wrapper>;
+
+        /**
+         * poll_wrapper: wrapper around the poll syscall
+         */
+        [[nodiscard]] static auto poll_wrapper(std::vector<pollfd_wrapper>& fds, int timeout) -> std::optional<int>;
     };
 } // namespace jsh

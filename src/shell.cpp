@@ -128,39 +128,64 @@ namespace jsh {
 
         // create the signal file descriptor for SIGINT
         sigset_t sigs;
-        sigemptyset(&sigs);
-        sigaddset(&sigs, SIGINT);
+
+        bool sigset_status = syscall_wrapper::sigemptyset_wrapper(sigs);
+        if(!sigset_status){
+            return false;
+        }
+
+        bool sigadd_status = syscall_wrapper::sigaddset_wrapper(sigs, SIGINT);
+        if(!sigadd_status){
+            return false;
+        }
 
         // block the signal handlers
-        sigprocmask(SIG_BLOCK, &sigs, nullptr);
+        bool sigprocmask_status = syscall_wrapper::sigprocmask_wrapper(SIG_BLOCK, sigs);
+        if(!sigprocmask_status){
+            return false;
+        }
 
         // create signal fd
-        int sigfd = signalfd(-1, &sigs, 0);
+        std::optional<file_descriptor_wrapper> sigfd_op = syscall_wrapper::signalfd_wrapper(syscall_wrapper::INVALID_FILE_DESCRIPTOR, sigs, 0);
+        if(!sigfd_op.has_value()){
+            return false;
+        }
+        file_descriptor_wrapper sigfd = std::move(sigfd_op.value());
 
         // poll the file descriptors
-        pollfd pfds[2];
+        std::vector<syscall_wrapper::pollfd_wrapper> pfds;
+        pfds.emplace_back(sigfd, POLLIN, 0);
+        pfds.emplace_back(syscall_wrapper::STDIN_FILE_DESCRIPTOR, POLLIN, 0);
 
-        pfds[0].fd = sigfd;
-        pfds[0].events = 0;
-        pfds[0].events |= POLLIN;
+        // poll the fds
+        std::optional<int> num_fds = syscall_wrapper::poll_wrapper(pfds, -1);
+        if(!num_fds.has_value()){
+            return false;
+        }
 
-        pfds[1].fd = STDIN_FILENO;
-        pfds[1].events = 0;
-        pfds[1].events |= POLLIN;
+        if(pfds[0].revents != 0){
+            signalfd_siginfo sigfdinfo{};
 
-        int status = poll(pfds, 2, -1);
+            ssize_t total_read = 0;
 
-        if(pfds[0].revents){
-            struct signalfd_siginfo sigfdinfo;
+            while(total_read != sizeof(sigfdinfo)){
+                std::optional<ssize_t> num_read = syscall_wrapper::read_wrapper(sigfd, &sigfdinfo, sizeof(sigfdinfo));
 
-            int s = read(sigfd, &sigfdinfo, sizeof(sigfdinfo));
+                // err handle
+                if(!num_read.has_value()){
+                    return false;
+                }
+
+                // increment
+                total_read = total_read + num_read.value();
+            }
 
             // we should only ever recieve a SIGINT
             assert(sigfdinfo.ssi_signo == SIGINT);
 
             // add new return
             jsh::cout_logger.log(jsh::LOG_LEVEL::SILENT, '\n');
-        }else if(pfds[1].revents){
+        }else if(pfds[1].revents != 0){
             getline(std::cin, input);
         }
 

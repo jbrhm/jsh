@@ -263,4 +263,86 @@ namespace jsh {
         }
         return std::make_optional<std::function<void(int)>>(ret);
     }
+    
+    auto syscall_wrapper::sigemptyset_wrapper(sigset_t& sigset) -> bool{
+        // empty the signal set
+        int status = sigemptyset(&sigset);
+
+        // error handle
+        if(status == -1){
+            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to empty signal set: ", strerror(errno));
+            return false;
+        }
+
+        // success
+        return true;
+    }
+
+    auto syscall_wrapper::sigaddset_wrapper(sigset_t& sigset, int signo) -> bool{
+        // add the signal
+        int status = sigaddset(&sigset, signo);
+
+        // error handle
+        if(status == -1){
+            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to add signal to set: ", strerror(errno));
+            return false;
+        }
+
+        // success
+        return true;
+    }
+
+    auto syscall_wrapper::sigprocmask_wrapper(int how, sigset_t& set) -> bool{
+        // add signal process mask
+        int status = sigprocmask(how, &set, nullptr);
+
+        // error handle
+        if(status == -1){
+            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to create process signal mask: ", strerror(errno));
+            return false;
+        }
+
+        // success
+        return true;
+    }
+
+    auto syscall_wrapper::signalfd_wrapper(file_descriptor_wrapper const& fides, sigset_t& set, int flags) -> std::optional<file_descriptor_wrapper>{
+        // create the signal file
+        int new_signal_fd = signalfd(fides._fides, &set, flags);
+
+        // error handle
+        if(new_signal_fd == -1){
+            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to create signal file descriptor: ", strerror(errno));
+            return std::nullopt;
+        }
+
+        // create the new file descriptor
+        return std::make_optional<file_descriptor_wrapper>(file_descriptor_wrapper(new_signal_fd));
+    }
+
+    auto syscall_wrapper::poll_wrapper(std::vector<pollfd_wrapper>& fds, int timeout) -> std::optional<int>{
+        // create the poll fds
+        std::vector<pollfd> poll_fds;
+        poll_fds.reserve(fds.size());
+        for(auto const& fdw : fds){
+            poll_fds.emplace_back(fdw.fides._fides, fdw.events, 0);
+        }
+
+        // poll the fds
+        int num_fds = poll(poll_fds.data(), fds.size(), timeout);
+
+        // error handle
+        if(num_fds == -1){
+            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to poll file descriptors: ", strerror(errno));
+            return std::nullopt;
+        }
+
+        // copy over the revents
+        for(std::size_t i = 0; i < fds.size(); ++i){
+            fds[i].revents = poll_fds[i].revents;
+        }
+
+        // create the new file descriptor
+        return std::make_optional<int>(num_fds);
+    }
 } // namespace jsh
