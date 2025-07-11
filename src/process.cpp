@@ -252,7 +252,7 @@ namespace jsh {
 
             // wait for the process to complete
             // TODO: I cannot wait everytime there is a command executed if we are going to support background tasks
-            int wait_status;
+            int wait_status = 0;
             pid_t exit_code = waitpid(pid, &wait_status, WUNTRACED);
 
             // close all of the older file descriptors
@@ -263,7 +263,14 @@ namespace jsh {
             // check for errors
             if(exit_code != pid){
                 jsh::cout_logger.log(jsh::LOG_LEVEL::ERROR, "Waiting on PID ", pid, " failed: ", strerror(errno), '\n');
+            }else{
+                // save the exit status
+                if(WIFEXITED(wait_status)){
+                    std::string exit_status = std::to_string(WEXITSTATUS(wait_status));
+                    environment::set_var(environment::STATUS_STRING, exit_status.c_str());
+                }
             }
+
 
             // restore terminal control to the shell
             // since the shell is its process leader, we can just use getpid
@@ -383,6 +390,9 @@ namespace jsh {
 
             // perform the export
             environment::set_var(data.name.c_str(), data.val.c_str());
+
+            // set return env var to 0
+            environment::set_var(environment::STATUS_STRING, environment::SUCCESS_STRING);
         } // sir scope
     }
 

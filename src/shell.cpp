@@ -8,6 +8,9 @@ namespace jsh {
         is_interactive = syscall_wrapper::isatty_wrapper(syscall_wrapper::STDIN_FILE_DESCRIPTOR);
         std::optional<pid_t> cur_grp_pid = std::nullopt;
         term_if = std::make_shared<termios>(); // structure describing the terminal interface
+        
+        // set the previous exit status to be zero
+        environment::set_var(environment::STATUS_STRING, environment::SUCCESS_STRING);
 
         // interactive shell setup
         if(is_interactive){
@@ -193,6 +196,7 @@ namespace jsh {
         input = jsh::parsing::variable_substitution(input);
         jsh::cout_logger.log(jsh::LOG_LEVEL::DEBUG, "Substituted user input: ", input);
 
+        // exit jsh on exit keyword
         if(input == "exit"){
             return false;
         }

@@ -20,6 +20,12 @@ namespace jsh {
 
     public:
         /**
+         * CONSTANT VARIABLES
+         */
+        static constexpr char const* STATUS_STRING = "?";
+        static constexpr char const* SUCCESS_STRING = "0";
+
+        /**
          *
          * set_var: sets the environment variable var to value
          *
