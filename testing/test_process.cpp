@@ -131,6 +131,8 @@ TEST(TestProcess, TestExecuteBinary) {
     assert(std::holds_alternative<jsh::binary_data>(*binary_var));
 
     jsh::binary_data& binary = std::get<jsh::binary_data>(*binary_var);
+    binary.pgid = std::make_shared<pid_t>(-1);
+    binary.is_foreground = true;
 
     binary.args = {"echo", "hi"};
 

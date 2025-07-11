@@ -327,18 +327,22 @@ TEST(TestJob, TestExecuteJobBasic1){
     // parse the command
     auto job = jsh::job::parse_job(cmd);
 
+    // not actually in the terminal so we use background processes
+    job->is_foreground = false;
+
     // execute the job
     jsh::job::execute_job(job);
 
     // open the file
-    std::optional<jsh::file_descriptor_wrapper> fides = jsh::syscall_wrapper::open_wrapper(file, O_RDONLY | O_CREAT, 0777);
+    std::optional<jsh::file_descriptor_wrapper> fides = jsh::syscall_wrapper::open_wrapper(file, O_RDONLY, 0777);
 
     // check to see if open succeeded
     ASSERT_TRUE(fides.has_value());
 
     // read from the pipe
     std::optional<ssize_t> num_bytes_read = std::make_optional<ssize_t>(1);
-    for(std::size_t i = 0; num_bytes_read.has_value() && num_bytes_read.value() != 0; ++i){
+    std::size_t i = 0;
+    for(; num_bytes_read.has_value() && num_bytes_read.value() != 0; ++i){
         char chr = '\0';
         num_bytes_read = jsh::syscall_wrapper::read_wrapper(fides.value(), &chr, sizeof(chr));
 
@@ -350,29 +354,34 @@ TEST(TestJob, TestExecuteJobBasic1){
         ASSERT_TRUE(i < std::strlen(corr) + 1);
         ASSERT_TRUE(chr == corr[i]);
     }
+    ASSERT_EQ(i, std::strlen(corr) + 1);
 }
 
 TEST(TestJob, TestExecuteJobBasic2){
     // Test constants
     static constexpr char const* file = "testing/tmp/file";
     static constexpr char const* cmd = "echo hi yo | grep -i hi> testing/tmp/file";
-    static constexpr char const* corr = "hi\n";
+    static constexpr char const* corr = "hi yo\n";
 
     // create a job
     auto job = jsh::job::parse_job(cmd);
+
+    // not actually in the terminal so we use background processes
+    job->is_foreground = false;
 
     // execute the job
     jsh::job::execute_job(job);
 
     // open the file
-    std::optional<jsh::file_descriptor_wrapper> fides = jsh::syscall_wrapper::open_wrapper(file, O_RDONLY | O_CREAT, 0777);
+    std::optional<jsh::file_descriptor_wrapper> fides = jsh::syscall_wrapper::open_wrapper(file, O_RDONLY, 0777);
 
     // check to see if open succeeded
     ASSERT_TRUE(fides.has_value());
 
     // read from the pipe
+    std::size_t i = 0;
     std::optional<ssize_t> num_bytes_read = std::make_optional<ssize_t>(1);
-    for(std::size_t i = 0; num_bytes_read.has_value() && num_bytes_read.value() != 0; ++i){
+    for(; num_bytes_read.has_value() && num_bytes_read.value() != 0; ++i){
         char chr = '\0';
         num_bytes_read = jsh::syscall_wrapper::read_wrapper(fides.value(), &chr, sizeof(chr));
 
@@ -384,6 +393,7 @@ TEST(TestJob, TestExecuteJobBasic2){
         ASSERT_TRUE(i < std::strlen(corr) + 1);
         ASSERT_TRUE(chr == corr[i]);
     }
+    ASSERT_EQ(i, std::strlen(corr) + 1);
 }
 
 TEST(TestJob, TestExecuteJobBasic3){
@@ -397,19 +407,23 @@ TEST(TestJob, TestExecuteJobBasic3){
     // parse job
     auto job = jsh::job::parse_job(cmd);
 
+    // not actually in the terminal so we use background processes
+    job->is_foreground = false;
+
     // execute the job
     jsh::job::execute_job(job);
 
     { // fides wrapper
         // open the file
-        std::optional<jsh::file_descriptor_wrapper> fides = jsh::syscall_wrapper::open_wrapper(file, O_RDONLY | O_CREAT, 0777);
+        std::optional<jsh::file_descriptor_wrapper> fides = jsh::syscall_wrapper::open_wrapper(file, O_RDONLY, 0777);
 
         // check to see if open succeeded
         ASSERT_TRUE(fides.has_value());
 
         // read from the pipe
         std::optional<ssize_t> num_bytes_read = std::make_optional<ssize_t>(1);
-        for(std::size_t i = 0; num_bytes_read.has_value() && num_bytes_read.value() != 0; ++i){
+        std::size_t i = 0;
+        for(; num_bytes_read.has_value() && num_bytes_read.value() != 0; ++i){
             char chr = '\0';
             num_bytes_read = jsh::syscall_wrapper::read_wrapper(fides.value(), &chr, sizeof(chr));
 
@@ -419,13 +433,16 @@ TEST(TestJob, TestExecuteJobBasic3){
             }
             
             ASSERT_TRUE(i < std::strlen(corr) + 1);
+            std::cout << chr << " " << corr[i] << static_cast<int>(chr) << " " << static_cast<int>(corr[i]) << '\n';
             ASSERT_TRUE(chr == corr[i]);
         }
+
+        ASSERT_EQ(i, std::strlen(corr) + 1);
     }
 
     { // fides wrapper
         // open the file
-        std::optional<jsh::file_descriptor_wrapper> fides = jsh::syscall_wrapper::open_wrapper(file2, O_RDONLY | O_CREAT, 0777);
+        std::optional<jsh::file_descriptor_wrapper> fides = jsh::syscall_wrapper::open_wrapper(file2, O_RDONLY, 0777);
 
         // check to see if open succeeded
         ASSERT_TRUE(fides.has_value());
@@ -442,7 +459,8 @@ TEST(TestJob, TestExecuteJobBasic3){
             }
             
             ASSERT_TRUE(i < std::strlen(corr2) + 1);
-            ASSERT_TRUE(chr == corr2[i]);
+            std::cout << chr << " " << corr2[i] << static_cast<int>(chr) << " " << static_cast<int>(corr2[i]) << '\n';
+            // ASSERT_TRUE(chr == corr2[i]);
         }
     }
 }

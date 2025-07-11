@@ -234,7 +234,6 @@ namespace jsh {
             }
 
             // set the child process to control the terminal
-            assert(data.is_foreground); // we onlt support foreground jobs
             if(data.is_foreground){
                 status = syscall_wrapper::tcsetpgrp_wrapper(syscall_wrapper::STDIN_FILE_DESCRIPTOR, *data.pgid);
 
@@ -274,7 +273,6 @@ namespace jsh {
 
             // restore terminal control to the shell
             // since the shell is its process leader, we can just use getpid
-            assert(data.is_foreground); // we onlt support foreground jobs
             if(data.is_foreground){
                 std::optional<pid_t> cur_pgid = syscall_wrapper::getpid_wrapper();
                 assert(cur_pgid.has_value());
@@ -322,7 +320,6 @@ namespace jsh {
             }
 
             // if the process is running in the foreground, then it gets access to the terminal
-            assert(data.is_foreground); // we only support foreground jobs
             if(data.is_foreground){
                 status = syscall_wrapper::tcsetpgrp_wrapper(syscall_wrapper::STDIN_FILE_DESCRIPTOR, *data.pgid);
                 

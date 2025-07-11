@@ -26,6 +26,10 @@ namespace jsh {
     auto file_descriptor_wrapper::operator=(file_descriptor_wrapper&& other) noexcept -> file_descriptor_wrapper&{
         // ensure we are nove being moved into ourselves
         if(this != &other){
+            // we need to close any currently open file descriptors
+            if(_fides != -1){
+                close(_fides);
+            }
             _fides = other._fides;
             other._fides = -1;
         }
