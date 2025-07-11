@@ -235,7 +235,7 @@ namespace jsh {
 
             // set the child process to control the terminal
             if(data.is_foreground){
-                //status = syscall_wrapper::tcsetpgrp_wrapper(syscall_wrapper::STDIN_FILE_DESCRIPTOR, *data.pgid);
+                status = syscall_wrapper::tcsetpgrp_wrapper(syscall_wrapper::STDIN_FILE_DESCRIPTOR, *data.pgid);
 
                 if(!status){
                     return;
@@ -276,7 +276,7 @@ namespace jsh {
             if(data.is_foreground){
                 std::optional<pid_t> cur_pgid = syscall_wrapper::getpid_wrapper();
                 assert(cur_pgid.has_value());
-                //status = syscall_wrapper::tcsetpgrp_wrapper(syscall_wrapper::STDIN_FILE_DESCRIPTOR, cur_pgid.value());
+                status = syscall_wrapper::tcsetpgrp_wrapper(syscall_wrapper::STDIN_FILE_DESCRIPTOR, cur_pgid.value());
 
                 // error handle
                 if(!status){
@@ -294,7 +294,7 @@ namespace jsh {
 
             // send job cont signal
             assert(shll_ptr.has_value());
-            //status = syscall_wrapper::tcsetattr_wrapper(syscall_wrapper::STDIN_FILE_DESCRIPTOR, TCSADRAIN, shll_ptr.value()->get_term_if());
+            status = syscall_wrapper::tcsetattr_wrapper(syscall_wrapper::STDIN_FILE_DESCRIPTOR, TCSADRAIN, shll_ptr.value()->get_term_if());
 
             if(!status){
                 return;
@@ -321,7 +321,7 @@ namespace jsh {
 
             // if the process is running in the foreground, then it gets access to the terminal
             if(data.is_foreground){
-                //status = syscall_wrapper::tcsetpgrp_wrapper(syscall_wrapper::STDIN_FILE_DESCRIPTOR, *data.pgid);
+                status = syscall_wrapper::tcsetpgrp_wrapper(syscall_wrapper::STDIN_FILE_DESCRIPTOR, *data.pgid);
                 
                 // error handle
                 if(!status){
