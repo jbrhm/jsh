@@ -38,11 +38,14 @@ namespace jsh {
         return *this;
     }
 
-    file_descriptor_wrapper::file_descriptor_wrapper(int fides) noexcept : _fides{fides}{}
+    file_descriptor_wrapper::file_descriptor_wrapper(int fides) noexcept : _fides{fides}{
+        //std::cout << "Creating: " << _fides << '\n';
+    }
 
     file_descriptor_wrapper::~file_descriptor_wrapper(){
         // close the file descriptor (not stdout, stdin, or stderr)
-        if(_fides != STDOUT_FILENO && _fides != STDIN_FILENO && _fides != STDERR_FILENO && _fides != -1){
+        if(_fides != -1){
+	    //std::cout << "Closing: " << _fides << '\n';
             int status = close(_fides);
             // check the status on close
             if(status == -1){

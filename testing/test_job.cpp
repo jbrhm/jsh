@@ -321,8 +321,8 @@ TEST(TestJob, TestParseJobPipeEdge4){
 TEST(TestJob, TestExecuteJobBasic1){
     // Test Constants
     static constexpr char const* file = "testing/tmp/file";
-    static constexpr char const* cmd = "echo hi > testing/tmp/file";
-    static constexpr char const* corr = "hi\n";
+    static constexpr char const* cmd = "echo test1 > testing/tmp/file";
+    static constexpr char const* corr = "test1\n";
 
     // parse the command
     auto job = jsh::job::parse_job(cmd);
@@ -352,7 +352,8 @@ TEST(TestJob, TestExecuteJobBasic1){
         }
         
         ASSERT_TRUE(i < std::strlen(corr) + 1);
-        ASSERT_TRUE(chr == corr[i]);
+        std::cout << chr << " " << corr[i] << static_cast<int>(chr) << " " << static_cast<int>(corr[i]) << '\n';
+        EXPECT_TRUE(chr == corr[i]);
     }
     ASSERT_EQ(i, std::strlen(corr) + 1);
 }
@@ -360,8 +361,8 @@ TEST(TestJob, TestExecuteJobBasic1){
 TEST(TestJob, TestExecuteJobBasic2){
     // Test constants
     static constexpr char const* file = "testing/tmp/file";
-    static constexpr char const* cmd = "echo hi yo | grep -i hi> testing/tmp/file";
-    static constexpr char const* corr = "hi yo\n";
+    static constexpr char const* cmd = "echo hi test2 yo | grep -i hi > testing/tmp/file";
+    static constexpr char const* corr = "hi test2 yo\n";
 
     // create a job
     auto job = jsh::job::parse_job(cmd);
@@ -391,7 +392,8 @@ TEST(TestJob, TestExecuteJobBasic2){
         }
         
         ASSERT_TRUE(i < std::strlen(corr) + 1);
-        ASSERT_TRUE(chr == corr[i]);
+        std::cout << chr << " " << corr[i] << static_cast<int>(chr) << " " << static_cast<int>(corr[i]) << '\n';
+        EXPECT_EQ(chr, corr[i]);
     }
     ASSERT_EQ(i, std::strlen(corr) + 1);
 }
@@ -400,9 +402,9 @@ TEST(TestJob, TestExecuteJobBasic3){
     // Test constants
     static constexpr char const* file = "testing/tmp/file";
     static constexpr char const* file2 = "testing/tmp/file2";
-    static constexpr char const* cmd = "echo linux > testing/tmp/file2 && echo hi yo | grep -i hi> testing/tmp/file";
-    static constexpr char const* corr = "hi\n";
-    static constexpr char const* corr2 = "linux\n";
+    static constexpr char const* cmd = "echo linux test3 > testing/tmp/file2 && echo test3 hi yo | grep -i hi > testing/tmp/file";
+    static constexpr char const* corr = "test3 hi yo\n";
+    static constexpr char const* corr2 = "linux test3\n";
 
     // parse job
     auto job = jsh::job::parse_job(cmd);
@@ -434,7 +436,7 @@ TEST(TestJob, TestExecuteJobBasic3){
             
             ASSERT_TRUE(i < std::strlen(corr) + 1);
             std::cout << chr << " " << corr[i] << static_cast<int>(chr) << " " << static_cast<int>(corr[i]) << '\n';
-            ASSERT_TRUE(chr == corr[i]);
+	    ASSERT_EQ(chr, corr[i]);
         }
 
         ASSERT_EQ(i, std::strlen(corr) + 1);
@@ -460,7 +462,7 @@ TEST(TestJob, TestExecuteJobBasic3){
             
             ASSERT_TRUE(i < std::strlen(corr2) + 1);
             std::cout << chr << " " << corr2[i] << static_cast<int>(chr) << " " << static_cast<int>(corr2[i]) << '\n';
-            // ASSERT_TRUE(chr == corr2[i]);
+            EXPECT_EQ(chr, corr2[i]);
         }
     }
 }

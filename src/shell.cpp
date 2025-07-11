@@ -197,7 +197,7 @@ namespace jsh {
         jsh::cout_logger.log(jsh::LOG_LEVEL::DEBUG, "Substituted user input: ", input);
 
         // exit jsh on exit keyword
-        if(input == "exit"){
+        if(input == "exit" || input == "\nexit" || input == "exit\n" || input == "\nexit\n"){
             return false;
         }
 
