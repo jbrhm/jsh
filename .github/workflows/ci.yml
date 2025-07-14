@@ -22,7 +22,9 @@ jobs:
       uses: actions/checkout@v2
       with:
         submodules: 'true'
+    - name: Symlink Clang
+      run: sudo ln -s /usr/bin/clang++-20 /usr/bin/clang++ && sudo ln -s /usr/bin/clang-20 /usr/bin/clang
     - name: Build Google Test
       run: scripts/build_google_test
-    - name: Build Rpo
+    - name: Build Repo
       run: ./build.sh
