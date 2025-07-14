@@ -1,0 +1,22 @@
+name: CI Workflow
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  container-job:
+    runs-on: ubuntu-latest
+
+    container:
+      image: ghcr.io/jbrhm/ci:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GH_PAT }}
+      volumes:
+        - ${{ github.workspace }}:/work
+
+    steps:
+    - name: Check Out Repo
+      uses: actions/checkout@v2
