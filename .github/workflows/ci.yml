@@ -20,3 +20,5 @@ jobs:
     steps:
     - name: Check Out Repo
       uses: actions/checkout@v2
+      with:
+        submodules: 'true'
