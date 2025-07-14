@@ -23,6 +23,3 @@
 #include <termios.h>
 #include <sys/signalfd.h>
 #include <poll.h>
-
-// JSH
-#include "macros.hpp"

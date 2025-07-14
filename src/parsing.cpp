@@ -26,7 +26,7 @@ namespace jsh {
 
             // find the first instance of the $
             for(std::size_t i = last_dollar_sign_location; i < output.size(); ++i){
-                if(auto c = peek_char(output, i); c && c.value() == '$'){
+                if(auto chr = peek_char(output, i); chr && chr.value() == '$'){
                     dollar_sign_location = i;
                     break;
                 }
@@ -39,7 +39,7 @@ namespace jsh {
 
             // find the first instance of the {
             for(std::size_t i = dollar_sign_location; i < output.size(); ++i){
-                if(auto c = peek_char(output, i); c && c.value() == '{'){
+                if(auto chr = peek_char(output, i); chr && chr.value() == '{'){
                     open_brace_location = i;
                     break;
                 }
@@ -57,7 +57,7 @@ namespace jsh {
 
             // find the first instance of the }
             for(std::size_t i = open_brace_location; i < output.size(); ++i){
-                if(auto c = peek_char(output, i); c && c.value() == '}'){
+                if(auto chr = peek_char(output, i); chr && chr.value() == '}'){
                     closed_brace_location = i;
                     break;
                 }
@@ -84,10 +84,10 @@ namespace jsh {
 
             // make the substitution
             std::string prefix = output.substr(0, dollar_sign_location);
-            std::string suffix = output.substr(std::min(closed_brace_location + 1, output.size()), output.size());
-            std::string var = output.substr(open_brace_location + 1, closed_brace_location - open_brace_location - 1);
+            std::string const suffix = output.substr(std::min(closed_brace_location + 1, output.size()), output.size());
+            std::string const var = output.substr(open_brace_location + 1, closed_brace_location - open_brace_location - 1);
 
-            output = prefix + environment::get_var(var.c_str()) + suffix;
+            output = prefix.append(environment::get_var(var.c_str())).append(suffix);
         }
 
         return output;

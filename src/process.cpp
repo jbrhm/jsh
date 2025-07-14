@@ -100,7 +100,7 @@ namespace jsh {
     }
 
     auto process::parse_process(std::string const& input) -> std::optional<std::unique_ptr<process_data>>{
-        // TODO: find a way to prevent this from defaulting to export
+        // TODO (john): find a way to prevent this from defaulting to export
         auto proc_data = std::make_unique<process_data>();
 
         // stack allocated variables

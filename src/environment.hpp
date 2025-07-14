@@ -1,6 +1,8 @@
 #pragma once
 
+// JSH
 #include "pch.hpp"
+#include "macros.hpp"
 
 namespace jsh {
     /**

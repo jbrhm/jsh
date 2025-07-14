@@ -5,6 +5,7 @@
 // JSH
 #include "environment.hpp"
 #include "posix_wrappers.hpp"
+#include "macros.hpp"
 
 namespace jsh {
     /**

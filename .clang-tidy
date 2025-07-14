@@ -1,18 +1,37 @@
 Checks: "*,
-        -abseil-*,
-        -altera-*,
-        -android-*,
-        -fuchsia-*,
-        -google-*,
-        -llvm*,
-        -modernize-use-trailing-return-type,
-        -zircon-*,
-        -readability-else-after-return,
-        -readability-static-accessed-through-instance,
-        -readability-avoid-const-params-in-decls,
-        -cppcoreguidelines-non-private-member-variables-in-classes,
-        -misc-non-private-member-variables-in-classes,
+        bugprone-*,
+        google-*,
+        misc-*,
+        modernize-*,
+        performance-*,
+        portability-*,
+        readability-*,
+        -llvm-header-guard,
+        -llvmlibc-implementation-in-namespace,
+        -fuchsia-trailing-return,
+        -fuchsia-default-arguments-declarations,
+        -misc-include-cleaner,
+        -llvmlibc-callee-namespace,
+        -hicpp-no-array-decay,
+        -altera-unroll-loops,
+        -altera-id-dependent-backward-branch,
+        -readability-function-cognitive-complexity,
+        -cppcoreguidelines-pro-type-vararg,hicpp-vararg,
+        -hicpp-vararg,
+        -fuchsia-overloaded-operator,
 "
-WarningsAsErrors: ''
-HeaderFilterRegex: ''
-FormatStyle:     none
+WarningsAsErrors: '*'
+
+CheckOptions:
+  - { key: readability-identifier-naming.NamespaceCase,          value: lower_case }
+  - { key: readability-identifier-naming.ClassCase,              value: lower_case  }
+  - { key: readability-identifier-naming.StructCase,             value: lower_case  }
+  - { key: readability-identifier-naming.TemplateParameterCase,  value: UPPER_CASE  }
+  - { key: readability-identifier-naming.FunctionCase,           value: lower_case  }
+  - { key: readability-identifier-naming.VariableCase,           value: lower_case }
+  - { key: readability-identifier-naming.MacroDefinitionCase,    value: UPPER_CASE }
+  - { key: readability-identifier-naming.EnumConstantCase,         value: UPPER_CASE }
+  - { key: readability-identifier-naming.ConstexprVariableCase,    value: UPPER_CASE }
+  - { key: readability-identifier-naming.GlobalConstantCase,       value: UPPER_CASE }
+  - { key: readability-identifier-naming.MemberConstantCase,       value: UPPER_CASE }
+  - { key: readability-identifier-naming.StaticConstantCase,       value: UPPER_CASE }

@@ -2,6 +2,9 @@
 
 #include "pch.hpp"
 
+static constexpr std::size_t ERR_BUF_SIZE = 100;
+inline std::array<char, ERR_BUF_SIZE> err_buf;
+
 template <typename T>
 concept printable = 
     requires(T t) {{std::cout << t};};

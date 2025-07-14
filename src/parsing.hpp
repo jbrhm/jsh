@@ -4,6 +4,7 @@
 
 // JSH
 #include "environment.hpp"
+#include "macros.hpp"
 
 namespace jsh {
     class parsing {

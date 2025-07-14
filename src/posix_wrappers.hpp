@@ -2,7 +2,6 @@
 
 // JSH
 #include "macros.hpp"
-#include <unistd.h>
 
 namespace jsh {
     /**
@@ -92,6 +91,13 @@ namespace jsh {
      * syscall_wrapper: a class full of static functions which safely wrap all the C-style syscalls
      */
     class syscall_wrapper {
+    private:
+        /**
+         * err_buf: storage location for error messages from strerror_r
+         */
+        static constexpr std::size_t ERR_BUF_SIZE = 100;
+        static std::array<char, ERR_BUF_SIZE> err_buf;
+
     public:
         /**
          * definitions for stdout, stdin, stderr file_descriptor_wrappers
@@ -184,7 +190,7 @@ namespace jsh {
         /**
          * tcgetattr_wrapper: wrapper around getting the terminal interface
          */
-        [[nodiscard]] static auto tcgetattr_wrapper(file_descriptor_wrapper const& term_fides, std::shared_ptr<termios> term_if) -> bool;
+        [[nodiscard]] static auto tcgetattr_wrapper(file_descriptor_wrapper const& term_fides, std::shared_ptr<termios> const& term_if) -> bool;
 
         /**
          * tcsetattr_wrapper: wrapper around setting the terminal interace

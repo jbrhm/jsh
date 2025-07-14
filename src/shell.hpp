@@ -8,6 +8,7 @@
 #include "parsing.hpp"
 #include "process.hpp"
 #include "job.hpp"
+#include "macros.hpp"
 
 namespace jsh {
     class shell{
