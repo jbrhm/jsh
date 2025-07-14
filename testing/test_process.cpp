@@ -132,7 +132,7 @@ TEST(TestProcess, TestExecuteBinary) {
 
     jsh::binary_data& binary = std::get<jsh::binary_data>(*binary_var);
     binary.pgid = std::make_shared<pid_t>(-1);
-    binary.is_foreground = true;
+    binary.is_foreground = false;
 
     binary.args = {"echo", "hi"};
 
