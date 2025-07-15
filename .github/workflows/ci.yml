@@ -28,5 +28,7 @@ jobs:
       run: scripts/build_google_test
     - name: Build Repo
       run: ./build.sh
-    - name: Check test cases
+    - name: Check Test Cases
       run: build/test_suite
+    - name: Check Tidy
+      run: ./style.sh

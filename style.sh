@@ -1,5 +1,7 @@
 #! /usr/bin/env bash
 
+set -euox pipefail
+
 # Find clang-tidy
 
 readonly CLANG_TIDY_PATH=$(which clang-tidy)
@@ -16,6 +18,7 @@ touch $TMP_ERROR
 
 for FOLDER in "${FOLDERS[@]}"; do
   find "${FOLDER}" -regex '.*\.\(cpp\|hpp\|h\)' | while read -r file; do
-	"${CLANG_TIDY_PATH}" "${CLANG_TIDY_ARGS[@]}" "$file"
+    echo "Tidying $file"
+    eval "${CLANG_TIDY_PATH}" "${CLANG_TIDY_ARGS[@]}" "$file"
   done
 done

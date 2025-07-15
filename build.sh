@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -Eeuo pipefail
+set -euox pipefail
 
 if test -d build; then
     echo "Build Directory Exists..."

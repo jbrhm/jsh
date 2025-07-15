@@ -7,14 +7,14 @@
 
 TEST(TestJob, TestParseJobNoOperators){
     // input
-    std::string input = "echo hi";
+    std::string const input = "echo hi";
 
     auto job = jsh::job::parse_job(input);
 
     // ensure correct sizing
-    ASSERT_TRUE(job->process_seq.size() == 0);
+    ASSERT_TRUE(job->process_seq.empty());
     ASSERT_TRUE(job->input_seq.size() == 1);
-    ASSERT_TRUE(job->operator_seq.size() == 0);
+    ASSERT_TRUE(job->operator_seq.empty());
 
     // ensure correct contents for input and operator sequence
     ASSERT_STREQ(job->input_seq[0].c_str(), "echo hi");
@@ -22,12 +22,12 @@ TEST(TestJob, TestParseJobNoOperators){
 
 TEST(TestJob, TestParseJobAndBasic1){
     // input
-    std::string input = "echo hi && echo hi";
+    std::string const input = "echo hi && echo hi";
 
     auto job = jsh::job::parse_job(input);
 
     // ensure correct sizing
-    ASSERT_TRUE(job->process_seq.size() == 0);
+    ASSERT_TRUE(job->process_seq.empty());
     ASSERT_TRUE(job->input_seq.size() == 2);
     ASSERT_TRUE(job->operator_seq.size() == 1);
 
@@ -39,12 +39,12 @@ TEST(TestJob, TestParseJobAndBasic1){
 
 TEST(TestJob, TestParseJobAndBasic2){
     // input
-    std::string input = "echo hi&& echo hi";
+    std::string const input = "echo hi&& echo hi";
 
     auto job = jsh::job::parse_job(input);
 
     // ensure correct sizing
-    ASSERT_TRUE(job->process_seq.size() == 0);
+    ASSERT_TRUE(job->process_seq.empty());
     ASSERT_TRUE(job->input_seq.size() == 2);
     ASSERT_TRUE(job->operator_seq.size() == 1);
 
@@ -56,12 +56,12 @@ TEST(TestJob, TestParseJobAndBasic2){
 
 TEST(TestJob, TestParseJobAndBasic3){
     // input
-    std::string input = "echo hi &&echo hi";
+    std::string const input = "echo hi &&echo hi";
 
     auto job = jsh::job::parse_job(input);
 
     // ensure correct sizing
-    ASSERT_TRUE(job->process_seq.size() == 0);
+    ASSERT_TRUE(job->process_seq.empty());
     ASSERT_TRUE(job->input_seq.size() == 2);
     ASSERT_TRUE(job->operator_seq.size() == 1);
 
@@ -73,12 +73,12 @@ TEST(TestJob, TestParseJobAndBasic3){
 
 TEST(TestJob, TestParseJobAndBasic4){
     // input
-    std::string input = "echo hi&&echo hi";
+    std::string const input = "echo hi&&echo hi";
 
     auto job = jsh::job::parse_job(input);
 
     // ensure correct sizing
-    ASSERT_TRUE(job->process_seq.size() == 0);
+    ASSERT_TRUE(job->process_seq.empty());
     ASSERT_TRUE(job->input_seq.size() == 2);
     ASSERT_TRUE(job->operator_seq.size() == 1);
 
@@ -90,12 +90,12 @@ TEST(TestJob, TestParseJobAndBasic4){
 
 TEST(TestJob, TestParseJobAndEdge1){
     // input
-    std::string input = "&&";
+    std::string const input = "&&";
 
     auto job = jsh::job::parse_job(input);
 
     // ensure correct sizing
-    ASSERT_TRUE(job->process_seq.size() == 0);
+    ASSERT_TRUE(job->process_seq.empty());
     ASSERT_TRUE(job->input_seq.size() == 2);
     ASSERT_TRUE(job->operator_seq.size() == 1);
 
@@ -107,12 +107,12 @@ TEST(TestJob, TestParseJobAndEdge1){
 
 TEST(TestJob, TestParseJobAndEdge2){
     // input
-    std::string input = "&&&";
+    std::string const input = "&&&";
 
     auto job = jsh::job::parse_job(input);
 
     // ensure correct sizing
-    ASSERT_TRUE(job->process_seq.size() == 0);
+    ASSERT_TRUE(job->process_seq.empty());
     ASSERT_TRUE(job->input_seq.size() == 2);
     ASSERT_TRUE(job->operator_seq.size() == 1);
 
@@ -124,12 +124,12 @@ TEST(TestJob, TestParseJobAndEdge2){
 
 TEST(TestJob, TestParseJobAndEdge3){
     // input
-    std::string input = "&&&&";
+    std::string const input = "&&&&";
 
     auto job = jsh::job::parse_job(input);
 
     // ensure correct sizing
-    ASSERT_TRUE(job->process_seq.size() == 0);
+    ASSERT_TRUE(job->process_seq.empty());
     ASSERT_TRUE(job->input_seq.size() == 3);
     ASSERT_TRUE(job->operator_seq.size() == 2);
 
@@ -143,12 +143,12 @@ TEST(TestJob, TestParseJobAndEdge3){
 
 TEST(TestJob, TestParseJobAndEdge4){
     // input
-    std::string input = "&&a&& command";
+    std::string const input = "&&a&& command";
 
     auto job = jsh::job::parse_job(input);
 
     // ensure correct sizing
-    ASSERT_TRUE(job->process_seq.size() == 0);
+    ASSERT_TRUE(job->process_seq.empty());
     ASSERT_TRUE(job->input_seq.size() == 3);
     ASSERT_TRUE(job->operator_seq.size() == 2);
 
@@ -162,12 +162,12 @@ TEST(TestJob, TestParseJobAndEdge4){
 
 TEST(TestJob, TestParseJobAndEdge5){
     // input
-    std::string input = "aa&& command";
+    std::string const input = "aa&& command";
 
     auto job = jsh::job::parse_job(input);
 
     // ensure correct sizing
-    ASSERT_TRUE(job->process_seq.size() == 0);
+    ASSERT_TRUE(job->process_seq.empty());
     ASSERT_TRUE(job->input_seq.size() == 2);
     ASSERT_TRUE(job->operator_seq.size() == 1);
 
@@ -179,12 +179,12 @@ TEST(TestJob, TestParseJobAndEdge5){
 
 TEST(TestJob, TestParseJobPipeBasic1){
     // input
-    std::string input = "echo hi | echo hi";
+    std::string const input = "echo hi | echo hi";
 
     auto job = jsh::job::parse_job(input);
 
     // ensure correct sizing
-    ASSERT_TRUE(job->process_seq.size() == 0);
+    ASSERT_TRUE(job->process_seq.empty());
     ASSERT_TRUE(job->input_seq.size() == 2);
     ASSERT_TRUE(job->operator_seq.size() == 1);
 
@@ -196,12 +196,12 @@ TEST(TestJob, TestParseJobPipeBasic1){
 
 TEST(TestJob, TestParseJobPipeBasic2){
     // input
-    std::string input = "echo hi| echo hi";
+    std::string const input = "echo hi| echo hi";
 
     auto job = jsh::job::parse_job(input);
 
     // ensure correct sizing
-    ASSERT_TRUE(job->process_seq.size() == 0);
+    ASSERT_TRUE(job->process_seq.empty());
     ASSERT_TRUE(job->input_seq.size() == 2);
     ASSERT_TRUE(job->operator_seq.size() == 1);
 
@@ -213,12 +213,12 @@ TEST(TestJob, TestParseJobPipeBasic2){
 
 TEST(TestJob, TestParseJobPipeBasic3){
     // input
-    std::string input = "echo hi |echo hi";
+    std::string const input = "echo hi |echo hi";
 
     auto job = jsh::job::parse_job(input);
 
     // ensure correct sizing
-    ASSERT_TRUE(job->process_seq.size() == 0);
+    ASSERT_TRUE(job->process_seq.empty());
     ASSERT_TRUE(job->input_seq.size() == 2);
     ASSERT_TRUE(job->operator_seq.size() == 1);
 
@@ -230,12 +230,12 @@ TEST(TestJob, TestParseJobPipeBasic3){
 
 TEST(TestJob, TestParseJobPipeBasic4){
     // input
-    std::string input = "echo hi|echo hi";
+    std::string const input = "echo hi|echo hi";
 
     auto job = jsh::job::parse_job(input);
 
     // ensure correct sizing
-    ASSERT_TRUE(job->process_seq.size() == 0);
+    ASSERT_TRUE(job->process_seq.empty());
     ASSERT_TRUE(job->input_seq.size() == 2);
     ASSERT_TRUE(job->operator_seq.size() == 1);
 
@@ -247,12 +247,12 @@ TEST(TestJob, TestParseJobPipeBasic4){
 
 TEST(TestJob, TestParseJobPipeEdge1){
     // input
-    std::string input = "|";
+    std::string const input = "|";
 
     auto job = jsh::job::parse_job(input);
 
     // ensure correct sizing
-    ASSERT_TRUE(job->process_seq.size() == 0);
+    ASSERT_TRUE(job->process_seq.empty());
     ASSERT_TRUE(job->input_seq.size() == 2);
     ASSERT_TRUE(job->operator_seq.size() == 1);
 
@@ -265,12 +265,12 @@ TEST(TestJob, TestParseJobPipeEdge1){
 
 TEST(TestJob, TestParseJobPipeEdge2){
     // input
-    std::string input = "||";
+    std::string const input = "||";
 
     auto job = jsh::job::parse_job(input);
 
     // ensure correct sizing
-    ASSERT_TRUE(job->process_seq.size() == 0);
+    ASSERT_TRUE(job->process_seq.empty());
     ASSERT_TRUE(job->input_seq.size() == 3);
     ASSERT_TRUE(job->operator_seq.size() == 2);
 
@@ -284,12 +284,12 @@ TEST(TestJob, TestParseJobPipeEdge2){
 
 TEST(TestJob, TestParseJobPipeEdge3){
     // input
-    std::string input = "|a| command";
+    std::string const input = "|a| command";
 
     auto job = jsh::job::parse_job(input);
 
     // ensure correct sizing
-    ASSERT_TRUE(job->process_seq.size() == 0);
+    ASSERT_TRUE(job->process_seq.empty());
     ASSERT_TRUE(job->input_seq.size() == 3);
     ASSERT_TRUE(job->operator_seq.size() == 2);
 
@@ -303,12 +303,12 @@ TEST(TestJob, TestParseJobPipeEdge3){
 
 TEST(TestJob, TestParseJobPipeEdge4){
     // input
-    std::string input = "aa| command";
+    std::string const input = "aa| command";
 
     auto job = jsh::job::parse_job(input);
 
     // ensure correct sizing
-    ASSERT_TRUE(job->process_seq.size() == 0);
+    ASSERT_TRUE(job->process_seq.empty());
     ASSERT_TRUE(job->input_seq.size() == 2);
     ASSERT_TRUE(job->operator_seq.size() == 1);
 
@@ -345,7 +345,7 @@ TEST(TestJob, TestExecuteJobBasic1){
     std::size_t idx = 0;
     for(; num_bytes_read.has_value() && num_bytes_read.value() != 0; ++idx){
         char chr = '\0';
-        num_bytes_read = jsh::syscall_wrapper::read_wrapper(fides.value(), &chr, sizeof(chr));
+        num_bytes_read = jsh::syscall_wrapper::read_wrapper(fides.value(), &chr, sizeof(chr)); // NOLINT assert checks this .value()
 
         // check for success
         if(!num_bytes_read.has_value()){
@@ -360,12 +360,12 @@ TEST(TestJob, TestExecuteJobBasic1){
 
 TEST(TestJob, TestExecuteJobBasic2){
     // Test constants
-    static constexpr char const* file = "testing/tmp/file";
-    static constexpr char const* cmd = "echo hi test2 yo | grep -i hi > testing/tmp/file";
-    static constexpr char const* corr = "hi test2 yo\n";
+    static constexpr char const* FILE = "testing/tmp/file";
+    static constexpr char const* CMD = "echo hi test2 yo | grep -i hi > testing/tmp/file";
+    static constexpr char const* CORR = "hi test2 yo\n";
 
     // create a job
-    auto job = jsh::job::parse_job(cmd);
+    auto job = jsh::job::parse_job(CMD);
 
     // not actually in the terminal so we use background processes
     job->is_foreground = false;
@@ -374,39 +374,40 @@ TEST(TestJob, TestExecuteJobBasic2){
     jsh::job::execute_job(job);
 
     // open the file
-    std::optional<jsh::file_descriptor_wrapper> fides = jsh::syscall_wrapper::open_wrapper(file, O_RDONLY, 0777);
+    static constexpr mode_t MODE = 0777;
+    std::optional<jsh::file_descriptor_wrapper> fides = jsh::syscall_wrapper::open_wrapper(FILE, O_RDONLY, MODE);
 
     // check to see if open succeeded
     ASSERT_TRUE(fides.has_value());
 
     // read from the pipe
-    std::size_t i = 0;
+    std::size_t idx = 0;
     std::optional<ssize_t> num_bytes_read = std::make_optional<ssize_t>(1);
-    for(; num_bytes_read.has_value() && num_bytes_read.value() != 0; ++i){
+    for(; num_bytes_read.has_value() && num_bytes_read.value() != 0; ++idx){
         char chr = '\0';
-        num_bytes_read = jsh::syscall_wrapper::read_wrapper(fides.value(), &chr, sizeof(chr));
+        num_bytes_read = jsh::syscall_wrapper::read_wrapper(fides.value(), &chr, sizeof(chr)); // NOLINT assert checks this .value()
 
         // check for success
         if(!num_bytes_read.has_value()){
             return;
         }
         
-        ASSERT_TRUE(i < std::strlen(corr) + 1);
-        EXPECT_EQ(chr, corr[i]);
+        ASSERT_TRUE(idx < std::strlen(CORR) + 1);
+        EXPECT_EQ(chr, CORR[idx]);
     }
-    ASSERT_EQ(i, std::strlen(corr) + 1);
+    ASSERT_EQ(idx, std::strlen(CORR) + 1);
 }
 
 TEST(TestJob, TestExecuteJobBasic3){
     // Test constants
-    static constexpr char const* file = "testing/tmp/file";
-    static constexpr char const* file2 = "testing/tmp/file2";
-    static constexpr char const* cmd = "echo linux test3 > testing/tmp/file2 && echo test3 hi yo | grep -i hi > testing/tmp/file";
-    static constexpr char const* corr = "test3 hi yo\n";
-    static constexpr char const* corr2 = "linux test3\n";
+    static constexpr char const* FILE = "testing/tmp/file";
+    static constexpr char const* FILE2 = "testing/tmp/file2";
+    static constexpr char const* CMD = "echo linux test3 > testing/tmp/file2 && echo test3 hi yo | grep -i hi > testing/tmp/file";
+    static constexpr char const* CORR = "test3 hi yo\n";
+    static constexpr char const* CORR2 = "linux test3\n";
 
     // parse job
-    auto job = jsh::job::parse_job(cmd);
+    auto job = jsh::job::parse_job(CMD);
 
     // not actually in the terminal so we use background processes
     job->is_foreground = false;
@@ -414,52 +415,56 @@ TEST(TestJob, TestExecuteJobBasic3){
     // execute the job
     jsh::job::execute_job(job);
 
+    static constexpr mode_t MODE = 0777;
+
     { // fides wrapper
         // open the file
-        std::optional<jsh::file_descriptor_wrapper> fides = jsh::syscall_wrapper::open_wrapper(file, O_RDONLY, 0777);
+        std::optional<jsh::file_descriptor_wrapper> fides = jsh::syscall_wrapper::open_wrapper(FILE, O_RDONLY, MODE);
 
         // check to see if open succeeded
         ASSERT_TRUE(fides.has_value());
 
         // read from the pipe
         std::optional<ssize_t> num_bytes_read = std::make_optional<ssize_t>(1);
-        std::size_t i = 0;
-        for(; num_bytes_read.has_value() && num_bytes_read.value() != 0; ++i){
+        std::size_t idx = 0;
+        for(; num_bytes_read.has_value() && num_bytes_read.value() != 0; ++idx){
             char chr = '\0';
-            num_bytes_read = jsh::syscall_wrapper::read_wrapper(fides.value(), &chr, sizeof(chr));
+            num_bytes_read = jsh::syscall_wrapper::read_wrapper(fides.value(), &chr, sizeof(chr)); // NOLINT assert checks this .value()
 
             // check for success
             if(!num_bytes_read.has_value()){
                 return;
             }
             
-            ASSERT_TRUE(i < std::strlen(corr) + 1);
-	    ASSERT_EQ(chr, corr[i]);
+            ASSERT_TRUE(idx < std::strlen(CORR) + 1);
+	    ASSERT_EQ(chr, CORR[idx]);
         }
 
-        ASSERT_EQ(i, std::strlen(corr) + 1);
+        ASSERT_EQ(idx, std::strlen(CORR) + 1);
     }
 
     { // fides wrapper
         // open the file
-        std::optional<jsh::file_descriptor_wrapper> fides = jsh::syscall_wrapper::open_wrapper(file2, O_RDONLY, 0777);
+        std::optional<jsh::file_descriptor_wrapper> fides = jsh::syscall_wrapper::open_wrapper(FILE2, O_RDONLY, MODE);
 
         // check to see if open succeeded
         ASSERT_TRUE(fides.has_value());
 
         // read from the pipe
         std::optional<ssize_t> num_bytes_read = std::make_optional<ssize_t>(1);
-        for(std::size_t i = 0; num_bytes_read.has_value() && num_bytes_read.value() != 0; ++i){
+        std::size_t idx = 0;
+        for(; num_bytes_read.has_value() && num_bytes_read.value() != 0; ++idx){
             char chr = '\0';
-            num_bytes_read = jsh::syscall_wrapper::read_wrapper(fides.value(), &chr, sizeof(chr)); // NOLINT
+            num_bytes_read = jsh::syscall_wrapper::read_wrapper(fides.value(), &chr, sizeof(chr)); // NOLINT the assert checks this access
 
             // check for success
             if(!num_bytes_read.has_value()){
                 return;
             }
             
-            ASSERT_TRUE(i < std::strlen(corr2) + 1);
-            EXPECT_EQ(chr, corr2[i]);
+            ASSERT_TRUE(idx < std::strlen(CORR2) + 1);
+            EXPECT_EQ(chr, CORR2[idx]);
         }
+        ASSERT_EQ(idx, std::strlen(CORR2) + 1);
     }
 }

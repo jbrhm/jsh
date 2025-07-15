@@ -2,12 +2,12 @@
 #include <gtest/gtest.h>
 
 // JSH
-#include "process.hpp"
 #include "posix_wrappers.hpp"
+#include "process.hpp"
 
 TEST(TestProcess, TestExportBasic1) {
     // input from user
-    std::string input = "export var=val";
+    std::string const input = "export var=val";
 
     auto proc_data = jsh::process::parse_process(input);
 
@@ -15,17 +15,17 @@ TEST(TestProcess, TestExportBasic1) {
     ASSERT_TRUE(proc_data.has_value());
 
     // should hold a expor_data struct
-    ASSERT_TRUE(std::holds_alternative<jsh::export_data>(*(proc_data.value())));
+    ASSERT_TRUE(std::holds_alternative<jsh::export_data>(*(proc_data.value()))); // NOLINT assert catches this .value()
 
     // varify the contents of the data
-    auto& data = std::get<jsh::export_data>(*(proc_data).value());
+    auto& data = std::get<jsh::export_data>(*(proc_data).value()); // NOLINT assert catches this .value()
     ASSERT_STREQ(data.name.c_str(), "var");
     ASSERT_STREQ(data.val.c_str(), "val");
 }
 
 TEST(TestProcess, TestExportBasic2) {
     // input from user
-    std::string input = "export v=v";
+    std::string const input = "export v=v";
 
     auto proc_data = jsh::process::parse_process(input);
 
@@ -33,17 +33,17 @@ TEST(TestProcess, TestExportBasic2) {
     ASSERT_TRUE(proc_data.has_value());
 
     // should hold a expor_data struct
-    ASSERT_TRUE(std::holds_alternative<jsh::export_data>(*(proc_data.value())));
+    ASSERT_TRUE(std::holds_alternative<jsh::export_data>(*(proc_data.value()))); // NOLINT assert catches this .value()
 
     // varify the contents of the data
-    auto& data = std::get<jsh::export_data>(*(proc_data).value());
+    auto& data = std::get<jsh::export_data>(*(proc_data).value()); // NOLINT assert catches this .value()
     ASSERT_STREQ(data.name.c_str(), "v");
     ASSERT_STREQ(data.val.c_str(), "v");
 }
 
 TEST(TestProcess, TestExportBasic3) {
     // input from user
-    std::string input = "export\tv=v";
+    std::string const input = "export\tv=v";
 
     auto proc_data = jsh::process::parse_process(input);
 
@@ -51,17 +51,17 @@ TEST(TestProcess, TestExportBasic3) {
     ASSERT_TRUE(proc_data.has_value());
 
     // should hold a expor_data struct
-    ASSERT_TRUE(std::holds_alternative<jsh::export_data>(*(proc_data.value())));
+    ASSERT_TRUE(std::holds_alternative<jsh::export_data>(*(proc_data.value()))); // NOLINT assert catches this .value()
 
     // varify the contents of the data
-    auto& data = std::get<jsh::export_data>(*(proc_data).value());
+    auto& data = std::get<jsh::export_data>(*(proc_data).value()); // NOLINT assert catches this .value()
     ASSERT_STREQ(data.name.c_str(), "v");
     ASSERT_STREQ(data.val.c_str(), "v");
 }
 
 TEST(TestProcess, TestMalformed1) {
     // input from user
-    std::string input = "export v=";
+    std::string const input = "export v=";
 
     auto proc_data = jsh::process::parse_process(input);
 
@@ -71,7 +71,7 @@ TEST(TestProcess, TestMalformed1) {
 
 TEST(TestProcess, TestMalformed2) {
     // input from user
-    std::string input = "export =v";
+    std::string const input = "export =v";
 
     auto proc_data = jsh::process::parse_process(input);
 
@@ -81,7 +81,7 @@ TEST(TestProcess, TestMalformed2) {
 
 TEST(TestProcess, TestMalformed3) {
     // input from user
-    std::string input = "export =";
+    std::string const input = "export =";
 
     auto proc_data = jsh::process::parse_process(input);
 
@@ -91,7 +91,7 @@ TEST(TestProcess, TestMalformed3) {
 
 TEST(TestProcess, TestMalformed4) {
     // input from user
-    std::string input = "export";
+    std::string const input = "export";
 
     auto proc_data = jsh::process::parse_process(input);
 
@@ -101,7 +101,7 @@ TEST(TestProcess, TestMalformed4) {
 
 TEST(TestProcess, TestExtra) {
     // input from user
-    std::string input = "export var=val awdasdawdsawd";
+    std::string const input = "export var=val awdasdawdsawd";
 
     auto proc_data = jsh::process::parse_process(input);
 
@@ -109,10 +109,10 @@ TEST(TestProcess, TestExtra) {
     ASSERT_TRUE(proc_data.has_value());
 
     // should hold a expor_data struct
-    ASSERT_TRUE(std::holds_alternative<jsh::export_data>(*(proc_data.value())));
+    ASSERT_TRUE(std::holds_alternative<jsh::export_data>(*(proc_data.value()))); // NOLINT assert catches this .value()
 
     // varify the contents of the data
-    auto& data = std::get<jsh::export_data>(*(proc_data).value());
+    auto& data = std::get<jsh::export_data>(*(proc_data).value()); // NOLINT assert catches this .value()
     ASSERT_STREQ(data.name.c_str(), "var");
     ASSERT_STREQ(data.val.c_str(), "val");
 }
@@ -121,8 +121,10 @@ TEST(TestProcess, TestExecuteBinary) {
     // make a fifo to store the output from standard out
     std::optional<std::vector<jsh::file_descriptor_wrapper>> pipe_fds_op = jsh::syscall_wrapper::pipe_wrapper();
     ASSERT_TRUE(pipe_fds_op.has_value());
-    ASSERT_TRUE(pipe_fds_op.value().size() == 2);
-    std::vector<jsh::file_descriptor_wrapper> pipe_fds = std::move(pipe_fds_op.value());
+    ASSERT_TRUE(pipe_fds_op.value().size() == 2); // NOLINT assert catches this .value()
+
+    std::vector<jsh::file_descriptor_wrapper> pipe_fds = std::move(pipe_fds_op.value()); // NOLINT assert catches this .value()
+
     ASSERT_TRUE(pipe_fds.size() == 2);
 
     // create the command for the binary data
@@ -152,7 +154,8 @@ TEST(TestProcess, TestExecuteBinary) {
         ASSERT_TRUE(rea.has_value());
 
         // add the number of bytes read
-        total_read += static_cast<int>(rea.value());
+        total_read += static_cast<int>(rea.value()); // NOLINT assert catches this .value()
+
     }
 
     // the pipe and buffer should now contain hi
@@ -179,7 +182,7 @@ TEST(TestProcess, TestExecuteExport) {
 }
 
 TEST(TestProcess, TestInputRedirectionParsingBasic1){
-    std::string input = "grep hi < testing/tmp/file";
+    std::string const input = "grep hi < testing/tmp/file";
 
     auto proc_data = jsh::process::parse_process(input);
     
@@ -187,15 +190,15 @@ TEST(TestProcess, TestInputRedirectionParsingBasic1){
     ASSERT_TRUE(proc_data.has_value());
 
     // make sure it contains binary data
-    ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value()));
+    ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value())); // NOLINT assert catches this .value()
     
     // get reference to underlying data
-    auto& data = std::get<jsh::binary_data>(*proc_data.value());
+    auto& data = std::get<jsh::binary_data>(*proc_data.value()); // NOLINT assert catches this .value()
     ASSERT_NE(data.stdin, jsh::syscall_wrapper::stdin_file_descriptor);
 }
 
 TEST(TestProcess, TestInputRedirectionParsingBasic2){
-    std::string input = "echo hi hi < testing/tmp/file";
+    std::string const input = "echo hi hi < testing/tmp/file";
 
     auto proc_data = jsh::process::parse_process(input);
     
@@ -203,15 +206,15 @@ TEST(TestProcess, TestInputRedirectionParsingBasic2){
     ASSERT_TRUE(proc_data.has_value());
 
     // make sure it contains binary data
-    ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value()));
+    ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value())); // NOLINT assert catches this .value()
     
     // get reference to underlying data
-    auto& data = std::get<jsh::binary_data>(*proc_data.value());
+    auto& data = std::get<jsh::binary_data>(*proc_data.value()); // NOLINT assert catches this .value()
     ASSERT_NE(data.stdin, jsh::syscall_wrapper::stdin_file_descriptor);
 }
 
 TEST(TestProcess, TestInputRedirectionParsingBasic3){
-    std::string input = "echo hi hi <\ttesting/tmp/file more args";
+    std::string const input = "echo hi hi <\ttesting/tmp/file more args";
 
     auto proc_data = jsh::process::parse_process(input);
     
@@ -219,15 +222,15 @@ TEST(TestProcess, TestInputRedirectionParsingBasic3){
     ASSERT_TRUE(proc_data.has_value());
 
     // make sure it contains binary data
-    ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value()));
+    ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value())); // NOLINT assert catches this .value()
     
     // get reference to underlying data
-    auto& data = std::get<jsh::binary_data>(*proc_data.value());
+    auto& data = std::get<jsh::binary_data>(*proc_data.value()); // NOLINT assert catches this .value()
     ASSERT_NE(data.stdin, jsh::syscall_wrapper::stdin_file_descriptor);
 }
 
 TEST(TestProcess, TestInputRedirectionParsingMalformed1){
-    std::string input = "echo hi hi <";
+    std::string const input = "echo hi hi <";
 
     auto proc_data = jsh::process::parse_process(input);
     
@@ -236,7 +239,7 @@ TEST(TestProcess, TestInputRedirectionParsingMalformed1){
 }
 
 TEST(TestProcess, TestInputRedirectionParsingMalformed2){
-    std::string input = "echo hi hi < def/not/a/path/to/a/file";
+    std::string const input = "echo hi hi < def/not/a/path/to/a/file";
 
     auto proc_data = jsh::process::parse_process(input);
     
@@ -245,7 +248,7 @@ TEST(TestProcess, TestInputRedirectionParsingMalformed2){
 }
 
 TEST(TestProcess, TestInputRedirectionParsingMalformed3){
-    std::string input = "echo hi hi < testing/tmp/not_real";
+    std::string const input = "echo hi hi < testing/tmp/not_real";
 
     auto proc_data = jsh::process::parse_process(input);
     
@@ -254,7 +257,7 @@ TEST(TestProcess, TestInputRedirectionParsingMalformed3){
 }
 
 TEST(TestProcess, TestOutputRedirectionParsingBasic1){
-    std::string input = "grep hi > testing/tmp/file";
+    std::string const input = "grep hi > testing/tmp/file";
 
     auto proc_data = jsh::process::parse_process(input);
     
@@ -262,15 +265,15 @@ TEST(TestProcess, TestOutputRedirectionParsingBasic1){
     ASSERT_TRUE(proc_data.has_value());
 
     // make sure it contains binary data
-    ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value()));
+    ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value())); // NOLINT assert catches this .value()
     
     // get reference to underlying data
-    auto& data = std::get<jsh::binary_data>(*proc_data.value());
+    auto& data = std::get<jsh::binary_data>(*proc_data.value()); // NOLINT assert catches this .value()
     ASSERT_NE(data.stdout, jsh::syscall_wrapper::stdout_file_descriptor);
 }
 
 TEST(TestProcess, TestOutputRedirectionParsingBasic2){
-    std::string input = "echo hi hi > testing/tmp/file";
+    std::string const input = "echo hi hi > testing/tmp/file";
 
     auto proc_data = jsh::process::parse_process(input);
     
@@ -278,15 +281,15 @@ TEST(TestProcess, TestOutputRedirectionParsingBasic2){
     ASSERT_TRUE(proc_data.has_value());
 
     // make sure it contains binary data
-    ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value()));
+    ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value())); // NOLINT assert catches this .value()
     
     // get reference to underlying data
-    auto& data = std::get<jsh::binary_data>(*proc_data.value());
+    auto& data = std::get<jsh::binary_data>(*proc_data.value()); // NOLINT assert catches this .value()
     ASSERT_NE(data.stdout, jsh::syscall_wrapper::stdout_file_descriptor);
 }
 
 TEST(TestProcess, TestOutputRedirectionParsingBasic3){
-    std::string input = "echo hi hi >\ttesting/tmp/file more args";
+    std::string const input = "echo hi hi >\ttesting/tmp/file more args";
 
     auto proc_data = jsh::process::parse_process(input);
     
@@ -294,15 +297,15 @@ TEST(TestProcess, TestOutputRedirectionParsingBasic3){
     ASSERT_TRUE(proc_data.has_value());
 
     // make sure it contains binary data
-    ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value()));
+    ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value())); // NOLINT assert catches this .value()
     
     // get reference to underlying data
-    auto& data = std::get<jsh::binary_data>(*proc_data.value());
+    auto& data = std::get<jsh::binary_data>(*proc_data.value()); // NOLINT assert catches this .value()
     ASSERT_NE(data.stdout, jsh::syscall_wrapper::stdout_file_descriptor);
 }
 
 TEST(TestProcess, TestOutputRedirectionParsingMalformed1){
-    std::string input = "echo hi hi >";
+    std::string const input = "echo hi hi >";
 
     auto proc_data = jsh::process::parse_process(input);
     
@@ -311,7 +314,7 @@ TEST(TestProcess, TestOutputRedirectionParsingMalformed1){
 }
 
 TEST(TestProcess, TestOutputRedirectionParsingMalformed2){
-    std::string input = "echo hi hi > def/not/a/path/to/a/file";
+    std::string const input = "echo hi hi > def/not/a/path/to/a/file";
 
     auto proc_data = jsh::process::parse_process(input);
     
