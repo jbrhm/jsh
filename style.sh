@@ -19,6 +19,6 @@ touch $TMP_ERROR
 for FOLDER in "${FOLDERS[@]}"; do
   find "${FOLDER}" -regex '.*\.\(cpp\|hpp\|h\)' | while read -r file; do
     echo "Tidying $file"
-    eval "${CLANG_TIDY_PATH}" "${CLANG_TIDY_ARGS[@]}" "$file"
+    "${CLANG_TIDY_PATH}" "${CLANG_TIDY_ARGS[@]}" "$file"
   done
 done
