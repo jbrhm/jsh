@@ -13,7 +13,7 @@ TEST(TestParsing, TestPeekValid) {
 
     // peek a
     ASSERT_TRUE(jsh::parsing::peek_char(input, 0) == 'a');
-    
+
     // peek z
     ASSERT_TRUE(jsh::parsing::peek_char(input, 25) == 'z');
 
@@ -33,8 +33,9 @@ TEST(TestParsing, TestPeekInvalid) {
     std::string const zero{};
 
     // make sure that npos returns nullopt
-    ASSERT_TRUE(jsh::parsing::peek_char(input, std::string::npos) == std::nullopt);
-    
+    ASSERT_TRUE(jsh::parsing::peek_char(input, std::string::npos) ==
+                std::nullopt);
+
     // check upper bound
     ASSERT_TRUE(jsh::parsing::peek_char(zero, 0) == std::nullopt);
 
@@ -62,7 +63,7 @@ TEST(TestParsing, TestSubstitutionBasic) {
     ASSERT_TRUE(jsh::parsing::variable_substitution("abc") == "abc");
 }
 
-TEST(TestParsing, TestEnvironmentVariableSubstitutions){
+TEST(TestParsing, TestEnvironmentVariableSubstitutions) {
     // set the environment variable
     jsh::environment::set_var("var", "val");
     jsh::environment::set_var("var2", "${var}");
@@ -83,30 +84,34 @@ TEST(TestParsing, TestEnvironmentVariableSubstitutions){
     ASSERT_TRUE(jsh::parsing::variable_substitution("abc") == "abc");
 }
 
-TEST(TestParsing, TestMaxSubstitutions){
+TEST(TestParsing, TestMaxSubstitutions) {
     // set the environment variable
     jsh::environment::set_var("var", "${var2}");
     jsh::environment::set_var("var2", "${var}");
 
     // infinite looping
-    ASSERT_TRUE(jsh::parsing::variable_substitution("abc${var2}") == "abc${var2}");
+    ASSERT_TRUE(jsh::parsing::variable_substitution("abc${var2}") ==
+                "abc${var2}");
 }
 
-TEST(TestParsing, TestMalformed){
+TEST(TestParsing, TestMalformed) {
     // set the environment variable
     jsh::environment::set_var("var", "val");
 
     // test extra characters one
-    ASSERT_EQ(jsh::parsing::variable_substitution("${NOT SET}a$bc${var}"), "a$bcval");
+    ASSERT_EQ(jsh::parsing::variable_substitution("${NOT SET}a$bc${var}"),
+              "a$bcval");
 
     // test extra characters two
-    ASSERT_EQ(jsh::parsing::variable_substitution("${NOT SET}a$${var}"), "a$val");
+    ASSERT_EQ(jsh::parsing::variable_substitution("${NOT SET}a$${var}"),
+              "a$val");
 
     // test extra characters three
     ASSERT_EQ(jsh::parsing::variable_substitution("${NOT SET}a${${var}"), "a");
 
     // test extra characters four
-    ASSERT_EQ(jsh::parsing::variable_substitution("${NOT SET}a$a{${var}"), "a$a{val");
+    ASSERT_EQ(jsh::parsing::variable_substitution("${NOT SET}a$a{${var}"),
+              "a$a{val");
 
     // test extra characters five
     ASSERT_EQ(jsh::parsing::variable_substitution("${val"), "${val");
