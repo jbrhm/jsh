@@ -12,11 +12,11 @@ if [ $# -eq 0 ] || [ "$1" != "--fix" ]; then
   CLANG_FORMAT_ARGS=("--dry-run" "--Werror")
 fi
 
-# Folders to analyzer
+# Folders to analyze
 
 readonly FOLDERS=("./src" "./testing")
 
-# Run clang-tidy on all src and testing
+# Run clang-tidy and clang-format on all src and testing
 readonly TMP_ERROR="/tmp/err_out.txt"
 mkdir -p /tmp
 touch $TMP_ERROR 
