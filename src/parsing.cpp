@@ -1,8 +1,7 @@
 #include "parsing.hpp"
 
 namespace jsh {
-auto parsing::peek_char(std::string const& str, std::size_t index)
-    -> std::optional<char> {
+auto parsing::peek_char(std::string const& str, std::size_t index) -> std::optional<char> {
     // check conditions for invalidity
     if (index == std::string::npos || index >= str.size()) {
         return std::nullopt;
@@ -26,8 +25,7 @@ auto parsing::variable_substitution(std::string const& input) -> std::string {
         std::size_t closed_brace_location = std::string::npos;
 
         // find the first instance of the $
-        for (std::size_t i = last_dollar_sign_location; i < output.size();
-             ++i) {
+        for (std::size_t i = last_dollar_sign_location; i < output.size(); ++i) {
             if (auto chr = peek_char(output, i); chr && chr.value() == '$') {
                 dollar_sign_location = i;
                 break;
@@ -47,14 +45,12 @@ auto parsing::variable_substitution(std::string const& input) -> std::string {
             }
         }
 
-        // the addition here is not going to overflow since dollar_sign_location
-        // cannot be std::string::npos
+        // the addition here is not going to overflow since dollar_sign_location cannot be std::string::npos
         assert(dollar_sign_location != std::string::npos);
 
         // if we didn't find a { continue to the next substitution
         // beyond the current one
-        if (open_brace_location == std::string::npos ||
-            dollar_sign_location + 1 != open_brace_location) {
+        if (open_brace_location == std::string::npos || dollar_sign_location + 1 != open_brace_location) {
             last_dollar_sign_location = dollar_sign_location + 1;
             continue;
         }
@@ -88,14 +84,10 @@ auto parsing::variable_substitution(std::string const& input) -> std::string {
 
         // make the substitution
         std::string prefix = output.substr(0, dollar_sign_location);
-        std::string const suffix = output.substr(
-            std::min(closed_brace_location + 1, output.size()), output.size());
-        std::string const var =
-            output.substr(open_brace_location + 1,
-                          closed_brace_location - open_brace_location - 1);
+        std::string const suffix = output.substr(std::min(closed_brace_location + 1, output.size()), output.size());
+        std::string const var = output.substr(open_brace_location + 1, closed_brace_location - open_brace_location - 1);
 
-        output =
-            prefix.append(environment::get_var(var.c_str())).append(suffix);
+        output = prefix.append(environment::get_var(var.c_str())).append(suffix);
     }
 
     return output;

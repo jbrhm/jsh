@@ -15,12 +15,10 @@ TEST(TestProcess, TestExportBasic1) {
     ASSERT_TRUE(proc_data.has_value());
 
     // should hold a expor_data struct
-    ASSERT_TRUE(std::holds_alternative<jsh::export_data>(
-        *(proc_data.value()))); // NOLINT assert catches this .value()
+    ASSERT_TRUE(std::holds_alternative<jsh::export_data>(*(proc_data.value()))); // NOLINT assert catches this .value()
 
     // varify the contents of the data
-    auto& data = std::get<jsh::export_data>(
-        *(proc_data).value()); // NOLINT assert catches this .value()
+    auto& data = std::get<jsh::export_data>(*(proc_data).value()); // NOLINT assert catches this .value()
     ASSERT_STREQ(data.name.c_str(), "var");
     ASSERT_STREQ(data.val.c_str(), "val");
 }
@@ -35,12 +33,10 @@ TEST(TestProcess, TestExportBasic2) {
     ASSERT_TRUE(proc_data.has_value());
 
     // should hold a expor_data struct
-    ASSERT_TRUE(std::holds_alternative<jsh::export_data>(
-        *(proc_data.value()))); // NOLINT assert catches this .value()
+    ASSERT_TRUE(std::holds_alternative<jsh::export_data>(*(proc_data.value()))); // NOLINT assert catches this .value()
 
     // varify the contents of the data
-    auto& data = std::get<jsh::export_data>(
-        *(proc_data).value()); // NOLINT assert catches this .value()
+    auto& data = std::get<jsh::export_data>(*(proc_data).value()); // NOLINT assert catches this .value()
     ASSERT_STREQ(data.name.c_str(), "v");
     ASSERT_STREQ(data.val.c_str(), "v");
 }
@@ -55,12 +51,10 @@ TEST(TestProcess, TestExportBasic3) {
     ASSERT_TRUE(proc_data.has_value());
 
     // should hold a expor_data struct
-    ASSERT_TRUE(std::holds_alternative<jsh::export_data>(
-        *(proc_data.value()))); // NOLINT assert catches this .value()
+    ASSERT_TRUE(std::holds_alternative<jsh::export_data>(*(proc_data.value()))); // NOLINT assert catches this .value()
 
     // varify the contents of the data
-    auto& data = std::get<jsh::export_data>(
-        *(proc_data).value()); // NOLINT assert catches this .value()
+    auto& data = std::get<jsh::export_data>(*(proc_data).value()); // NOLINT assert catches this .value()
     ASSERT_STREQ(data.name.c_str(), "v");
     ASSERT_STREQ(data.val.c_str(), "v");
 }
@@ -115,32 +109,26 @@ TEST(TestProcess, TestExtra) {
     ASSERT_TRUE(proc_data.has_value());
 
     // should hold a expor_data struct
-    ASSERT_TRUE(std::holds_alternative<jsh::export_data>(
-        *(proc_data.value()))); // NOLINT assert catches this .value()
+    ASSERT_TRUE(std::holds_alternative<jsh::export_data>(*(proc_data.value()))); // NOLINT assert catches this .value()
 
     // varify the contents of the data
-    auto& data = std::get<jsh::export_data>(
-        *(proc_data).value()); // NOLINT assert catches this .value()
+    auto& data = std::get<jsh::export_data>(*(proc_data).value()); // NOLINT assert catches this .value()
     ASSERT_STREQ(data.name.c_str(), "var");
     ASSERT_STREQ(data.val.c_str(), "val");
 }
 
 TEST(TestProcess, TestExecuteBinary) {
     // make a fifo to store the output from standard out
-    std::optional<std::vector<jsh::file_descriptor_wrapper>> pipe_fds_op =
-        jsh::syscall_wrapper::pipe_wrapper();
+    std::optional<std::vector<jsh::file_descriptor_wrapper>> pipe_fds_op = jsh::syscall_wrapper::pipe_wrapper();
     ASSERT_TRUE(pipe_fds_op.has_value());
-    ASSERT_TRUE(pipe_fds_op.value().size() ==
-                2); // NOLINT assert catches this .value()
+    ASSERT_TRUE(pipe_fds_op.value().size() == 2); // NOLINT assert catches this .value()
 
-    std::vector<jsh::file_descriptor_wrapper> pipe_fds =
-        std::move(pipe_fds_op.value()); // NOLINT assert catches this .value()
+    std::vector<jsh::file_descriptor_wrapper> pipe_fds = std::move(pipe_fds_op.value()); // NOLINT assert catches this .value()
 
     ASSERT_TRUE(pipe_fds.size() == 2);
 
     // create the command for the binary data
-    std::unique_ptr<jsh::process_data> binary_var =
-        std::make_unique<jsh::process_data>(jsh::binary_data{});
+    std::unique_ptr<jsh::process_data> binary_var = std::make_unique<jsh::process_data>(jsh::binary_data{});
 
     assert(std::holds_alternative<jsh::binary_data>(*binary_var));
 
@@ -160,15 +148,13 @@ TEST(TestProcess, TestExecuteBinary) {
     std::array<char, 2> data{};
     int total_read = 0;
     while (total_read != sizeof(data)) {
-        std::optional<ssize_t> rea = jsh::syscall_wrapper::read_wrapper(
-            pipe_fds[0], data.data(), sizeof(data));
+        std::optional<ssize_t> rea = jsh::syscall_wrapper::read_wrapper(pipe_fds[0], data.data(), sizeof(data));
 
         // read should've succeeded
         ASSERT_TRUE(rea.has_value());
 
         // add the number of bytes read
-        total_read += static_cast<int>(
-            rea.value()); // NOLINT assert catches this .value()
+        total_read += static_cast<int>(rea.value()); // NOLINT assert catches this .value()
     }
 
     // the pipe and buffer should now contain hi
@@ -178,8 +164,7 @@ TEST(TestProcess, TestExecuteBinary) {
 
 TEST(TestProcess, TestExecuteExport) {
     // create the export data structure
-    std::unique_ptr<jsh::process_data> export_var =
-        std::make_unique<jsh::process_data>(jsh::export_data{});
+    std::unique_ptr<jsh::process_data> export_var = std::make_unique<jsh::process_data>(jsh::export_data{});
 
     assert(std::holds_alternative<jsh::export_data>(*export_var));
 
@@ -204,12 +189,10 @@ TEST(TestProcess, TestInputRedirectionParsingBasic1) {
     ASSERT_TRUE(proc_data.has_value());
 
     // make sure it contains binary data
-    ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(
-        *proc_data.value())); // NOLINT assert catches this .value()
+    ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value())); // NOLINT assert catches this .value()
 
     // get reference to underlying data
-    auto& data = std::get<jsh::binary_data>(
-        *proc_data.value()); // NOLINT assert catches this .value()
+    auto& data = std::get<jsh::binary_data>(*proc_data.value()); // NOLINT assert catches this .value()
     ASSERT_NE(data.stdin, jsh::syscall_wrapper::stdin_file_descriptor);
 }
 
@@ -222,12 +205,10 @@ TEST(TestProcess, TestInputRedirectionParsingBasic2) {
     ASSERT_TRUE(proc_data.has_value());
 
     // make sure it contains binary data
-    ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(
-        *proc_data.value())); // NOLINT assert catches this .value()
+    ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value())); // NOLINT assert catches this .value()
 
     // get reference to underlying data
-    auto& data = std::get<jsh::binary_data>(
-        *proc_data.value()); // NOLINT assert catches this .value()
+    auto& data = std::get<jsh::binary_data>(*proc_data.value()); // NOLINT assert catches this .value()
     ASSERT_NE(data.stdin, jsh::syscall_wrapper::stdin_file_descriptor);
 }
 
@@ -240,12 +221,10 @@ TEST(TestProcess, TestInputRedirectionParsingBasic3) {
     ASSERT_TRUE(proc_data.has_value());
 
     // make sure it contains binary data
-    ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(
-        *proc_data.value())); // NOLINT assert catches this .value()
+    ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value())); // NOLINT assert catches this .value()
 
     // get reference to underlying data
-    auto& data = std::get<jsh::binary_data>(
-        *proc_data.value()); // NOLINT assert catches this .value()
+    auto& data = std::get<jsh::binary_data>(*proc_data.value()); // NOLINT assert catches this .value()
     ASSERT_NE(data.stdin, jsh::syscall_wrapper::stdin_file_descriptor);
 }
 
@@ -285,12 +264,10 @@ TEST(TestProcess, TestOutputRedirectionParsingBasic1) {
     ASSERT_TRUE(proc_data.has_value());
 
     // make sure it contains binary data
-    ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(
-        *proc_data.value())); // NOLINT assert catches this .value()
+    ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value())); // NOLINT assert catches this .value()
 
     // get reference to underlying data
-    auto& data = std::get<jsh::binary_data>(
-        *proc_data.value()); // NOLINT assert catches this .value()
+    auto& data = std::get<jsh::binary_data>(*proc_data.value()); // NOLINT assert catches this .value()
     ASSERT_NE(data.stdout, jsh::syscall_wrapper::stdout_file_descriptor);
 }
 
@@ -303,12 +280,10 @@ TEST(TestProcess, TestOutputRedirectionParsingBasic2) {
     ASSERT_TRUE(proc_data.has_value());
 
     // make sure it contains binary data
-    ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(
-        *proc_data.value())); // NOLINT assert catches this .value()
+    ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value())); // NOLINT assert catches this .value()
 
     // get reference to underlying data
-    auto& data = std::get<jsh::binary_data>(
-        *proc_data.value()); // NOLINT assert catches this .value()
+    auto& data = std::get<jsh::binary_data>(*proc_data.value()); // NOLINT assert catches this .value()
     ASSERT_NE(data.stdout, jsh::syscall_wrapper::stdout_file_descriptor);
 }
 
@@ -321,12 +296,10 @@ TEST(TestProcess, TestOutputRedirectionParsingBasic3) {
     ASSERT_TRUE(proc_data.has_value());
 
     // make sure it contains binary data
-    ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(
-        *proc_data.value())); // NOLINT assert catches this .value()
+    ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value())); // NOLINT assert catches this .value()
 
     // get reference to underlying data
-    auto& data = std::get<jsh::binary_data>(
-        *proc_data.value()); // NOLINT assert catches this .value()
+    auto& data = std::get<jsh::binary_data>(*proc_data.value()); // NOLINT assert catches this .value()
     ASSERT_NE(data.stdout, jsh::syscall_wrapper::stdout_file_descriptor);
 }
 

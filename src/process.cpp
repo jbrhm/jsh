@@ -2,27 +2,18 @@
 #include "shell.hpp" // required to be here for non-cyclic includes
 
 namespace jsh {
-process::shell_internal_redirection::shell_internal_redirection(
-    std::optional<file_descriptor_wrapper> stdout,
-    std::optional<file_descriptor_wrapper> stdin,
-    std::optional<file_descriptor_wrapper> stderr, bool restore)
-    : new_stdout{std::move(stdout)}, new_stdin{std::move(stdin)},
-      new_stderr{std::move(stderr)}, og_stdout{std::nullopt},
-      og_stdin{std::nullopt}, og_stderr{std::nullopt}, _restore{restore} {
+process::shell_internal_redirection::shell_internal_redirection(std::optional<file_descriptor_wrapper> stdout, std::optional<file_descriptor_wrapper> stdin, std::optional<file_descriptor_wrapper> stderr, bool restore) : new_stdout{std::move(stdout)}, new_stdin{std::move(stdin)}, new_stderr{std::move(stderr)}, og_stdout{std::nullopt}, og_stdin{std::nullopt}, og_stderr{std::nullopt}, _restore{restore} {
     // check for a different stdout
     if (new_stdout.has_value()) {
-        // this will essentially make STDOUT_FILENO point to the other file
-        // descriptor since according to the man page it will close
-        // STDOUT_FILENO since it already exists
+        // this will essentially make STDOUT_FILENO point to the other file descriptor
+        // since according to the man page it will close STDOUT_FILENO since it already exists
         if (_restore) {
-            og_stdout = syscall_wrapper::dup_wrapper(
-                syscall_wrapper::stdout_file_descriptor);
+            og_stdout = syscall_wrapper::dup_wrapper(syscall_wrapper::stdout_file_descriptor);
         }
 
         // we should have a value at this point
         assert(new_stdout.has_value());
-        bool const status = syscall_wrapper::dup2_wrapper(
-            new_stdout.value(), syscall_wrapper::stdout_file_descriptor);
+        bool const status = syscall_wrapper::dup2_wrapper(new_stdout.value(), syscall_wrapper::stdout_file_descriptor);
 
         // check to make sure dup succeeded
         if (!status) {
@@ -36,14 +27,12 @@ process::shell_internal_redirection::shell_internal_redirection(
     // check for a different stdin
     if (new_stdin.has_value()) {
         if (_restore) {
-            og_stdin = syscall_wrapper::dup_wrapper(
-                syscall_wrapper::stdin_file_descriptor);
+            og_stdin = syscall_wrapper::dup_wrapper(syscall_wrapper::stdin_file_descriptor);
         }
 
         // we should have a value at this point
         assert(new_stdin.has_value());
-        bool const status = syscall_wrapper::dup2_wrapper(
-            new_stdin.value(), syscall_wrapper::stdin_file_descriptor);
+        bool const status = syscall_wrapper::dup2_wrapper(new_stdin.value(), syscall_wrapper::stdin_file_descriptor);
 
         // check to make sure dup succeeded
         if (!status) {
@@ -57,14 +46,12 @@ process::shell_internal_redirection::shell_internal_redirection(
     // check for a different stderr
     if (new_stderr.has_value()) {
         if (_restore) {
-            og_stderr = syscall_wrapper::dup_wrapper(
-                syscall_wrapper::stderr_file_descriptor);
+            og_stderr = syscall_wrapper::dup_wrapper(syscall_wrapper::stderr_file_descriptor);
         }
 
         // we should have a value at this point
         assert(new_stderr.has_value());
-        bool const status = syscall_wrapper::dup2_wrapper(
-            new_stderr.value(), syscall_wrapper::stderr_file_descriptor);
+        bool const status = syscall_wrapper::dup2_wrapper(new_stderr.value(), syscall_wrapper::stderr_file_descriptor);
 
         // check to make sure dup succeeded
         if (!status) {
@@ -80,8 +67,7 @@ process::shell_internal_redirection::~shell_internal_redirection() {
     if (_restore) {
         // check for a different stdout
         if (og_stdout.has_value()) {
-            bool const status = syscall_wrapper::dup2_wrapper(
-                og_stdout.value(), syscall_wrapper::stdout_file_descriptor);
+            bool const status = syscall_wrapper::dup2_wrapper(og_stdout.value(), syscall_wrapper::stdout_file_descriptor);
             // check to make sure dup succeeded
             if (!status) {
                 return;
@@ -90,8 +76,7 @@ process::shell_internal_redirection::~shell_internal_redirection() {
 
         // check for a different stdin
         if (og_stdin.has_value()) {
-            bool const status = syscall_wrapper::dup2_wrapper(
-                og_stdin.value(), syscall_wrapper::stdin_file_descriptor);
+            bool const status = syscall_wrapper::dup2_wrapper(og_stdin.value(), syscall_wrapper::stdin_file_descriptor);
 
             // check to make sure dup succeeded
             if (!status) {
@@ -101,8 +86,7 @@ process::shell_internal_redirection::~shell_internal_redirection() {
 
         // check for a different stderr
         if (og_stderr.has_value()) {
-            bool const status = syscall_wrapper::dup2_wrapper(
-                og_stderr.value(), syscall_wrapper::stderr_file_descriptor);
+            bool const status = syscall_wrapper::dup2_wrapper(og_stderr.value(), syscall_wrapper::stderr_file_descriptor);
 
             // check to make sure dup succeeded
             if (!status) {
@@ -112,8 +96,7 @@ process::shell_internal_redirection::~shell_internal_redirection() {
     }
 }
 
-auto process::parse_process(std::string const& input)
-    -> std::optional<std::unique_ptr<process_data>> {
+auto process::parse_process(std::string const& input) -> std::optional<std::unique_ptr<process_data>> {
     // TODO (john): find a way to prevent this from defaulting to export
     auto proc_data = std::make_unique<process_data>();
 
@@ -135,12 +118,10 @@ auto process::parse_process(std::string const& input)
         if (arg.size() == 1 && arg[0] == INPUT_REDIRECTION) {
             // get the input file descriptor
             if (!(sstrm >> filename)) {
-                cout_logger.log(LOG_LEVEL::ERROR,
-                                "Input file not specified...");
+                cout_logger.log(LOG_LEVEL::ERROR, "Input file not specified...");
                 return std::nullopt;
             }
-            proc_stdin =
-                syscall_wrapper::open_wrapper(filename, O_RDONLY, FILE_MODE);
+            proc_stdin = syscall_wrapper::open_wrapper(filename, O_RDONLY, FILE_MODE);
 
             if (!proc_stdin.has_value()) {
                 return std::nullopt;
@@ -152,12 +133,10 @@ auto process::parse_process(std::string const& input)
         if (arg.size() == 1 && arg[0] == OUTPUT_REDIRECTION) {
             // get the output file descriptor
             if (!(sstrm >> filename)) {
-                cout_logger.log(LOG_LEVEL::ERROR,
-                                "Output file not specified...");
+                cout_logger.log(LOG_LEVEL::ERROR, "Output file not specified...");
                 return std::nullopt;
             }
-            proc_stdout = syscall_wrapper::open_wrapper(
-                filename, O_WRONLY | O_CREAT | O_TRUNC, FILE_MODE);
+            proc_stdout = syscall_wrapper::open_wrapper(filename, O_WRONLY | O_CREAT | O_TRUNC, FILE_MODE);
 
             if (!proc_stdout.has_value()) {
                 return std::nullopt;
@@ -185,8 +164,7 @@ auto process::parse_process(std::string const& input)
         data.stderr = std::move(proc_stderr);
 
         // find the variable name and value from the input
-        // we should only have two items in the args list export and [variable
-        // name]=[value]
+        // we should only have two items in the args list export and [variable name]=[value]
         if (args.size() < 2) {
             return std::nullopt;
         }
@@ -246,14 +224,12 @@ void process::execute_process(binary_data& data) {
     pid_t const& pid = pid_op.value();
 
     if (static_cast<bool>(pid)) { // parent
-        // update the process id for the new process if it is the first one/its
-        // pointer is nullptr
+        // update the process id for the new process if it is the first one/its pointer is nullptr
         if (*data.pgid == -1) {
             *data.pgid = pid;
         }
 
-        // set the child process' process group id in parent to prevent race
-        // conditions
+        // set the child process' process group id in parent to prevent race conditions
         bool status = syscall_wrapper::setpgid_wrapper(pid, *data.pgid);
 
         // error handle
@@ -263,8 +239,7 @@ void process::execute_process(binary_data& data) {
 
         // set the child process to control the terminal
         if (data.is_foreground) {
-            status = syscall_wrapper::tcsetpgrp_wrapper(
-                syscall_wrapper::stdin_file_descriptor, *data.pgid);
+            status = syscall_wrapper::tcsetpgrp_wrapper(syscall_wrapper::stdin_file_descriptor, *data.pgid);
 
             if (!status) {
                 return;
@@ -279,8 +254,7 @@ void process::execute_process(binary_data& data) {
         }
 
         // wait for the process to complete
-        // TODO (john): I cannot wait everytime there is a command executed if
-        // we are going to support background tasks
+        // TODO (john): I cannot wait everytime there is a command executed if we are going to support background tasks
         int wait_status = 0;
         pid_t const exit_code = waitpid(pid, &wait_status, WUNTRACED);
 
@@ -291,16 +265,12 @@ void process::execute_process(binary_data& data) {
 
         // check for errors
         if (exit_code != pid) {
-            jsh::cout_logger.log(
-                jsh::LOG_LEVEL::ERROR, "Waiting on PID ", pid,
-                " failed: ", syscall_wrapper::strerror_wrapper(errno), '\n');
+            jsh::cout_logger.log(jsh::LOG_LEVEL::ERROR, "Waiting on PID ", pid, " failed: ", syscall_wrapper::strerror_wrapper(errno), '\n');
         } else {
             // save the exit status
             if (WIFEXITED(wait_status)) {
-                std::string const exit_status =
-                    std::to_string(WEXITSTATUS(wait_status));
-                environment::set_var(environment::STATUS_STRING,
-                                     exit_status.c_str());
+                std::string const exit_status = std::to_string(WEXITSTATUS(wait_status));
+                environment::set_var(environment::STATUS_STRING, exit_status.c_str());
             }
         }
 
@@ -309,8 +279,7 @@ void process::execute_process(binary_data& data) {
         if (data.is_foreground) {
             std::optional<pid_t> cur_pgid = syscall_wrapper::getpid_wrapper();
             assert(cur_pgid.has_value());
-            status = syscall_wrapper::tcsetpgrp_wrapper(
-                syscall_wrapper::stdin_file_descriptor, cur_pgid.value());
+            status = syscall_wrapper::tcsetpgrp_wrapper(syscall_wrapper::stdin_file_descriptor, cur_pgid.value());
 
             // error handle
             if (!status) {
@@ -328,9 +297,7 @@ void process::execute_process(binary_data& data) {
 
         // send job cont signal
         assert(shll_ptr.has_value());
-        status = syscall_wrapper::tcsetattr_wrapper(
-            syscall_wrapper::stdin_file_descriptor, TCSADRAIN,
-            shll_ptr.value()->get_term_if());
+        status = syscall_wrapper::tcsetattr_wrapper(syscall_wrapper::stdin_file_descriptor, TCSADRAIN, shll_ptr.value()->get_term_if());
 
         if (!status) {
             return;
@@ -338,31 +305,26 @@ void process::execute_process(binary_data& data) {
     } else { // child
         // get the current PID
         std::optional<pid_t> cur_pid = syscall_wrapper::getpid_wrapper();
-        assert(cur_pid.has_value()); // this should always pass since it getpid
-                                     // shouldn't fail
+        assert(cur_pid.has_value()); // this should always pass since it getpid shouldn't fail
 
-        // if the pgid is nullptr, then this is the first process and we should
-        // make its PID the PGID since it will be the process leader
+        // if the pgid is nullptr, then this is the first process and we should make its PID the
+        // PGID since it will be the process leader
         if (*data.pgid == -1) {
             *data.pgid = cur_pid.value();
         }
 
         // set the current process' process group id
-        // if this is the first process being launched then it will be the
-        // process leader and cur_pid.value() == data.pgid
-        bool status =
-            syscall_wrapper::setpgid_wrapper(cur_pid.value(), *data.pgid);
+        // if this is the first process being launched then it will be the process leader and cur_pid.value() == data.pgid
+        bool status = syscall_wrapper::setpgid_wrapper(cur_pid.value(), *data.pgid);
 
         // error handle
         if (!status) {
             return;
         }
 
-        // if the process is running in the foreground, then it gets access to
-        // the terminal
+        // if the process is running in the foreground, then it gets access to the terminal
         if (data.is_foreground) {
-            status = syscall_wrapper::tcsetpgrp_wrapper(
-                syscall_wrapper::stdin_file_descriptor, *data.pgid);
+            status = syscall_wrapper::tcsetpgrp_wrapper(syscall_wrapper::stdin_file_descriptor, *data.pgid);
 
             // error handle
             if (!status) {
@@ -372,8 +334,7 @@ void process::execute_process(binary_data& data) {
 
         // listen to job control signals
         std::optional<std::function<void(int)>> sig_status;
-        sig_status = syscall_wrapper::signal_wrapper(
-            SIGINT, SIG_DFL); // termination requests
+        sig_status = syscall_wrapper::signal_wrapper(SIGINT, SIG_DFL); // termination requests
 
         // error handle
         if (!sig_status.has_value()) {
@@ -409,9 +370,7 @@ void process::execute_process(binary_data& data) {
         }
 
         { // sir scope
-            shell_internal_redirection const sir(std::move(data.stdout),
-                                                 std::move(data.stdin),
-                                                 std::move(data.stderr), false);
+            shell_internal_redirection const sir(std::move(data.stdout), std::move(data.stdin), std::move(data.stderr), false);
 
             int const exit_code = execvp(args_ptr[0], args_ptr.data());
 
@@ -420,28 +379,27 @@ void process::execute_process(binary_data& data) {
         } // sir scope
 
         // log that this command was invalid
-        jsh::cout_logger.log(jsh::LOG_LEVEL::ERROR,
-                             "Executing command failed...");
+        jsh::cout_logger.log(jsh::LOG_LEVEL::ERROR, "Executing command failed...");
     }
 }
 
 void process::execute_process(export_data& data) {
     { // sir scope
-        shell_internal_redirection const sir(std::move(data.stdout),
-                                             std::move(data.stdin),
-                                             std::move(data.stderr));
+        shell_internal_redirection const sir(std::move(data.stdout), std::move(data.stdin), std::move(data.stderr));
 
         // perform the export
         environment::set_var(data.name.c_str(), data.val.c_str());
 
         // set return env var to 0
-        environment::set_var(environment::STATUS_STRING,
-                             environment::SUCCESS_STRING);
+        environment::set_var(environment::STATUS_STRING, environment::SUCCESS_STRING);
     } // sir scope
 }
 
 void process::execute(std::unique_ptr<process_data>& data) {
     // execute on the given data
-    std::visit([](auto&& var) { jsh::process::execute_process(var); }, *data);
+    std::visit([](auto&& var) {
+        jsh::process::execute_process(var);
+    },
+               *data);
 }
 } // namespace jsh

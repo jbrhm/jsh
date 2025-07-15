@@ -17,16 +17,12 @@ namespace jsh {
  *
  * stderr: the file descriptor which standard error will be directed towards
  *
- * pgid: the current process group id the process should be put in, note: this
- * information is redundant to the pgid in the job structure, however instead of
- * passing on the stack, we add a member to this structure
+ * pgid: the current process group id the process should be put in, note: this information is redundant to the pgid in the job structure, however instead of passing on the stack, we add a member to this structure
  *
- * is_foreground: indicates whether the process will run in the foreground of
- * the shell
+ * is_foreground: indicates whether the process will run in the foreground of the shell
  */
 static constexpr std::size_t DEFAULT_DATA_ALIGNMENT = 64;
-struct __attribute__((packed)) __attribute__((aligned(DEFAULT_DATA_ALIGNMENT)))
-default_data {
+struct __attribute__((packed)) __attribute__((aligned(DEFAULT_DATA_ALIGNMENT))) default_data {
     std::optional<file_descriptor_wrapper> stdout = std::nullopt;
     std::optional<file_descriptor_wrapper> stdin = std::nullopt;
     std::optional<file_descriptor_wrapper> stderr = std::nullopt;
@@ -41,8 +37,7 @@ default_data {
  *
  * args: the arguments provided to the shell
  */
-struct __attribute__((packed)) binary_data
-    : default_data { // NOLINT this complains about being 64 byte aligned
+struct __attribute__((packed)) binary_data : default_data { // NOLINT this complains about being 64 byte aligned
     std::vector<std::string> args;
 };
 
@@ -53,8 +48,7 @@ struct __attribute__((packed)) binary_data
  *
  * val: the value that will be associated with this environment variable
  */
-struct __attribute__((packed)) export_data
-    : default_data { // NOLINT this complains about being 64 byte aligned
+struct __attribute__((packed)) export_data : default_data { // NOLINT this complains about being 64 byte aligned
     std::string name;
     std::string val;
 };
@@ -78,8 +72,7 @@ class process {
     static void populate_process_data(binary_data& data);
 
     /**
-     * shell_internal_redirection: RAII wrapper around setting stdout, stdin,
-     * and stderr for a given shell internal
+     * shell_internal_redirection: RAII wrapper around setting stdout, stdin, and stderr for a given shell internal
      */
     class shell_internal_redirection {
       private:
@@ -114,8 +107,7 @@ class process {
         std::optional<file_descriptor_wrapper> og_stderr;
 
         /**
-         * restore: indicates whether the file descriptors will be restored in
-         * the destructor
+         * restore: indicates whether the file descriptors will be restored in the destructor
          */
         bool _restore;
 
@@ -123,22 +115,15 @@ class process {
         /**
          * constructor to wrap all fd redirection
          */
-        shell_internal_redirection(
-            std::optional<file_descriptor_wrapper> stdout,
-            std::optional<file_descriptor_wrapper> stdin,
-            std::optional<file_descriptor_wrapper> stderr,
-            [[maybe_unused]] bool restore = true);
+        shell_internal_redirection(std::optional<file_descriptor_wrapper> stdout, std::optional<file_descriptor_wrapper> stdin, std::optional<file_descriptor_wrapper> stderr, [[maybe_unused]] bool restore = true);
 
         /**
          * delete other constructors
          */
-        shell_internal_redirection(shell_internal_redirection const& other) =
-            delete;
+        shell_internal_redirection(shell_internal_redirection const& other) = delete;
         shell_internal_redirection(shell_internal_redirection&& other) = delete;
-        auto operator=(shell_internal_redirection const& other)
-            -> shell_internal_redirection& = delete;
-        auto operator=(shell_internal_redirection&& other)
-            -> shell_internal_redirection& = delete;
+        auto operator=(shell_internal_redirection const& other) -> shell_internal_redirection& = delete;
+        auto operator=(shell_internal_redirection&& other) -> shell_internal_redirection& = delete;
 
         /**
          * destructor to close all fds
@@ -148,19 +133,16 @@ class process {
 
   public:
     /**
-     * parse_process: parse an input into a process_data structure, or if a
-     * shell internal was called return the appropriate type
+     * parse_process: parse an input into a process_data structure, or if a shell internal was called return the appropriate type
      *
      * input: the input command provided by the user to start the process
      */
-    [[nodiscard]] static auto parse_process(std::string const& input)
-        -> std::optional<std::unique_ptr<process_data>>;
+    [[nodiscard]] static auto parse_process(std::string const& input) -> std::optional<std::unique_ptr<process_data>>;
 
     /**
      * execute_binary: performs the execution for binary
      *
-     * data: the parsed input command from the user which is used to execute the
-     * binary
+     * data: the parsed input command from the user which is used to execute the binary
      */
     static void execute_process(binary_data& data);
 

@@ -334,8 +334,7 @@ TEST(TestJob, TestExecuteJobBasic1) {
 
     // open the file
     static constexpr mode_t MODE = 0777;
-    std::optional<jsh::file_descriptor_wrapper> fides =
-        jsh::syscall_wrapper::open_wrapper(FILE, O_RDONLY, MODE);
+    std::optional<jsh::file_descriptor_wrapper> fides = jsh::syscall_wrapper::open_wrapper(FILE, O_RDONLY, MODE);
 
     // check to see if open succeeded
     ASSERT_TRUE(fides.has_value());
@@ -345,9 +344,7 @@ TEST(TestJob, TestExecuteJobBasic1) {
     std::size_t idx = 0;
     for (; num_bytes_read.has_value() && num_bytes_read.value() != 0; ++idx) {
         char chr = '\0';
-        num_bytes_read = jsh::syscall_wrapper::read_wrapper(
-            fides.value(), &chr,
-            sizeof(chr)); // NOLINT assert checks this .value()
+        num_bytes_read = jsh::syscall_wrapper::read_wrapper(fides.value(), &chr, sizeof(chr)); // NOLINT assert checks this .value()
 
         // check for success
         if (!num_bytes_read.has_value()) {
@@ -363,8 +360,7 @@ TEST(TestJob, TestExecuteJobBasic1) {
 TEST(TestJob, TestExecuteJobBasic2) {
     // Test constants
     static constexpr char const* FILE = "testing/tmp/file";
-    static constexpr char const* CMD =
-        "echo hi test2 yo | grep -i hi > testing/tmp/file";
+    static constexpr char const* CMD = "echo hi test2 yo | grep -i hi > testing/tmp/file";
     static constexpr char const* CORR = "hi test2 yo\n";
 
     // create a job
@@ -378,8 +374,7 @@ TEST(TestJob, TestExecuteJobBasic2) {
 
     // open the file
     static constexpr mode_t MODE = 0777;
-    std::optional<jsh::file_descriptor_wrapper> fides =
-        jsh::syscall_wrapper::open_wrapper(FILE, O_RDONLY, MODE);
+    std::optional<jsh::file_descriptor_wrapper> fides = jsh::syscall_wrapper::open_wrapper(FILE, O_RDONLY, MODE);
 
     // check to see if open succeeded
     ASSERT_TRUE(fides.has_value());
@@ -389,9 +384,7 @@ TEST(TestJob, TestExecuteJobBasic2) {
     std::optional<ssize_t> num_bytes_read = std::make_optional<ssize_t>(1);
     for (; num_bytes_read.has_value() && num_bytes_read.value() != 0; ++idx) {
         char chr = '\0';
-        num_bytes_read = jsh::syscall_wrapper::read_wrapper(
-            fides.value(), &chr,
-            sizeof(chr)); // NOLINT assert checks this .value()
+        num_bytes_read = jsh::syscall_wrapper::read_wrapper(fides.value(), &chr, sizeof(chr)); // NOLINT assert checks this .value()
 
         // check for success
         if (!num_bytes_read.has_value()) {
@@ -408,9 +401,7 @@ TEST(TestJob, TestExecuteJobBasic3) {
     // Test constants
     static constexpr char const* FILE = "testing/tmp/file";
     static constexpr char const* FILE2 = "testing/tmp/file2";
-    static constexpr char const* CMD =
-        "echo linux test3 > testing/tmp/file2 && echo test3 hi yo | grep -i hi "
-        "> testing/tmp/file";
+    static constexpr char const* CMD = "echo linux test3 > testing/tmp/file2 && echo test3 hi yo | grep -i hi > testing/tmp/file";
     static constexpr char const* CORR = "test3 hi yo\n";
     static constexpr char const* CORR2 = "linux test3\n";
 
@@ -427,8 +418,7 @@ TEST(TestJob, TestExecuteJobBasic3) {
 
     { // fides wrapper
         // open the file
-        std::optional<jsh::file_descriptor_wrapper> fides =
-            jsh::syscall_wrapper::open_wrapper(FILE, O_RDONLY, MODE);
+        std::optional<jsh::file_descriptor_wrapper> fides = jsh::syscall_wrapper::open_wrapper(FILE, O_RDONLY, MODE);
 
         // check to see if open succeeded
         ASSERT_TRUE(fides.has_value());
@@ -436,12 +426,9 @@ TEST(TestJob, TestExecuteJobBasic3) {
         // read from the pipe
         std::optional<ssize_t> num_bytes_read = std::make_optional<ssize_t>(1);
         std::size_t idx = 0;
-        for (; num_bytes_read.has_value() && num_bytes_read.value() != 0;
-             ++idx) {
+        for (; num_bytes_read.has_value() && num_bytes_read.value() != 0; ++idx) {
             char chr = '\0';
-            num_bytes_read = jsh::syscall_wrapper::read_wrapper(
-                fides.value(), &chr,
-                sizeof(chr)); // NOLINT assert checks this .value()
+            num_bytes_read = jsh::syscall_wrapper::read_wrapper(fides.value(), &chr, sizeof(chr)); // NOLINT assert checks this .value()
 
             // check for success
             if (!num_bytes_read.has_value()) {
@@ -457,8 +444,7 @@ TEST(TestJob, TestExecuteJobBasic3) {
 
     { // fides wrapper
         // open the file
-        std::optional<jsh::file_descriptor_wrapper> fides =
-            jsh::syscall_wrapper::open_wrapper(FILE2, O_RDONLY, MODE);
+        std::optional<jsh::file_descriptor_wrapper> fides = jsh::syscall_wrapper::open_wrapper(FILE2, O_RDONLY, MODE);
 
         // check to see if open succeeded
         ASSERT_TRUE(fides.has_value());
@@ -466,12 +452,9 @@ TEST(TestJob, TestExecuteJobBasic3) {
         // read from the pipe
         std::optional<ssize_t> num_bytes_read = std::make_optional<ssize_t>(1);
         std::size_t idx = 0;
-        for (; num_bytes_read.has_value() && num_bytes_read.value() != 0;
-             ++idx) {
+        for (; num_bytes_read.has_value() && num_bytes_read.value() != 0; ++idx) {
             char chr = '\0';
-            num_bytes_read = jsh::syscall_wrapper::read_wrapper(
-                fides.value(), &chr,
-                sizeof(chr)); // NOLINT the assert checks this access
+            num_bytes_read = jsh::syscall_wrapper::read_wrapper(fides.value(), &chr, sizeof(chr)); // NOLINT the assert checks this access
 
             // check for success
             if (!num_bytes_read.has_value()) {

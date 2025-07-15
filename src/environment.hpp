@@ -6,8 +6,7 @@
 
 namespace jsh {
 /**
- * The goal of the environment class is to facilitate the shell's interaction
- * with environment variables
+ * The goal of the environment class is to facilitate the shell's interaction with environment variables
  */
 class environment {
   private:
@@ -17,8 +16,7 @@ class environment {
     static constexpr char const* EMPTY_STRING = "";
 
     /**
-     * get: gets the array of environment strings representing the current
-     * process' environment
+     * get: gets the array of environment strings representing the current process' environment
      */
     [[nodiscard]] static auto get() -> char**;
 
@@ -33,8 +31,7 @@ class environment {
      *
      * set_var: sets the environment variable var to value
      *
-     * var: the name of the environment variable being altered in c-string
-     * format
+     * var: the name of the environment variable being altered in c-string format
      *
      * val: the value to which the environment variable should be set
      */

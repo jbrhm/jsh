@@ -18,8 +18,7 @@ class shell {
      */
     static constexpr char const* PROMPT_MESSAGE = "prompt:";
     /**
-     * is_interactice: indicates whether the shell is running in interactive
-     * mode
+     * is_interactice: indicates whether the shell is running in interactive mode
      */
     bool is_interactive;
 
@@ -58,8 +57,7 @@ class shell {
     [[nodiscard]] static auto get() -> std::optional<std::shared_ptr<shell>>;
 
     /**
-     * execute_command: recieves user input and executes their command, returns
-     * false if we are to exit
+     * execute_command: recieves user input and executes their command, returns false if we are to exit
      */
     [[nodiscard]] static auto execute_command() -> bool;
 

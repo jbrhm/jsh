@@ -31,9 +31,7 @@ auto job::parse_job(std::string const& input) -> std::unique_ptr<job_data> {
             assert(op_d.index != std::string::npos);
 
             // ensure that this index is unique
-            assert(std::ranges::find_if(indices, [&](op_data const& oprtr) {
-                       return oprtr.index == op_d.index;
-                   }) == std::end(indices));
+            assert(std::ranges::find_if(indices, [&](op_data const& oprtr) { return oprtr.index == op_d.index; }) == std::end(indices));
 
             // add index
             indices.push_back(op_d);
@@ -52,9 +50,7 @@ auto job::parse_job(std::string const& input) -> std::unique_ptr<job_data> {
 
     // populate job_data
     // sort based on indices, so commands will happen in the correct order
-    std::ranges::sort(indices, [](op_data const& lhs, op_data const& rhs) {
-        return lhs.index < rhs.index;
-    });
+    std::ranges::sort(indices, [](op_data const& lhs, op_data const& rhs) { return lhs.index < rhs.index; });
 
     // resize job vectors
     j_data->input_seq.reserve(indices.size() + 1);
@@ -89,8 +85,7 @@ void job::execute_job(std::unique_ptr<job_data>& data) {
     // parse all of the individual process inputs
     for (std::string const& input : data->input_seq) {
         // parse the users input into a data describing a specific process
-        std::optional<std::unique_ptr<jsh::process_data>> proc_data =
-            jsh::process::parse_process(input);
+        std::optional<std::unique_ptr<jsh::process_data>> proc_data = jsh::process::parse_process(input);
 
         // check the to see if the input was valid
         if (!proc_data.has_value()) { // invalid
@@ -103,8 +98,7 @@ void job::execute_job(std::unique_ptr<job_data>& data) {
         data->process_seq.emplace_back(std::move(proc_data.value()));
     }
 
-    // if the job is running in the forground, relinquish control of the
-    // terminal
+    // if the job is running in the forground, relinquish control of the terminal
 
     // create the process control group
     data->pgid = std::make_shared<pid_t>(-1);
@@ -121,12 +115,10 @@ void job::execute_job(std::unique_ptr<job_data>& data) {
             // we should not have any invalid operators at this point
             assert(data->operator_seq[i] < OPERATOR::COUNT);
 
-            // Check if the current process' output is being piped somewhere
-            // else
+            // Check if the current process' output is being piped somewhere else
             if (data->operator_seq[i] == OPERATOR::PIPE) {
                 // create the pipe
-                std::optional<std::vector<file_descriptor_wrapper>>
-                    pipe_fds_op = syscall_wrapper::pipe_wrapper();
+                std::optional<std::vector<file_descriptor_wrapper>> pipe_fds_op = syscall_wrapper::pipe_wrapper();
 
                 // error handle
                 if (!pipe_fds_op.has_value()) {
@@ -136,42 +128,27 @@ void job::execute_job(std::unique_ptr<job_data>& data) {
                 // get pipe fds
                 assert(pipe_fds_op.has_value());
                 assert(pipe_fds_op.value().size() == 2);
-                std::vector<file_descriptor_wrapper> pipe_fds =
-                    std::move(pipe_fds_op.value());
+                std::vector<file_descriptor_wrapper> pipe_fds = std::move(pipe_fds_op.value());
                 assert(pipe_fds.size() == 2);
 
-                // set the current output and the next input to read from the
-                // pipe
-                std::visit(
-                    [&](auto&& var) { var.stdout = std::move(pipe_fds[1]); },
-                    *proc_data);
-                // there will always be another process since this is being
-                // piped somewhere else
+                // set the current output and the next input to read from the pipe
+                std::visit([&](auto&& var) { var.stdout = std::move(pipe_fds[1]); }, *proc_data);
+                // there will always be another process since this is being piped somewhere else
                 assert(data->process_seq.size() > i);
-                std::visit(
-                    [&](auto&& var) { var.stdin = std::move(pipe_fds[0]); },
-                    *data->process_seq[i + 1]);
+                std::visit([&](auto&& var) { var.stdin = std::move(pipe_fds[0]); }, *data->process_seq[i + 1]);
             } else if (data->operator_seq[i] == OPERATOR::AND) {
                 // get the exit status from previous process
-                std::string const exit_status =
-                    environment::get_var(environment::STATUS_STRING);
+                std::string const exit_status = environment::get_var(environment::STATUS_STRING);
 
-                // check to see if it was not sucessful, if so break out of the
-                // loop
+                // check to see if it was not sucessful, if so break out of the loop
                 if (exit_status != environment::SUCCESS_STRING) {
                     break;
                 }
             }
         }
 
-        // set the process group id ptr to be the process group id ptr for the
-        // job
-        std::visit(
-            [&](auto&& var) {
-                var.pgid = std::make_shared<pid_t>(-1);
-                var.is_foreground = data->is_foreground;
-            },
-            *data->process_seq[i]);
+        // set the process group id ptr to be the process group id ptr for the job
+        std::visit([&](auto&& var) {var.pgid = std::make_shared<pid_t>(-1);var.is_foreground = data->is_foreground; }, *data->process_seq[i]);
 
         // execute the process
         jsh::process::execute(proc_data);

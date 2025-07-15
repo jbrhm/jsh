@@ -6,9 +6,8 @@ static constexpr std::size_t ERR_BUF_SIZE = 100;
 inline std::array<char, ERR_BUF_SIZE> err_buf;
 
 template <typename T>
-concept printable = requires(T itm) {
-    { std::cout << itm };
-};
+concept printable =
+    requires(T itm) {{std::cout << itm}; };
 
 namespace jsh {
 enum LOG_LEVEL : char {
@@ -21,12 +20,12 @@ enum LOG_LEVEL : char {
     COUNT = 6
 };
 
-inline static constexpr char const* LOG_LEVEL_STRINGS[] = {
-    "DEBUG",  "WARN", "ERROR", "FATAL",
-    "STATUS", ""}; // NOLINT this is because std::array is not allowed here
+inline static constexpr char const* LOG_LEVEL_STRINGS[] = {"DEBUG", "WARN", "ERROR", "FATAL", "STATUS", ""}; // NOLINT this is because std::array is not allowed here
 
 inline char global_log_level = 0;
-inline void set_log_level(char level) { global_log_level = level; }
+inline void set_log_level(char level) {
+    global_log_level = level;
+}
 
 class logger {
   private:
@@ -40,11 +39,11 @@ class logger {
     auto operator=(logger const& other) -> logger& = delete;
     auto operator=(logger&& other) -> logger& = delete;
 
-    explicit logger([[maybe_unused]] std::ostream& ostm = std::cout) noexcept
-        : _os{ostm} {}
+    explicit logger([[maybe_unused]] std::ostream& ostm = std::cout) noexcept : _os{ostm} {}
     ~logger() = default;
 
-    template <printable... T> void log(LOG_LEVEL log_level, T... arg) {
+    template <printable... T>
+    void log(LOG_LEVEL log_level, T... arg) {
         if (log_level == LOG_LEVEL::SILENT) {
             (_os << ... << arg);
             _os << std::flush;

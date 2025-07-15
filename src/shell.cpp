@@ -3,26 +3,20 @@
 namespace jsh {
 std::shared_ptr<shell> shell::shell_ptr;
 
-shell::shell()
-    : is_interactive{syscall_wrapper::isatty_wrapper(
-          syscall_wrapper::stdin_file_descriptor)} {
+shell::shell() : is_interactive{syscall_wrapper::isatty_wrapper(syscall_wrapper::stdin_file_descriptor)} {
     // check to see if jsh is interactive
     std::optional<pid_t> cur_grp_pid = std::nullopt;
-    term_if = std::make_shared<termios>(); // structure describing the terminal
-                                           // interface
+    term_if = std::make_shared<termios>(); // structure describing the terminal interface
 
     // set the previous exit status to be zero
-    environment::set_var(environment::STATUS_STRING,
-                         environment::SUCCESS_STRING);
+    environment::set_var(environment::STATUS_STRING, environment::SUCCESS_STRING);
 
     // interactive shell setup
     if (is_interactive) {
         // loop until jsh is in the foreground
         while (true) {
             // get the process group id controlling the terminal
-            std::optional<pid_t> tc_grp_pid =
-                syscall_wrapper::tcgetpgrp_wrapper(
-                    syscall_wrapper::stdin_file_descriptor);
+            std::optional<pid_t> tc_grp_pid = syscall_wrapper::tcgetpgrp_wrapper(syscall_wrapper::stdin_file_descriptor);
 
             // get the current process' group id
             cur_grp_pid = syscall_wrapper::getpgrp_wrapper();
@@ -47,8 +41,7 @@ shell::shell()
 
         // ignore all of the job control signals
         std::optional<std::function<void(int)>> sig_status;
-        sig_status = syscall_wrapper::signal_wrapper(
-            SIGINT, &shell::ctrl_c_signal_handler); // termination requests
+        sig_status = syscall_wrapper::signal_wrapper(SIGINT, &shell::ctrl_c_signal_handler); // termination requests
 
         // error handle
         if (!sig_status.has_value()) {
@@ -88,21 +81,17 @@ shell::shell()
         assert(cur_grp_pid.has_value()); // this function shouldn't fail
 
         // if we cant set into our own process group exit
-        if (!syscall_wrapper::setpgid_wrapper(cur_grp_pid.value(),
-                                              cur_grp_pid.value())) {
+        if (!syscall_wrapper::setpgid_wrapper(cur_grp_pid.value(), cur_grp_pid.value())) {
             throw std::runtime_error("Failed to set process group id...");
         }
 
         // try and grab control of the shell
-        if (!syscall_wrapper::tcsetpgrp_wrapper(
-                syscall_wrapper::stdin_file_descriptor, cur_grp_pid.value())) {
-            throw std::runtime_error(
-                "Failed to grab control of terminal shell...");
+        if (!syscall_wrapper::tcsetpgrp_wrapper(syscall_wrapper::stdin_file_descriptor, cur_grp_pid.value())) {
+            throw std::runtime_error("Failed to grab control of terminal shell...");
         }
 
         // get the shell attributes
-        if (!syscall_wrapper::tcgetattr_wrapper(
-                syscall_wrapper::stdin_file_descriptor, term_if)) {
+        if (!syscall_wrapper::tcgetattr_wrapper(syscall_wrapper::stdin_file_descriptor, term_if)) {
             throw std::runtime_error("Failed to get shell attributes...");
         }
     } else {
@@ -151,16 +140,13 @@ auto shell::execute_command() -> bool {
     }
 
     // block the signal handlers
-    bool const sigprocmask_status =
-        syscall_wrapper::sigprocmask_wrapper(SIG_BLOCK, sigs);
+    bool const sigprocmask_status = syscall_wrapper::sigprocmask_wrapper(SIG_BLOCK, sigs);
     if (!sigprocmask_status) {
         return false;
     }
 
     // create signal fd
-    std::optional<file_descriptor_wrapper> sigfd_op =
-        syscall_wrapper::signalfd_wrapper(
-            syscall_wrapper::invalid_file_descriptor, sigs, 0);
+    std::optional<file_descriptor_wrapper> sigfd_op = syscall_wrapper::signalfd_wrapper(syscall_wrapper::invalid_file_descriptor, sigs, 0);
     if (!sigfd_op.has_value()) {
         return false;
     }
@@ -183,8 +169,7 @@ auto shell::execute_command() -> bool {
         ssize_t total_read = 0;
 
         while (total_read != sizeof(sigfdinfo)) {
-            std::optional<ssize_t> num_read = syscall_wrapper::read_wrapper(
-                sigfd, &sigfdinfo, sizeof(sigfdinfo));
+            std::optional<ssize_t> num_read = syscall_wrapper::read_wrapper(sigfd, &sigfdinfo, sizeof(sigfdinfo));
 
             // err handle
             if (!num_read.has_value()) {
@@ -206,12 +191,10 @@ auto shell::execute_command() -> bool {
 
     jsh::cout_logger.log(jsh::LOG_LEVEL::DEBUG, "Raw user input: ", input);
     input = jsh::parsing::variable_substitution(input);
-    jsh::cout_logger.log(jsh::LOG_LEVEL::DEBUG,
-                         "Substituted user input: ", input);
+    jsh::cout_logger.log(jsh::LOG_LEVEL::DEBUG, "Substituted user input: ", input);
 
     // exit jsh on exit keyword
-    if (input == "exit" || input == "\nexit" || input == "exit\n" ||
-        input == "\nexit\n") {
+    if (input == "exit" || input == "\nexit" || input == "exit\n" || input == "\nexit\n") {
         return false;
     }
 
@@ -225,7 +208,9 @@ auto shell::execute_command() -> bool {
     return true;
 }
 
-auto shell::get_term_if() -> std::shared_ptr<termios> { return term_if; }
+auto shell::get_term_if() -> std::shared_ptr<termios> {
+    return term_if;
+}
 
 void shell::ctrl_c_signal_handler(int sig) {
     // this handler should only ever run for ctrl+c

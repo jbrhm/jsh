@@ -1,14 +1,15 @@
 #include "environment.hpp"
 
 namespace jsh {
-auto environment::get() -> char** { return environ; }
+auto environment::get() -> char** {
+    return environ;
+}
 
 void environment::set_var(char const* var, char const* val) {
     // ensure that there is not an equals in the variable name
     assert(std::strstr(var, "=") == nullptr);
 
-    // set the environment variable to the appropriate value, overriding if
-    // necessary
+    // set the environment variable to the appropriate value, overriding if necessary
     setenv(var, val, 1); // NOLINT
 }
 
