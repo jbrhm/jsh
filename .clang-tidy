@@ -27,6 +27,7 @@ Checks: "*,
         -llvmlibc-inline-function-decl,
         -llvmlibc-restrict-system-libc-headers,
         -boost-use-ranges,
+        -cppcoreguidelines-pro-bounds-pointer-arithmetic,
 "
 WarningsAsErrors: '*'
 

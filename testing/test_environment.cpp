@@ -7,9 +7,9 @@
 
 TEST(TestEnvironment, EnvironmentSetGet) {
     // create the envp
-    std::string var1 = "VAR1", var2 = "VAR2", var3 = "VAR3", var4 = "VAR4";
-    std::string val1 = "VAL1", val2 = "VAL2", val3 = "VAL3", val4 = "VAL4";
-    std::string cor1 = "VAL1", cor2 = "VAL2", cor3 = "VAL3", cor4 = "VAL4";
+    std::string var1 = "VAR1", var2 = "VAR2", var3 = "VAR3", var4 = "VAR4"; // NOLINT
+    std::string val1 = "VAL1", val2 = "VAL2", val3 = "VAL3", val4 = "VAL4"; // NOLINT
+    std::string cor1 = "VAL1", cor2 = "VAL2", cor3 = "VAL3", cor4 = "VAL4"; // NOLINT
     std::vector<char*> vars = {var1.data(), var2.data(), var3.data(), var4.data()};
     std::vector<char*> vals = {val1.data(), val2.data(), val3.data(), val4.data()};
     std::vector<char*> cors = {cor1.data(), cor2.data(), cor3.data(), cor4.data()};

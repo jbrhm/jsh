@@ -6,7 +6,7 @@
 
 TEST(TestParsing, TestPeekValid) {
     // create a string to call peek on
-    std::string input = "abcdefghijklmnopqrstuvwxyz";
+    std::string const input = "abcdefghijklmnopqrstuvwxyz";
 
     // make sure the string was initialized properly
     ASSERT_TRUE(input.size() == 26);
@@ -29,8 +29,8 @@ TEST(TestParsing, TestPeekValid) {
 
 TEST(TestParsing, TestPeekInvalid) {
     // create a string to call peek on
-    std::string input = "abcdefghijklmnopqrstuvwxyz";
-    std::string zero = "";
+    std::string const input = "abcdefghijklmnopqrstuvwxyz";
+    std::string const zero{};
 
     // make sure that npos returns nullopt
     ASSERT_TRUE(jsh::parsing::peek_char(input, std::string::npos) == std::nullopt);

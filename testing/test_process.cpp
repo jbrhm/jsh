@@ -2,7 +2,7 @@
 #include <gtest/gtest.h>
 
 // JSH
-#include <process.hpp>
+#include "process.hpp"
 #include "posix_wrappers.hpp"
 
 TEST(TestProcess, TestExportBasic1) {
@@ -18,7 +18,7 @@ TEST(TestProcess, TestExportBasic1) {
     ASSERT_TRUE(std::holds_alternative<jsh::export_data>(*(proc_data.value())));
 
     // varify the contents of the data
-    jsh::export_data& data = std::get<jsh::export_data>(*(proc_data).value());
+    auto& data = std::get<jsh::export_data>(*(proc_data).value());
     ASSERT_STREQ(data.name.c_str(), "var");
     ASSERT_STREQ(data.val.c_str(), "val");
 }
@@ -36,7 +36,7 @@ TEST(TestProcess, TestExportBasic2) {
     ASSERT_TRUE(std::holds_alternative<jsh::export_data>(*(proc_data.value())));
 
     // varify the contents of the data
-    jsh::export_data& data = std::get<jsh::export_data>(*(proc_data).value());
+    auto& data = std::get<jsh::export_data>(*(proc_data).value());
     ASSERT_STREQ(data.name.c_str(), "v");
     ASSERT_STREQ(data.val.c_str(), "v");
 }
@@ -54,7 +54,7 @@ TEST(TestProcess, TestExportBasic3) {
     ASSERT_TRUE(std::holds_alternative<jsh::export_data>(*(proc_data.value())));
 
     // varify the contents of the data
-    jsh::export_data& data = std::get<jsh::export_data>(*(proc_data).value());
+    auto& data = std::get<jsh::export_data>(*(proc_data).value());
     ASSERT_STREQ(data.name.c_str(), "v");
     ASSERT_STREQ(data.val.c_str(), "v");
 }
@@ -112,7 +112,7 @@ TEST(TestProcess, TestExtra) {
     ASSERT_TRUE(std::holds_alternative<jsh::export_data>(*(proc_data.value())));
 
     // varify the contents of the data
-    jsh::export_data& data = std::get<jsh::export_data>(*(proc_data).value());
+    auto& data = std::get<jsh::export_data>(*(proc_data).value());
     ASSERT_STREQ(data.name.c_str(), "var");
     ASSERT_STREQ(data.val.c_str(), "val");
 }
@@ -130,7 +130,7 @@ TEST(TestProcess, TestExecuteBinary) {
 
     assert(std::holds_alternative<jsh::binary_data>(*binary_var));
 
-    jsh::binary_data& binary = std::get<jsh::binary_data>(*binary_var);
+    auto& binary = std::get<jsh::binary_data>(*binary_var);
     binary.pgid = std::make_shared<pid_t>(-1);
     binary.is_foreground = false;
 
@@ -143,10 +143,10 @@ TEST(TestProcess, TestExecuteBinary) {
     jsh::process::execute(binary_var);
 
     // read the contents of the pipe
-    char data[2];
+    std::array<char, 2> data{};
     int total_read = 0;
     while(total_read != sizeof(data)){
-        std::optional<ssize_t> rea = jsh::syscall_wrapper::read_wrapper(pipe_fds[0], &data[0], sizeof(data));
+        std::optional<ssize_t> rea = jsh::syscall_wrapper::read_wrapper(pipe_fds[0], data.data(), sizeof(data));
 
         // read should've succeeded
         ASSERT_TRUE(rea.has_value());
@@ -166,7 +166,7 @@ TEST(TestProcess, TestExecuteExport) {
 
     assert(std::holds_alternative<jsh::export_data>(*export_var));
 
-    jsh::export_data& exp = std::get<jsh::export_data>(*export_var);
+    auto& exp = std::get<jsh::export_data>(*export_var);
 
     exp.name = "name";
     exp.val = "val";
@@ -191,7 +191,7 @@ TEST(TestProcess, TestInputRedirectionParsingBasic1){
     
     // get reference to underlying data
     auto& data = std::get<jsh::binary_data>(*proc_data.value());
-    ASSERT_NE(data.stdin, jsh::syscall_wrapper::STDIN_FILE_DESCRIPTOR);
+    ASSERT_NE(data.stdin, jsh::syscall_wrapper::stdin_file_descriptor);
 }
 
 TEST(TestProcess, TestInputRedirectionParsingBasic2){
@@ -207,7 +207,7 @@ TEST(TestProcess, TestInputRedirectionParsingBasic2){
     
     // get reference to underlying data
     auto& data = std::get<jsh::binary_data>(*proc_data.value());
-    ASSERT_NE(data.stdin, jsh::syscall_wrapper::STDIN_FILE_DESCRIPTOR);
+    ASSERT_NE(data.stdin, jsh::syscall_wrapper::stdin_file_descriptor);
 }
 
 TEST(TestProcess, TestInputRedirectionParsingBasic3){
@@ -223,7 +223,7 @@ TEST(TestProcess, TestInputRedirectionParsingBasic3){
     
     // get reference to underlying data
     auto& data = std::get<jsh::binary_data>(*proc_data.value());
-    ASSERT_NE(data.stdin, jsh::syscall_wrapper::STDIN_FILE_DESCRIPTOR);
+    ASSERT_NE(data.stdin, jsh::syscall_wrapper::stdin_file_descriptor);
 }
 
 TEST(TestProcess, TestInputRedirectionParsingMalformed1){
@@ -266,7 +266,7 @@ TEST(TestProcess, TestOutputRedirectionParsingBasic1){
     
     // get reference to underlying data
     auto& data = std::get<jsh::binary_data>(*proc_data.value());
-    ASSERT_NE(data.stdout, jsh::syscall_wrapper::STDOUT_FILE_DESCRIPTOR);
+    ASSERT_NE(data.stdout, jsh::syscall_wrapper::stdout_file_descriptor);
 }
 
 TEST(TestProcess, TestOutputRedirectionParsingBasic2){
@@ -282,7 +282,7 @@ TEST(TestProcess, TestOutputRedirectionParsingBasic2){
     
     // get reference to underlying data
     auto& data = std::get<jsh::binary_data>(*proc_data.value());
-    ASSERT_NE(data.stdout, jsh::syscall_wrapper::STDOUT_FILE_DESCRIPTOR);
+    ASSERT_NE(data.stdout, jsh::syscall_wrapper::stdout_file_descriptor);
 }
 
 TEST(TestProcess, TestOutputRedirectionParsingBasic3){
@@ -298,7 +298,7 @@ TEST(TestProcess, TestOutputRedirectionParsingBasic3){
     
     // get reference to underlying data
     auto& data = std::get<jsh::binary_data>(*proc_data.value());
-    ASSERT_NE(data.stdout, jsh::syscall_wrapper::STDOUT_FILE_DESCRIPTOR);
+    ASSERT_NE(data.stdout, jsh::syscall_wrapper::stdout_file_descriptor);
 }
 
 TEST(TestProcess, TestOutputRedirectionParsingMalformed1){
