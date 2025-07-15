@@ -19,6 +19,14 @@ Checks: "*,
         -cppcoreguidelines-pro-type-vararg,hicpp-vararg,
         -hicpp-vararg,
         -fuchsia-overloaded-operator,
+        -fuchsia-default-arguments-calls,
+        -fuchsia-statically-constructed-objects,
+        -cppcoreguidelines-avoid-non-const-global-variables,
+        -cppcoreguidelines-interfaces-global-init,
+        -cppcoreguidelines-pro-bounds-constant-array-index,
+        -llvmlibc-inline-function-decl,
+        -llvmlibc-restrict-system-libc-headers,
+        -boost-use-ranges,
 "
 WarningsAsErrors: '*'
 

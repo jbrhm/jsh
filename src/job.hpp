@@ -3,8 +3,8 @@
 #include "pch.hpp"
 
 // JSH
-#include "process.hpp"
 #include "macros.hpp"
+#include "process.hpp"
 
 namespace jsh {
     struct job_data;
@@ -31,16 +31,16 @@ namespace jsh {
         enum OPERATOR : char {
             AND = 0,
             PIPE = 1,
-            COUNT
+            COUNT = 2
         };
 
     private:
         /**
          * CONSTANTS
          */
-        static constexpr char const* OPERATOR_STR[OPERATOR::COUNT] = {"&&", "|"};
+        static constexpr char const* OPERATOR_STR[OPERATOR::COUNT] = {"&&", "|"}; // NOLINT
 
-        static constexpr std::size_t OPERATOR_LENGTH[OPERATOR::COUNT] = {std::string_view(OPERATOR_STR[OPERATOR::AND]).size(), std::string_view(OPERATOR_STR[OPERATOR::PIPE]).size()};
+        static constexpr std::size_t OPERATOR_LENGTH[OPERATOR::COUNT] = {std::string_view(OPERATOR_STR[OPERATOR::AND]).size(), std::string_view(OPERATOR_STR[OPERATOR::PIPE]).size()}; // NOLINT
         static_assert(OPERATOR_LENGTH[OPERATOR::AND] == 2, "&& operator not correct length");
         static_assert(OPERATOR_LENGTH[OPERATOR::PIPE] == 1, "| operator not correct length");
     };
@@ -50,8 +50,9 @@ namespace jsh {
      *
      * NOTES: SoA is used since we will wont need to access both data inbesides during initial population
      */
-    // TODO: use memory prefetching to grab this process structure while the current one is running since we are using lists
-    struct job_data {
+    // TODO (john): use memory prefetching to grab this process structure while the current one is running since we are using lists
+    static constexpr std::size_t JOB_DATA_ALIGNMENT = 128;
+    struct __attribute__((packed)) __attribute__((aligned(JOB_DATA_ALIGNMENT))) job_data {
         /**
          * input_seq: the sequence of commands which make up a job
          */

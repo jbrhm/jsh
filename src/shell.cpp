@@ -3,9 +3,8 @@
 namespace jsh {
     std::shared_ptr<shell> shell::shell_ptr;
 
-    shell::shell(){
+    shell::shell() : is_interactive{syscall_wrapper::isatty_wrapper(syscall_wrapper::stdin_file_descriptor)}{
         // check to see if jsh is interactive
-        is_interactive = syscall_wrapper::isatty_wrapper(syscall_wrapper::STDIN_FILE_DESCRIPTOR);
         std::optional<pid_t> cur_grp_pid = std::nullopt;
         term_if = std::make_shared<termios>(); // structure describing the terminal interface
         
@@ -17,7 +16,7 @@ namespace jsh {
             // loop until jsh is in the foreground
             while(true){
                 // get the process group id controlling the terminal
-                std::optional<pid_t> tc_grp_pid = syscall_wrapper::tcgetpgrp_wrapper(syscall_wrapper::STDIN_FILE_DESCRIPTOR);
+                std::optional<pid_t> tc_grp_pid = syscall_wrapper::tcgetpgrp_wrapper(syscall_wrapper::stdin_file_descriptor);
 
                 // get the current process' group id
                 cur_grp_pid = syscall_wrapper::getpgrp_wrapper();
@@ -88,12 +87,12 @@ namespace jsh {
             }
 
             // try and grab control of the shell
-            if(!syscall_wrapper::tcsetpgrp_wrapper(syscall_wrapper::STDIN_FILE_DESCRIPTOR, cur_grp_pid.value())){
+            if(!syscall_wrapper::tcsetpgrp_wrapper(syscall_wrapper::stdin_file_descriptor, cur_grp_pid.value())){
                 throw std::runtime_error("Failed to grab control of terminal shell...");
             }
 
             // get the shell attributes
-            if(!syscall_wrapper::tcgetattr_wrapper(syscall_wrapper::STDIN_FILE_DESCRIPTOR, term_if)){
+            if(!syscall_wrapper::tcgetattr_wrapper(syscall_wrapper::stdin_file_descriptor, term_if)){
                 throw std::runtime_error("Failed to get shell attributes...");
             }
         }else{
@@ -124,7 +123,6 @@ namespace jsh {
     auto shell::execute_command() -> bool{
         // stack vars
         std::string input;
-        std::string arg;
 
         // get the command from the user
         jsh::cout_logger.log(jsh::LOG_LEVEL::SILENT, PROMPT_MESSAGE);
@@ -132,36 +130,36 @@ namespace jsh {
         // create the signal file descriptor for SIGINT
         sigset_t sigs;
 
-        bool sigset_status = syscall_wrapper::sigemptyset_wrapper(sigs);
+        bool const sigset_status = syscall_wrapper::sigemptyset_wrapper(sigs);
         if(!sigset_status){
             return false;
         }
 
-        bool sigadd_status = syscall_wrapper::sigaddset_wrapper(sigs, SIGINT);
+        bool const sigadd_status = syscall_wrapper::sigaddset_wrapper(sigs, SIGINT);
         if(!sigadd_status){
             return false;
         }
 
         // block the signal handlers
-        bool sigprocmask_status = syscall_wrapper::sigprocmask_wrapper(SIG_BLOCK, sigs);
+        bool const sigprocmask_status = syscall_wrapper::sigprocmask_wrapper(SIG_BLOCK, sigs);
         if(!sigprocmask_status){
             return false;
         }
 
         // create signal fd
-        std::optional<file_descriptor_wrapper> sigfd_op = syscall_wrapper::signalfd_wrapper(syscall_wrapper::INVALID_FILE_DESCRIPTOR, sigs, 0);
+        std::optional<file_descriptor_wrapper> sigfd_op = syscall_wrapper::signalfd_wrapper(syscall_wrapper::invalid_file_descriptor, sigs, 0);
         if(!sigfd_op.has_value()){
             return false;
         }
-        file_descriptor_wrapper sigfd = std::move(sigfd_op.value());
+        file_descriptor_wrapper const sigfd = std::move(sigfd_op.value());
 
         // poll the file descriptors
         std::vector<syscall_wrapper::pollfd_wrapper> pfds;
         pfds.emplace_back(sigfd, POLLIN, 0);
-        pfds.emplace_back(syscall_wrapper::STDIN_FILE_DESCRIPTOR, POLLIN, 0);
+        pfds.emplace_back(syscall_wrapper::stdin_file_descriptor, POLLIN, 0);
 
         // poll the fds
-        std::optional<int> num_fds = syscall_wrapper::poll_wrapper(pfds, -1);
+        std::optional<int> const num_fds = syscall_wrapper::poll_wrapper(pfds, -1);
         if(!num_fds.has_value()){
             return false;
         }

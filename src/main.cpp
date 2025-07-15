@@ -25,7 +25,7 @@ auto main() noexcept -> int{
         // loop through user input
         while(true){
             // execute the user input
-            bool const status = jsh->execute_command();
+            bool const status = jsh::shell::execute_command();
 
             if(!status){
                 return 0;

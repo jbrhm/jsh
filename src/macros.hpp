@@ -7,7 +7,7 @@ inline std::array<char, ERR_BUF_SIZE> err_buf;
 
 template <typename T>
 concept printable = 
-    requires(T t) {{std::cout << t};};
+    requires(T itm) {{std::cout << itm};};
 
 namespace jsh {
     enum LOG_LEVEL : char {
@@ -17,10 +17,10 @@ namespace jsh {
         FATAL = 3,
         STATUS = 4,
         SILENT = 5,
-        COUNT
+        COUNT = 6
     };
 
-    inline static constexpr char const* log_level_strings[] = {"DEBUG", "WARN", "ERROR", "FATAL", "STATUS", ""};
+    inline static constexpr char const* LOG_LEVEL_STRINGS[] = {"DEBUG", "WARN", "ERROR", "FATAL", "STATUS", ""}; // NOLINT this is because std::array is not allowed here
     
 
     inline char global_log_level = 0;
@@ -37,18 +37,19 @@ namespace jsh {
         // delete all copy/move constructors and assignment operators
         logger(logger const& other) = delete;
         logger(logger&& other) = delete;
-        logger& operator=(logger const& other) = delete;
-        logger& operator=(logger&& other) = delete;
+        auto operator=(logger const& other) -> logger& = delete;
+        auto operator=(logger&& other) -> logger& = delete;
 
-        logger([[maybe_unused]] std::ostream& os = std::cout) : _os{os}{}
+        explicit logger([[maybe_unused]] std::ostream& ostm = std::cout) noexcept: _os{ostm}{}
+        ~logger() = default;
 
         template<printable ...T>
-        inline void log(LOG_LEVEL log_level, T... arg){
+        void log(LOG_LEVEL log_level, T... arg){
             if(log_level == LOG_LEVEL::SILENT){
                 (_os << ... << arg);
                 _os << std::flush;
             }else if(log_level >= global_log_level){
-                _os << log_level_strings[log_level] << ": ";
+                _os << LOG_LEVEL_STRINGS[static_cast<int>(log_level)] << ": ";
                 (_os << ... << arg);
                 _os << '\n';
                 _os << std::flush;
@@ -57,4 +58,4 @@ namespace jsh {
     };
 
     inline static logger cout_logger;
-};
+}; // namespace jsh

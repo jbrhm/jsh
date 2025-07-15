@@ -3,12 +3,12 @@
 #include "pch.hpp"
 
 // JSH
-#include "posix_wrappers.hpp"
 #include "environment.hpp"
-#include "parsing.hpp"
-#include "process.hpp"
 #include "job.hpp"
 #include "macros.hpp"
+#include "parsing.hpp"
+#include "posix_wrappers.hpp"
+#include "process.hpp"
 
 namespace jsh {
     class shell{
@@ -39,6 +39,14 @@ namespace jsh {
         shell();
 
         /**
+         * delete other constructors
+         */
+        shell(shell const& other) = delete;
+        shell(shell&& other) = delete;
+        auto operator=(shell const& other) -> shell& = delete;
+        auto operator=(shell&& other) -> shell& = delete;
+
+        /**
          * destructor
          */
         ~shell();
@@ -51,7 +59,7 @@ namespace jsh {
         /**
          * execute_command: recieves user input and executes their command, returns false if we are to exit
          */
-        [[nodiscard]] auto execute_command() -> bool;
+        [[nodiscard]] static auto execute_command() -> bool;
 
         /**
          * get_term_if: returns the terminal interface pointer

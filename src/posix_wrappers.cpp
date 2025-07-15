@@ -5,7 +5,7 @@ namespace jsh {
     named_pipe_wrapper::named_pipe_wrapper(std::string pipe_name) : success{true}, name{std::move(pipe_name)}{
         // create the pipe
         if(mkfifo(name.c_str(), PIPE_PERMS) == -1){
-            std::cout << "Error making pipe: " << strerror_r(errno, err_buf.data(), err_buf.size()) << '\n';
+            std::cout << "Error making pipe: " << syscall_wrapper::strerror_wrapper(errno) << '\n';
             success = false;
         }
     }
@@ -13,7 +13,7 @@ namespace jsh {
         // if pipe was created delete it
         if(success){
             if(unlink(name.c_str()) == -1){
-                std::cout << "Error removing pipe: " << strerror_r(errno, err_buf.data(), err_buf.size()) << '\n';
+                std::cout << "Error removing pipe: " << syscall_wrapper::strerror_wrapper(errno) << '\n';
             }
         }
     }
@@ -50,7 +50,7 @@ namespace jsh {
             int const status = close(_fides);
             // check the status on close
             if(status == -1){
-                cout_logger.log(LOG_LEVEL::ERROR, "Error occurred while closing file: ", strerror_r(errno, err_buf.data(), err_buf.size()));
+                cout_logger.log(LOG_LEVEL::ERROR, "Error occurred while closing file: ", syscall_wrapper::strerror_wrapper(errno));
             }
         }
     }
@@ -75,7 +75,7 @@ namespace jsh {
 
         // check for errors
         if(fides == -1){
-            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Error occurred while opening file ", file, ": ", strerror_r(errno, err_buf.data(), err_buf.size()));
+            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Error occurred while opening file ", file, ": ", strerror_wrapper(errno));
             return std::nullopt;
         }
 
@@ -92,7 +92,7 @@ namespace jsh {
 
         // check to see if there was an error
         if(new_fides == -1){
-            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Error occurred while duplicating a file descriptor: ", strerror_r(errno, err_buf.data(), err_buf.size()));
+            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Error occurred while duplicating a file descriptor: ", strerror_wrapper(errno));
             return std::nullopt;
         }
 
@@ -106,7 +106,7 @@ namespace jsh {
 
         // check to see if there was an error
         if(status == -1){
-            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Error occurred while duplicating2 a file descriptor: ", strerror_r(errno, err_buf.data(), err_buf.size()));
+            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Error occurred while duplicating2 a file descriptor: ", strerror_wrapper(errno));
             return false;
         }
         
@@ -121,7 +121,7 @@ namespace jsh {
 
         // check for errors
         if(status == -1){
-            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Creating a anonymous pipe: ", strerror_r(errno, err_buf.data(), err_buf.size()));
+            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Creating a anonymous pipe: ", strerror_wrapper(errno));
             return std::nullopt;
         }
 
@@ -140,7 +140,7 @@ namespace jsh {
 
         // error handle
         if(status == -1){
-            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Error while reading file descriptor: ", strerror_r(errno, err_buf.data(), err_buf.size()));
+            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Error while reading file descriptor: ", strerror_wrapper(errno));
             return std::nullopt;
         }
 
@@ -154,7 +154,7 @@ namespace jsh {
 
         // error handle
         if(status != 1){
-            cout_logger.log(jsh::LOG_LEVEL::WARN, "JSH is not running as a terminal: ", strerror_r(errno, err_buf.data(), err_buf.size()));
+            cout_logger.log(jsh::LOG_LEVEL::WARN, "JSH is not running as a terminal: ", strerror_wrapper(errno));
             return false;
         }
 
@@ -168,7 +168,7 @@ namespace jsh {
 
         // check for errors
         if(tc_grp_pid == -1){
-            cout_logger.log(jsh::LOG_LEVEL::WARN, "Failed to get the process group controlling the terminal: ", strerror_r(errno, err_buf.data(), err_buf.size()));
+            cout_logger.log(jsh::LOG_LEVEL::WARN, "Failed to get the process group controlling the terminal: ", strerror_wrapper(errno));
             return std::nullopt;
         }
 
@@ -182,7 +182,7 @@ namespace jsh {
 
         // error handle
         if(pgrp_id == -1){
-            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to get the process group id: ", strerror_r(errno, err_buf.data(), err_buf.size()));
+            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to get the process group id: ", strerror_wrapper(errno));
             return std::nullopt;
         }
 
@@ -202,7 +202,7 @@ namespace jsh {
 
         // error handle
         if(status == -1){
-            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to set the process' process group id: ", strerror_r(errno, err_buf.data(), err_buf.size()));
+            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to set the process' process group id: ", strerror_wrapper(errno));
             return false;
         }
 
@@ -216,7 +216,7 @@ namespace jsh {
 
         // error hangle
         if(status == -1){
-            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to set the terminal's controlling process group: ", strerror_r(errno, err_buf.data(), err_buf.size()));
+            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to set the terminal's controlling process group: ", strerror_wrapper(errno));
             return false;
         }
 
@@ -229,7 +229,7 @@ namespace jsh {
         int const status = tcgetattr(term_fides._fides, term_if.get());
 
         if(status == -1){
-            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to get the terminal's interface attribute: ", strerror_r(errno, err_buf.data(), err_buf.size()));
+            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to get the terminal's interface attribute: ", strerror_wrapper(errno));
             return false;
         }
 
@@ -243,7 +243,7 @@ namespace jsh {
 
         // error handle
         if(status == -1){
-            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to set the terminal's interface attribute: ", strerror_r(errno, err_buf.data(), err_buf.size()));
+            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to set the terminal's interface attribute: ", strerror_wrapper(errno));
             return false;
         }
 
@@ -257,7 +257,7 @@ namespace jsh {
 
         // error handle
         if(status == -1){
-            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to send signal: ", strerror_r(errno, err_buf.data(), err_buf.size()));
+            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to send signal: ", strerror_wrapper(errno));
             return false;
         }
 
@@ -270,7 +270,7 @@ namespace jsh {
 
         // error handle
         if(ret == SIG_ERR){
-            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to set signal handler: ", strerror_r(errno, err_buf.data(), err_buf.size()));
+            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to set signal handler: ", strerror_wrapper(errno));
             return std::nullopt;
         }
         return std::make_optional<std::function<void(int)>>(ret);
@@ -282,7 +282,7 @@ namespace jsh {
 
         // error handle
         if(status == -1){
-            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to empty signal set: ", strerror_r(errno, err_buf.data(), err_buf.size()));
+            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to empty signal set: ", strerror_wrapper(errno));
             return false;
         }
 
@@ -296,7 +296,7 @@ namespace jsh {
 
         // error handle
         if(status == -1){
-            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to add signal to set: ", strerror_r(errno, err_buf.data(), err_buf.size()));
+            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to add signal to set: ", strerror_wrapper(errno));
             return false;
         }
 
@@ -310,7 +310,7 @@ namespace jsh {
 
         // error handle
         if(status == -1){
-            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to create process signal mask: ", strerror_r(errno, err_buf.data(), err_buf.size()));
+            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to create process signal mask: ", strerror_wrapper(errno));
             return false;
         }
 
@@ -324,7 +324,7 @@ namespace jsh {
 
         // error handle
         if(new_signal_fd == -1){
-            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to create signal file descriptor: ", strerror_r(errno, err_buf.data(), err_buf.size()));
+            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to create signal file descriptor: ", strerror_wrapper(errno));
             return std::nullopt;
         }
 
@@ -345,7 +345,7 @@ namespace jsh {
 
         // error handle
         if(num_fds == -1){
-            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to poll file descriptors: ", strerror_r(errno, err_buf.data(), err_buf.size()));
+            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to poll file descriptors: ", strerror_wrapper(errno));
             return std::nullopt;
         }
 
@@ -358,5 +358,32 @@ namespace jsh {
         return std::make_optional<int>(num_fds);
     }
 
+    auto syscall_wrapper::fork_wrapper() -> std::optional<pid_t>{
+        // fork
+        pid_t const pid = fork();
+
+        // error handle
+        if(pid == -1){
+            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed to fork file descriptors: ", strerror_wrapper(errno));
+            return std::nullopt;
+        }
+
+        // success
+        return std::make_optional<pid_t>(pid);
+    }
+
+    auto syscall_wrapper::strerror_wrapper(int err) -> bool{
+        // call strerror_r
+        char const* status = strerror_r(err, err_buf.data(), err_buf.size());
+
+        // error handle
+        if(status == nullptr){
+            cout_logger.log(jsh::LOG_LEVEL::ERROR, "Failed convert error to string: ", strerror_r(err, err_buf.data(), err_buf.size()));
+            return false;
+        }
+
+        // success
+        return true;
+    }
     ///// SYSCALL WRAPPER /////
 } // namespace jsh

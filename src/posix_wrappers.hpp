@@ -33,6 +33,14 @@ namespace jsh {
          */
         explicit named_pipe_wrapper(std::string pipe_name);
 
+        /**
+         * delete other constructors
+         */
+        named_pipe_wrapper(named_pipe_wrapper const& other) = delete;
+        named_pipe_wrapper(named_pipe_wrapper&& other) = delete;
+        auto operator=(named_pipe_wrapper const& other) -> named_pipe_wrapper& = delete;
+        auto operator=(named_pipe_wrapper&& other) -> named_pipe_wrapper& = delete;
+
         ~named_pipe_wrapper();
     };
 
@@ -70,7 +78,7 @@ namespace jsh {
          * delete copy and assignment operator
          */
         file_descriptor_wrapper(file_descriptor_wrapper const& other) = delete;
-        file_descriptor_wrapper& operator=(file_descriptor_wrapper const& other) = delete;
+        auto operator=(file_descriptor_wrapper const& other) -> file_descriptor_wrapper& = delete;
 
         /**
          * define move semantics
@@ -102,34 +110,35 @@ namespace jsh {
         /**
          * definitions for stdout, stdin, stderr file_descriptor_wrappers
          */
-        inline static file_descriptor_wrapper STDOUT_FILE_DESCRIPTOR = file_descriptor_wrapper(STDOUT_FILENO);
-        inline static file_descriptor_wrapper STDIN_FILE_DESCRIPTOR = file_descriptor_wrapper(STDIN_FILENO);
-        inline static file_descriptor_wrapper STDERR_FILE_DESCRIPTOR = file_descriptor_wrapper(STDERR_FILENO);
-        inline static file_descriptor_wrapper INVALID_FILE_DESCRIPTOR = file_descriptor_wrapper(-1);
+        inline static file_descriptor_wrapper stdout_file_descriptor = file_descriptor_wrapper(STDOUT_FILENO);
+        inline static file_descriptor_wrapper stdin_file_descriptor = file_descriptor_wrapper(STDIN_FILENO);
+        inline static file_descriptor_wrapper stderr_file_descriptor = file_descriptor_wrapper(STDERR_FILENO);
+        inline static file_descriptor_wrapper invalid_file_descriptor = file_descriptor_wrapper(-1);
 
         /**
          * pollfd_wrapper: wrapper around the pollfd structure
          */
-        struct pollfd_wrapper{
+        static constexpr std::size_t POLLFD_ALIGNMENT = 16;
+        struct __attribute((aligned(POLLFD_ALIGNMENT))) pollfd_wrapper{
             /**
              * fides: the file descriptor
              */
-            file_descriptor_wrapper const& fides; // default
+            file_descriptor_wrapper const& fides; // default NOLINT
 
             /**
              * events: the events the pollfd is listening for
              */
-            short events;
+            std::int16_t events; // NOLINT
 
             /**
              * revents: the events that get returned out
              */
-            short revents;
+            std::int16_t revents; // NOLINT
 
             /**
              * constructor since this structure holds a reference
              */
-            explicit pollfd_wrapper(file_descriptor_wrapper const& fid, short evnts, short rvnts) : fides{fid}, events{evnts}, revents{rvnts}{};
+            explicit pollfd_wrapper(file_descriptor_wrapper const& fid, std::int16_t evnts, std::int16_t rvnts) : fides{fid}, events{evnts}, revents{rvnts}{};
         };
 
         /**
@@ -231,5 +240,15 @@ namespace jsh {
          * poll_wrapper: wrapper around the poll syscall
          */
         [[nodiscard]] static auto poll_wrapper(std::vector<pollfd_wrapper>& fds, int timeout) -> std::optional<int>;
+
+        /**
+         * fork_wrapper: wrapper around the fork syscall
+         */
+        [[nodiscard]] static auto fork_wrapper() -> std::optional<pid_t>;
+
+        /**
+         * strerror_wrapper: wrapper around the strerror syscall which uses strerror_r to be thread safe
+         */
+        [[nodiscard]] static auto strerror_wrapper(int err) -> bool;
     };
 } // namespace jsh

@@ -4,8 +4,8 @@
 
 // JSH
 #include "environment.hpp"
-#include "posix_wrappers.hpp"
 #include "macros.hpp"
+#include "posix_wrappers.hpp"
 
 namespace jsh {
     /**
@@ -21,7 +21,8 @@ namespace jsh {
      *
      * is_foreground: indicates whether the process will run in the foreground of the shell
      */
-    struct default_data {
+    static constexpr std::size_t DEFAULT_DATA_ALIGNMENT = 64;
+    struct __attribute__((packed)) __attribute__((aligned(DEFAULT_DATA_ALIGNMENT))) default_data {
         std::optional<file_descriptor_wrapper> stdout = std::nullopt;
         std::optional<file_descriptor_wrapper> stdin = std::nullopt;
         std::optional<file_descriptor_wrapper> stderr = std::nullopt;
@@ -36,7 +37,7 @@ namespace jsh {
      *
      * args: the arguments provided to the shell
      */
-    struct binary_data : default_data {
+    struct __attribute__((packed)) binary_data : default_data { // NOLINT this complains about being 64 byte aligned
         std::vector<std::string> args;
     };
 
@@ -47,7 +48,7 @@ namespace jsh {
      *
      * val: the value that will be associated with this environment variable
      */
-    struct export_data : default_data {
+    struct __attribute__((packed)) export_data : default_data { // NOLINT this complains about being 64 byte aligned
         std::string name;
         std::string val;
     };
@@ -110,7 +111,22 @@ namespace jsh {
              */
             bool _restore;
         public:
+            /**
+             * constructor to wrap all fd redirection
+             */
             shell_internal_redirection(std::optional<file_descriptor_wrapper> stdout, std::optional<file_descriptor_wrapper> stdin, std::optional<file_descriptor_wrapper> stderr, [[maybe_unused]] bool restore = true);
+
+            /**
+             * delete other constructors
+             */
+            shell_internal_redirection(shell_internal_redirection const& other) = delete;
+            shell_internal_redirection(shell_internal_redirection&& other) = delete;
+            auto operator=(shell_internal_redirection const& other) -> shell_internal_redirection& = delete;
+            auto operator=(shell_internal_redirection&& other) -> shell_internal_redirection& = delete;
+
+            /**
+             * destructor to close all fds
+             */
             ~shell_internal_redirection();
         };
 

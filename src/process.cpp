@@ -1,8 +1,5 @@
 #include "process.hpp"
-#include "shell.hpp"
-#include "posix_wrappers.hpp"
-#include <optional>
-
+#include "shell.hpp" // required to be here for non-cyclic includes
 
 namespace jsh {
     process::shell_internal_redirection::shell_internal_redirection(std::optional<file_descriptor_wrapper> stdout, std::optional<file_descriptor_wrapper> stdin, std::optional<file_descriptor_wrapper> stderr, bool restore) : new_stdout{std::move(stdout)}, new_stdin{std::move(stdin)}, new_stderr{std::move(stderr)}, og_stdout{std::nullopt}, og_stdin{std::nullopt}, og_stderr{std::nullopt}, _restore{restore}{
@@ -11,12 +8,12 @@ namespace jsh {
             // this will essentially make STDOUT_FILENO point to the other file descriptor
             // since according to the man page it will close STDOUT_FILENO since it already exists
             if(_restore){
-                og_stdout = syscall_wrapper::dup_wrapper(syscall_wrapper::STDOUT_FILE_DESCRIPTOR);
+                og_stdout = syscall_wrapper::dup_wrapper(syscall_wrapper::stdout_file_descriptor);
             }
 
             // we should have a value at this point
             assert(new_stdout.has_value());
-            bool status = syscall_wrapper::dup2_wrapper(new_stdout.value(), syscall_wrapper::STDOUT_FILE_DESCRIPTOR);
+            bool const status = syscall_wrapper::dup2_wrapper(new_stdout.value(), syscall_wrapper::stdout_file_descriptor);
 
             // check to make sure dup succeeded
             if(!status){
@@ -30,12 +27,12 @@ namespace jsh {
         // check for a different stdin
         if(new_stdin.has_value()){
             if(_restore){
-                og_stdin = syscall_wrapper::dup_wrapper(syscall_wrapper::STDIN_FILE_DESCRIPTOR);
+                og_stdin = syscall_wrapper::dup_wrapper(syscall_wrapper::stdin_file_descriptor);
             }
 
             // we should have a value at this point
             assert(new_stdin.has_value());
-            bool status = syscall_wrapper::dup2_wrapper(new_stdin.value(), syscall_wrapper::STDIN_FILE_DESCRIPTOR);
+            bool const status = syscall_wrapper::dup2_wrapper(new_stdin.value(), syscall_wrapper::stdin_file_descriptor);
 
             // check to make sure dup succeeded
             if(!status){
@@ -49,12 +46,12 @@ namespace jsh {
         // check for a different stderr
         if(new_stderr.has_value()){
             if(_restore){
-                og_stderr = syscall_wrapper::dup_wrapper(syscall_wrapper::STDERR_FILE_DESCRIPTOR);
+                og_stderr = syscall_wrapper::dup_wrapper(syscall_wrapper::stderr_file_descriptor);
             }
 
             // we should have a value at this point
             assert(new_stderr.has_value());
-            bool status = syscall_wrapper::dup2_wrapper(new_stderr.value(), syscall_wrapper::STDERR_FILE_DESCRIPTOR);
+            bool const status = syscall_wrapper::dup2_wrapper(new_stderr.value(), syscall_wrapper::stderr_file_descriptor);
 
             // check to make sure dup succeeded
             if(!status){
@@ -70,7 +67,7 @@ namespace jsh {
         if(_restore){
             // check for a different stdout
             if(og_stdout.has_value()){
-                bool status = syscall_wrapper::dup2_wrapper(og_stdout.value(), syscall_wrapper::STDOUT_FILE_DESCRIPTOR);
+                bool const status = syscall_wrapper::dup2_wrapper(og_stdout.value(), syscall_wrapper::stdout_file_descriptor);
                 // check to make sure dup succeeded
                 if(!status){
                     return;
@@ -79,7 +76,7 @@ namespace jsh {
 
             // check for a different stdin
             if(og_stdin.has_value()){
-                bool status = syscall_wrapper::dup2_wrapper(og_stdin.value(), syscall_wrapper::STDIN_FILE_DESCRIPTOR);
+                bool const status = syscall_wrapper::dup2_wrapper(og_stdin.value(), syscall_wrapper::stdin_file_descriptor);
 
                 // check to make sure dup succeeded
                 if(!status){
@@ -88,8 +85,8 @@ namespace jsh {
             }
 
             // check for a different stderr
-            if(new_stderr.has_value()){
-                bool status = syscall_wrapper::dup2_wrapper(og_stderr.value(), syscall_wrapper::STDERR_FILE_DESCRIPTOR);
+            if(og_stderr.has_value()){
+                bool const status = syscall_wrapper::dup2_wrapper(og_stderr.value(), syscall_wrapper::stderr_file_descriptor);
 
                 // check to make sure dup succeeded
                 if(!status){
@@ -105,7 +102,7 @@ namespace jsh {
 
         // stack allocated variables
         std::string arg;
-        std::stringstream ss(input);
+        std::stringstream sstrm(input);
         std::vector<std::string> args;
 
         // file descriptors
@@ -114,16 +111,17 @@ namespace jsh {
         std::optional<file_descriptor_wrapper> proc_stderr = std::nullopt;
 
         // parse the command into different components
-        while(ss >> arg){
+        static constexpr mode_t FILE_MODE = 0777;
+        while(sstrm >> arg){
             // search for input and output redirection
             std::string filename;
             if(arg.size() == 1 && arg[0] == INPUT_REDIRECTION){
                 // get the input file descriptor
-                if(!(ss >> filename)){
+                if(!(sstrm >> filename)){
                     cout_logger.log(LOG_LEVEL::ERROR, "Input file not specified...");
                     return std::nullopt;
                 }
-                proc_stdin = syscall_wrapper::open_wrapper(filename, O_RDONLY, 0777);
+                proc_stdin = syscall_wrapper::open_wrapper(filename, O_RDONLY, FILE_MODE);
 
                 if(!proc_stdin.has_value()){
                     return std::nullopt;
@@ -134,11 +132,11 @@ namespace jsh {
 
             if(arg.size() == 1 && arg[0] == OUTPUT_REDIRECTION){
                 // get the output file descriptor
-                if(!(ss >> filename)){
+                if(!(sstrm >> filename)){
                     cout_logger.log(LOG_LEVEL::ERROR, "Output file not specified...");
                     return std::nullopt;
                 }
-                proc_stdout = syscall_wrapper::open_wrapper(filename, O_WRONLY | O_CREAT | O_TRUNC, 0777);
+                proc_stdout = syscall_wrapper::open_wrapper(filename, O_WRONLY | O_CREAT | O_TRUNC, FILE_MODE);
 
                 if(!proc_stdout.has_value()){
                     return std::nullopt;
@@ -158,7 +156,7 @@ namespace jsh {
 
             assert(std::holds_alternative<export_data>(*proc_data));
 
-            export_data& data = std::get<export_data>(*proc_data);
+            auto& data = std::get<export_data>(*proc_data);
 
             // set IO redirection
             data.stdout = std::move(proc_stdout);
@@ -173,22 +171,22 @@ namespace jsh {
 
             // find the equals
             // indexing into this at 1 is fine since we know the size is at least 2
-            std::size_t it = args[1].find(EQUALS);
+            std::size_t const idx = args[1].find(EQUALS);
 
             // ensure there is an = in the string
-            if(it == std::string::npos || it + 1 >= args[1].size() || it == 0){
+            if(idx == std::string::npos || idx + 1 >= args[1].size() || idx == 0){
                 return std::nullopt;
             }
 
             // get the variable name
-            data.name = args[1].substr(0, it);
-            data.val = args[1].substr(it + 1, args[1].size());
+            data.name = args[1].substr(0, idx);
+            data.val = args[1].substr(idx + 1, args[1].size());
         }else{ // regular binary
             *proc_data = binary_data{};
 
             assert(std::holds_alternative<binary_data>(*proc_data));
 
-            binary_data& data = std::get<binary_data>(*proc_data);
+            auto& data = std::get<binary_data>(*proc_data);
 
             // set IO redirection
             data.stdout = std::move(proc_stdout);
@@ -210,6 +208,7 @@ namespace jsh {
         std::vector<char*> args_ptr;
 
         // push back all of the pointers to the arguments
+        args_ptr.reserve(data.args.size());
         for(auto& arg : data.args){
             args_ptr.push_back(arg.data());
         }
@@ -218,7 +217,12 @@ namespace jsh {
         args_ptr.push_back(nullptr);
 
         // fork into another subprocess to execute the binary
-        pid_t pid = fork();
+        std::optional<pid_t> pid_op = syscall_wrapper::fork_wrapper();
+        if(!pid_op.has_value()){
+            return;
+        }
+        pid_t const& pid = pid_op.value();
+
         if(static_cast<bool>(pid)){ // parent
             // update the process id for the new process if it is the first one/its pointer is nullptr
             if(*data.pgid == -1){
@@ -235,7 +239,7 @@ namespace jsh {
 
             // set the child process to control the terminal
             if(data.is_foreground){
-                status = syscall_wrapper::tcsetpgrp_wrapper(syscall_wrapper::STDIN_FILE_DESCRIPTOR, *data.pgid);
+                status = syscall_wrapper::tcsetpgrp_wrapper(syscall_wrapper::stdin_file_descriptor, *data.pgid);
 
                 if(!status){
                     return;
@@ -250,9 +254,9 @@ namespace jsh {
             }
 
             // wait for the process to complete
-            // TODO: I cannot wait everytime there is a command executed if we are going to support background tasks
+            // TODO (john): I cannot wait everytime there is a command executed if we are going to support background tasks
             int wait_status = 0;
-            pid_t exit_code = waitpid(pid, &wait_status, WUNTRACED);
+            pid_t const exit_code = waitpid(pid, &wait_status, WUNTRACED);
 
             // close all of the older file descriptors
             data.stdout = std::nullopt;
@@ -261,11 +265,11 @@ namespace jsh {
 
             // check for errors
             if(exit_code != pid){
-                jsh::cout_logger.log(jsh::LOG_LEVEL::ERROR, "Waiting on PID ", pid, " failed: ", strerror(errno), '\n');
+                jsh::cout_logger.log(jsh::LOG_LEVEL::ERROR, "Waiting on PID ", pid, " failed: ", syscall_wrapper::strerror_wrapper(errno), '\n');
             }else{
                 // save the exit status
                 if(WIFEXITED(wait_status)){
-                    std::string exit_status = std::to_string(WEXITSTATUS(wait_status));
+                    std::string const exit_status = std::to_string(WEXITSTATUS(wait_status));
                     environment::set_var(environment::STATUS_STRING, exit_status.c_str());
                 }
             }
@@ -276,7 +280,7 @@ namespace jsh {
             if(data.is_foreground){
                 std::optional<pid_t> cur_pgid = syscall_wrapper::getpid_wrapper();
                 assert(cur_pgid.has_value());
-                status = syscall_wrapper::tcsetpgrp_wrapper(syscall_wrapper::STDIN_FILE_DESCRIPTOR, cur_pgid.value());
+                status = syscall_wrapper::tcsetpgrp_wrapper(syscall_wrapper::stdin_file_descriptor, cur_pgid.value());
 
                 // error handle
                 if(!status){
@@ -294,7 +298,7 @@ namespace jsh {
 
             // send job cont signal
             assert(shll_ptr.has_value());
-            status = syscall_wrapper::tcsetattr_wrapper(syscall_wrapper::STDIN_FILE_DESCRIPTOR, TCSADRAIN, shll_ptr.value()->get_term_if());
+            status = syscall_wrapper::tcsetattr_wrapper(syscall_wrapper::stdin_file_descriptor, TCSADRAIN, shll_ptr.value()->get_term_if());
 
             if(!status){
                 return;
@@ -321,7 +325,7 @@ namespace jsh {
 
             // if the process is running in the foreground, then it gets access to the terminal
             if(data.is_foreground){
-                status = syscall_wrapper::tcsetpgrp_wrapper(syscall_wrapper::STDIN_FILE_DESCRIPTOR, *data.pgid);
+                status = syscall_wrapper::tcsetpgrp_wrapper(syscall_wrapper::stdin_file_descriptor, *data.pgid);
                 
                 // error handle
                 if(!status){
@@ -367,9 +371,9 @@ namespace jsh {
             }
 
             { // sir scope
-                shell_internal_redirection sir(std::move(data.stdout), std::move(data.stdin), std::move(data.stderr), false);
+                shell_internal_redirection const sir(std::move(data.stdout), std::move(data.stdin), std::move(data.stderr), false);
 
-                int exit_code = execvp(args_ptr[0], args_ptr.data());
+                int const exit_code = execvp(args_ptr[0], args_ptr.data());
 
                 // execvp only returns if there was an error
                 assert(exit_code == -1);
@@ -383,7 +387,7 @@ namespace jsh {
 
     void process::execute_process(export_data& data){
         { // sir scope
-            shell_internal_redirection sir(std::move(data.stdout), std::move(data.stdin), std::move(data.stderr));
+            shell_internal_redirection const sir(std::move(data.stdout), std::move(data.stdin), std::move(data.stderr));
 
             // perform the export
             environment::set_var(data.name.c_str(), data.val.c_str());
