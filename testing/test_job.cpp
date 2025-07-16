@@ -467,3 +467,37 @@ TEST(TestJob, TestExecuteJobBasic3) {
         ASSERT_EQ(idx, std::strlen(CORR2) + 1);
     }
 }
+
+TEST(TestJob, TestExitCodeEnvVar) {
+    // command
+    static constexpr char const* CMD = "echo this should exit 0";
+
+    // parse job
+    auto job = jsh::job::parse_job(CMD);
+
+    // not actually in the terminal so we use background processes
+    job->is_foreground = false;
+
+    // execute the job
+    jsh::job::execute_job(job);
+
+    // get the $? env var
+    ASSERT_STREQ(jsh::environment::get_var("?"), jsh::environment::SUCCESS_STRING);
+}
+
+TEST(TestJob, TestExitCodeEnvVarFail) {
+    // command
+    static constexpr char const* CMD = "cat thisfiledoesntexist";
+
+    // parse job
+    auto job = jsh::job::parse_job(CMD);
+
+    // not actually in the terminal so we use background processes
+    job->is_foreground = false;
+
+    // execute the job
+    jsh::job::execute_job(job);
+
+    // get the $? env var
+    ASSERT_STRNE(jsh::environment::get_var("?"), jsh::environment::SUCCESS_STRING);
+}
