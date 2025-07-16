@@ -63,3 +63,7 @@ This file will then be populated with contents of standard out from the last pro
 > `jsh` does not support redirecting for standard error currently
 >
 > In `jsh` pipes have precedence for IO redirection over redirection, such that if both redirection and pipes are utilized, the pipe will be written to instead of the file.
+
+## Contributing:
+
+To contribute, please make github issues. These github issues will then be solved by the maintainer.

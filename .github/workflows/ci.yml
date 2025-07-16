@@ -35,4 +35,4 @@ jobs:
       run: build/test_suite
 
     - name: Check Tidy
-      run: ./style.sh
+      run: scripts/style.sh
