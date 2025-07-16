@@ -487,7 +487,7 @@ TEST(TestJob, TestExitCodeEnvVar) {
 
 TEST(TestJob, TestExitCodeEnvVarFail) {
     // command
-    static constexpr char const* CMD = "cat thisfiledoesntexist";
+    static constexpr char const* CMD = "grep";
 
     // parse job
     auto job = jsh::job::parse_job(CMD);
