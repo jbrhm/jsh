@@ -30,7 +30,7 @@ class shell {
     /**
      * shell_ptr: a singleton pointing to the only install of the jsh shell
      */
-    static std::shared_ptr<shell> shell_ptr;
+    static std::optional<std::shared_ptr<shell>> shell_ptr;
 
   public:
     /**
