@@ -1,5 +1,13 @@
 # jsh
 
+## Usage:
+
+To build `jsh` from source use the `build.sh` script.
+
+To setup the environment install all dependencies in `scripts/setup.sh` and then from the `jsh` folder run `scripts/build_google_test`.
+
+To begin execute `build/jsh`.
+
 ## Basics:
 
 Inside of `jsh` there are two main components, `processes` and `jobs`. 
