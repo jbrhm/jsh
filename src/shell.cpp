@@ -96,7 +96,6 @@ shell::shell() : is_interactive{syscall_wrapper::isatty_wrapper(syscall_wrapper:
         }
     } else {
         cout_logger.log(LOG_LEVEL::ERROR, "JSH must run interactively...");
-        throw std::runtime_error("JSH must run interactively...");
     }
 }
 
