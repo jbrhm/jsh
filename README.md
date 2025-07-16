@@ -40,7 +40,7 @@ The environment variable `$?` will return the previous process' exit value.
 ## Operators:
 
 - `|`: The `|` (pipe) operator chains together two commands such that the standard output of the first command becomes the standard input for the second command.
-- `&&`: The `&&` (and) operator chains together two commands such that the second command will only execute if the first command is successful.
+- `&&`: The `&&` (and) operator chains together two commands.
 
 > [!IMPORTANT]  
 > Operator chaining must be used in the form `$[first command and args][whitespace][operator][whitespace][second command and args]`
