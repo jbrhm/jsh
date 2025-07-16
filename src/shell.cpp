@@ -1,7 +1,7 @@
 #include "shell.hpp"
 
 namespace jsh {
-    std::optional<std::shared_ptr<shell>> shell::shell_ptr = std::nullopt;
+std::optional<std::shared_ptr<shell>> shell::shell_ptr = std::nullopt;
 
 shell::shell() : is_interactive{syscall_wrapper::isatty_wrapper(syscall_wrapper::stdin_file_descriptor)} {
     // check to see if jsh is interactive
