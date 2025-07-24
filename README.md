@@ -14,6 +14,7 @@ Inside of `jsh` there are two main components, `processes` and `jobs`.
 A `process` is as you would expect, it is one binary that will be invoked on the given command line arguments it is passed.
 A `job` is a series of processes that will run in sequence with one another.
 Processes are chained together into jobs through the use of operators.
+The `exit` keyword can be used to exit the `jsh` shell.
 
 ## Environment Variables:
 
@@ -31,6 +32,7 @@ Export commands must be of the form `$export[whitespace][variable name]=[value]`
 To achieve substitution, the substitution must be of the form `$[command part 1]${[environment variable name]}[command part 2]`.
 In this case the characters from the `$` to the `}` will be replaced by the value of the environment variable name.
 In the case where the environment variable does not exist, it will be substituted for an empty string.
+The environment variable `$?` will return the previous process' exit value.
 
 > [!IMPORTANT]  
 > `jsh` does not support nested variable substitutions
@@ -46,7 +48,7 @@ In the case where the environment variable does not exist, it will be substitute
 ## Operators:
 
 - `|`: The `|` (pipe) operator chains together two commands such that the standard output of the first command becomes the standard input for the second command.
-- `&&`: The `&&` (and) operator chains together two commands without altering either of them.
+- `&&`: The `&&` (and) operator chains together two commands.
 
 > [!IMPORTANT]  
 > Operator chaining must be used in the form `$[first command and args][whitespace][operator][whitespace][second command and args]`
