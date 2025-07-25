@@ -133,7 +133,7 @@ auto process::parse_process(std::string const& input) -> std::optional<std::uniq
                 }else if(chr == INPUT_REDIRECTION){ // transition to input filename
                     add_current_arg(); // the redirection characters will act like whitespace
                     curr_state.push(PARSE_STATE::INPUT_FILENAME);
-                }else if(chr == OUTPUT_FILENAME){ // transition to output filename
+                }else if(chr == OUTPUT_REDIRECTION){ // transition to output filename
                     add_current_arg(); // the redirection characters will act like whitespace
                     curr_state.push(PARSE_STATE::OUTPUT_FILENAME);
                 }else if(chr == SINGLE_QUOTE){ // transition to single quote state
@@ -237,6 +237,8 @@ auto process::parse_process(std::string const& input) -> std::optional<std::uniq
         cout_logger.log(LOG_LEVEL::ERROR, "No filename provided...");
         return std::nullopt;
     }
+
+    // create leftover filenames
     if(curr_state.top() == PARSE_STATE::INPUT_FILENAME && !arg.empty()){
         proc_stdin = syscall_wrapper::open_wrapper(arg, O_RDONLY, FILE_MODE);
 
@@ -247,7 +249,7 @@ auto process::parse_process(std::string const& input) -> std::optional<std::uniq
     if(curr_state.top() == PARSE_STATE::OUTPUT_FILENAME && !arg.empty()){
         proc_stdout = syscall_wrapper::open_wrapper(arg, O_WRONLY | O_CREAT | O_TRUNC, FILE_MODE);
 
-        if (!proc_stdin.has_value()) {
+        if (!proc_stdout.has_value()) {
             return std::nullopt;
         }
     }
