@@ -97,12 +97,10 @@ process::shell_internal_redirection::~shell_internal_redirection() {
 }
 
 auto process::parse_process(std::string const& input) -> std::optional<std::unique_ptr<process_data>> {
-    // TODO (john): find a way to prevent this from defaulting to export
     auto proc_data = std::make_unique<process_data>();
 
     // stack allocated variables
     std::string arg;
-    std::stringstream sstrm(input);
     std::vector<std::string> args;
 
     // file descriptors
@@ -112,41 +110,151 @@ auto process::parse_process(std::string const& input) -> std::optional<std::uniq
 
     // parse the command into different components
     static constexpr mode_t FILE_MODE = 0777;
-    while (sstrm >> arg) {
-        // search for input and output redirection
-        std::string filename;
-        if (arg.size() == 1 && arg[0] == INPUT_REDIRECTION) {
-            // get the input file descriptor
-            if (!(sstrm >> filename)) {
-                cout_logger.log(LOG_LEVEL::ERROR, "Input file not specified...");
-                return std::nullopt;
-            }
-            proc_stdin = syscall_wrapper::open_wrapper(filename, O_RDONLY, FILE_MODE);
 
-            if (!proc_stdin.has_value()) {
-                return std::nullopt;
-            }
+    // parsing state
+    std::stack<PARSE_STATE> curr_state{};
+    // default behavior should be REGULAR mode
+    curr_state.push(PARSE_STATE::REGULAR);
+    for(char chr : input) {
+        assert(!curr_state.empty()); // this should be true since we dont pop in REGULAR
+        assert(static_cast<char>(curr_state.top()) < PARSE_STATE::COUNT);
 
-            continue;
+        auto add_current_arg = [&](){
+            if(!arg.empty()){
+                args.emplace_back(std::move(arg));
+                arg = std::string{};
+            }
+        };
+        switch(curr_state.top()){
+            case PARSE_STATE::REGULAR:{
+                // if we encounter white space we want to move push back out new argument and clear it
+                if(static_cast<bool>(std::isspace(chr))){
+                    add_current_arg();
+                }else if(chr == INPUT_REDIRECTION){ // transition to input filename
+                    add_current_arg(); // the redirection characters will act like whitespace
+                    curr_state.push(PARSE_STATE::INPUT_FILENAME);
+                }else if(chr == OUTPUT_FILENAME){ // transition to output filename
+                    add_current_arg(); // the redirection characters will act like whitespace
+                    curr_state.push(PARSE_STATE::OUTPUT_FILENAME);
+                }else if(chr == SINGLE_QUOTE){ // transition to single quote state
+                    curr_state.push(PARSE_STATE::QUOTE);
+                }else if(chr == DOUBLE_QUOTE){ // transition to double quote state
+                    curr_state.push(PARSE_STATE::DBL_QUOTE);
+                }else{ // append the character
+                    arg += chr;
+                }
+
+                break;
+            }
+            case PARSE_STATE::INPUT_FILENAME:{
+                // if we encounter a boundary we want create the filename
+                if(static_cast<bool>(std::isspace(chr)) || chr == INPUT_REDIRECTION || chr == OUTPUT_REDIRECTION){
+                    if (!arg.empty()) {
+                        cout_logger.log(LOG_LEVEL::DEBUG, "Attempting to open file ", arg, " for reading...");
+                        proc_stdin = syscall_wrapper::open_wrapper(arg, O_RDONLY, FILE_MODE);
+
+                        if (!proc_stdin.has_value()) {
+                            return std::nullopt;
+                        }
+                        curr_state.pop();
+                    }
+
+                    // if we are IO redirection then push another state
+                    if(chr == INPUT_REDIRECTION){
+                        curr_state.push(PARSE_STATE::INPUT_FILENAME);
+                    }else if(chr == OUTPUT_REDIRECTION){
+                        curr_state.push(PARSE_STATE::OUTPUT_FILENAME);
+                    }
+                    arg.clear();
+                }else if(chr == SINGLE_QUOTE){ // transition to single quote state
+                    curr_state.push(PARSE_STATE::QUOTE);
+                }else if(chr == DOUBLE_QUOTE){ // transition to double quote state
+                    curr_state.push(PARSE_STATE::DBL_QUOTE);
+                }else{ // append the character
+                    arg += chr;
+                }
+                break;
+            }
+            case PARSE_STATE::OUTPUT_FILENAME:{
+                // if we encounter a boundary character we want create the filename
+                if(static_cast<bool>(std::isspace(chr)) || chr == INPUT_REDIRECTION || chr == OUTPUT_REDIRECTION){
+                    if (!arg.empty()) {
+                        cout_logger.log(LOG_LEVEL::DEBUG, "Attempting to open file ", arg, " for writing...");
+                        proc_stdout = syscall_wrapper::open_wrapper(arg, O_WRONLY | O_CREAT | O_TRUNC, FILE_MODE);
+
+                        if (!proc_stdout.has_value()) {
+                            return std::nullopt;
+                        }
+                        curr_state.pop();
+                    }
+
+                    // if we are IO redirection then push another state
+                    if(chr == INPUT_REDIRECTION){
+                        curr_state.push(PARSE_STATE::INPUT_FILENAME);
+                    }else if(chr == OUTPUT_REDIRECTION){
+                        curr_state.push(PARSE_STATE::OUTPUT_FILENAME);
+                    }
+                    arg.clear();
+                }else if(chr == SINGLE_QUOTE){ // transition to single quote state
+                    curr_state.push(PARSE_STATE::QUOTE);
+                }else if(chr == DOUBLE_QUOTE){ // transition to double quote state
+                    curr_state.push(PARSE_STATE::DBL_QUOTE);
+                }else{ // append the character
+                    arg += chr;
+                }
+                break;
+            }
+            case PARSE_STATE::QUOTE:{
+                if(chr == SINGLE_QUOTE){ // close single quote
+                    curr_state.pop();
+                }else{ // append the character
+                    arg += chr;
+                }
+                break;
+            }
+            case PARSE_STATE::DBL_QUOTE:{
+                if(chr == DOUBLE_QUOTE){ // close double quote
+                    curr_state.pop();
+                }else{ // append the character
+                    arg += chr;
+                }
+                break;
+            }
+            case PARSE_STATE::COUNT:{
+                // we should never get here
+                assert(false);
+                break;
+            }
         }
+    }
 
-        if (arg.size() == 1 && arg[0] == OUTPUT_REDIRECTION) {
-            // get the output file descriptor
-            if (!(sstrm >> filename)) {
-                cout_logger.log(LOG_LEVEL::ERROR, "Output file not specified...");
-                return std::nullopt;
-            }
-            proc_stdout = syscall_wrapper::open_wrapper(filename, O_WRONLY | O_CREAT | O_TRUNC, FILE_MODE);
+    // check to make sure for errors
+    if(curr_state.top() == PARSE_STATE::QUOTE || curr_state.top() == PARSE_STATE::DBL_QUOTE){
+        cout_logger.log(LOG_LEVEL::ERROR, "Invalid process input, unclosed quotation...");
+        return std::nullopt;
+    }
+    if((curr_state.top() == PARSE_STATE::OUTPUT_FILENAME || curr_state.top() == PARSE_STATE::INPUT_FILENAME) && arg.empty()){
+        cout_logger.log(LOG_LEVEL::ERROR, "No filename provided...");
+        return std::nullopt;
+    }
+    if(curr_state.top() == PARSE_STATE::INPUT_FILENAME && !arg.empty()){
+        proc_stdin = syscall_wrapper::open_wrapper(arg, O_RDONLY, FILE_MODE);
 
-            if (!proc_stdout.has_value()) {
-                return std::nullopt;
-            }
-
-            continue;
+        if (!proc_stdin.has_value()) {
+            return std::nullopt;
         }
+    }
+    if(curr_state.top() == PARSE_STATE::OUTPUT_FILENAME && !arg.empty()){
+        proc_stdout = syscall_wrapper::open_wrapper(arg, O_WRONLY | O_CREAT | O_TRUNC, FILE_MODE);
 
-        // if not IO redirection push back as command line arg
-        args.push_back(arg);
+        if (!proc_stdin.has_value()) {
+            return std::nullopt;
+        }
+    }
+
+    // add any leftover arguments
+    if(!arg.empty()){
+        args.push_back(std::move(arg));
     }
 
     // search for shell built-ins
@@ -165,9 +273,15 @@ auto process::parse_process(std::string const& input) -> std::optional<std::uniq
 
         // find the variable name and value from the input
         // we should only have two items in the args list export and [variable name]=[value]
-        if (args.size() < 2) {
+        cout_logger.log(LOG_LEVEL::DEBUG, "Args size: ", args.size());
+        for(auto const& argument : args){
+            cout_logger.log(LOG_LEVEL::DEBUG, "Export arg: ", argument);
+        }
+
+        if (args.size() != 2) {
             return std::nullopt;
         }
+
 
         // find the equals
         // indexing into this at 1 is fine since we know the size is at least 2

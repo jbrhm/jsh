@@ -65,11 +65,25 @@ class process {
     static constexpr char EQUALS = '=';
     static constexpr char INPUT_REDIRECTION = '<';
     static constexpr char OUTPUT_REDIRECTION = '>';
+    static constexpr char SINGLE_QUOTE = '\'';
+    static constexpr char DOUBLE_QUOTE = '\"';
 
     /**
      * populate the binary with its data
      */
     static void populate_process_data(binary_data& data);
+
+    /**
+     * parse_state: the current state of the parsing algorithm
+     */
+    enum PARSE_STATE : char {
+        REGULAR = 0,
+        QUOTE = 1,
+        DBL_QUOTE = 2,
+        INPUT_FILENAME = 3,
+        OUTPUT_FILENAME = 4,
+        COUNT = 5
+    };
 
     /**
      * shell_internal_redirection: RAII wrapper around setting stdout, stdin, and stderr for a given shell internal

@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <array>
 #include <cassert>
+#include <cctype>
 #include <cstdlib>
 #include <cstring>
 #include <exception>
@@ -11,6 +12,7 @@
 #include <memory>
 #include <optional>
 #include <sstream>
+#include <stack>
 #include <string>
 #include <variant>
 #include <vector>
