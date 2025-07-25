@@ -1,11 +1,19 @@
 # jsh
 
+## Usage:
+
+To build `jsh` from source use the `build.sh` script.
+
+To setup the environment install all dependencies in `scripts/setup.sh` and then from the `jsh` folder run `scripts/build_google_test`.
+
+To begin execute `build/jsh`.
+
 ## Basics:
 
 Inside of `jsh` there are two main components, `processes` and `jobs`. 
 A `process` is as you would expect, it is one binary that will be invoked on the given command line arguments it is passed.
 A `job` is a series of processes that will run in sequence with one another.
-Processes are chained together into jobs through the use operators.
+Processes are chained together into jobs through the use of operators.
 The `exit` keyword can be used to exit the `jsh` shell.
 
 ## Environment Variables:
