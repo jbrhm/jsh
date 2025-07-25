@@ -245,13 +245,18 @@ auto process::parse_process(std::string const& input) -> std::optional<std::uniq
         if (!proc_stdin.has_value()) {
             return std::nullopt;
         }
+
+        arg.clear();
     }
+
     if(curr_state.top() == PARSE_STATE::OUTPUT_FILENAME && !arg.empty()){
         proc_stdout = syscall_wrapper::open_wrapper(arg, O_WRONLY | O_CREAT | O_TRUNC, FILE_MODE);
 
         if (!proc_stdout.has_value()) {
             return std::nullopt;
         }
+
+        arg.clear();
     }
 
     // add any leftover arguments
@@ -280,7 +285,7 @@ auto process::parse_process(std::string const& input) -> std::optional<std::uniq
             cout_logger.log(LOG_LEVEL::DEBUG, "Export arg: ", argument);
         }
 
-        if (args.size() != 2) {
+        if (args.size() < 2) {
             return std::nullopt;
         }
 
