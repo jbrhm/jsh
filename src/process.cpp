@@ -233,6 +233,7 @@ auto process::parse_process(std::string const& input) -> std::optional<std::uniq
         cout_logger.log(LOG_LEVEL::ERROR, "Invalid process input, unclosed quotation...");
         return std::nullopt;
     }
+
     if((curr_state.top() == PARSE_STATE::OUTPUT_FILENAME || curr_state.top() == PARSE_STATE::INPUT_FILENAME) && arg.empty()){
         cout_logger.log(LOG_LEVEL::ERROR, "No filename provided...");
         return std::nullopt;
