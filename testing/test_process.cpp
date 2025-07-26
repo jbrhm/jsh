@@ -330,10 +330,10 @@ TEST(TestProcess, TestPosixNestedQuotes1) {
     // make sure the command was invalid
     ASSERT_TRUE(proc_data.has_value());
     ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value())); // NOLINT assert catches this .value()
-    auto& data = std::get<jsh::binary_data>(*proc_data.value()); // NOLINT assert catches this .value()
+    auto& data = std::get<jsh::binary_data>(*proc_data.value());               // NOLINT assert catches this .value()
 
     // compare the arguments
-    for(std::size_t i = 0; i < correct.size(); ++i){
+    for (std::size_t i = 0; i < correct.size(); ++i) {
         ASSERT_STREQ(correct[i].c_str(), data.args[i].c_str());
     }
 }
@@ -347,10 +347,10 @@ TEST(TestProcess, TestPosixNestedQuotes2) {
     // make sure the command was invalid
     ASSERT_TRUE(proc_data.has_value());
     ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value())); // NOLINT assert catches this .value()
-    auto& data = std::get<jsh::binary_data>(*proc_data.value()); // NOLINT assert catches this .value()
+    auto& data = std::get<jsh::binary_data>(*proc_data.value());               // NOLINT assert catches this .value()
 
     // compare the arguments
-    for(std::size_t i = 0; i < correct.size(); ++i){
+    for (std::size_t i = 0; i < correct.size(); ++i) {
         ASSERT_STREQ(correct[i].c_str(), data.args[i].c_str());
     }
 }
@@ -364,10 +364,10 @@ TEST(TestProcess, TestPosixNestedQuotes3) {
     // make sure the command was invalid
     ASSERT_TRUE(proc_data.has_value());
     ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value())); // NOLINT assert catches this .value()
-    auto& data = std::get<jsh::binary_data>(*proc_data.value()); // NOLINT assert catches this .value()
+    auto& data = std::get<jsh::binary_data>(*proc_data.value());               // NOLINT assert catches this .value()
 
     // compare the arguments
-    for(std::size_t i = 0; i < correct.size(); ++i){
+    for (std::size_t i = 0; i < correct.size(); ++i) {
         ASSERT_STREQ(correct[i].c_str(), data.args[i].c_str());
     }
 }
@@ -381,10 +381,10 @@ TEST(TestProcess, TestPosixAdjacentQuotes1) {
     // make sure the command was invalid
     ASSERT_TRUE(proc_data.has_value());
     ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value())); // NOLINT assert catches this .value()
-    auto& data = std::get<jsh::binary_data>(*proc_data.value()); // NOLINT assert catches this .value()
+    auto& data = std::get<jsh::binary_data>(*proc_data.value());               // NOLINT assert catches this .value()
 
     // compare the arguments
-    for(std::size_t i = 0; i < correct.size(); ++i){
+    for (std::size_t i = 0; i < correct.size(); ++i) {
         ASSERT_STREQ(correct[i].c_str(), data.args[i].c_str());
     }
 }
@@ -398,10 +398,10 @@ TEST(TestProcess, TestPosixAdjacentQuotes2) {
     // make sure the command was invalid
     ASSERT_TRUE(proc_data.has_value());
     ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value())); // NOLINT assert catches this .value()
-    auto& data = std::get<jsh::binary_data>(*proc_data.value()); // NOLINT assert catches this .value()
+    auto& data = std::get<jsh::binary_data>(*proc_data.value());               // NOLINT assert catches this .value()
 
     // compare the arguments
-    for(std::size_t i = 0; i < correct.size(); ++i){
+    for (std::size_t i = 0; i < correct.size(); ++i) {
         ASSERT_STREQ(correct[i].c_str(), data.args[i].c_str());
     }
 }
@@ -415,10 +415,10 @@ TEST(TestProcess, TestPosixNestedQuotesAndFilenames1) {
     // make sure the command was invalid
     ASSERT_TRUE(proc_data.has_value());
     ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value())); // NOLINT assert catches this .value()
-    auto& data = std::get<jsh::binary_data>(*proc_data.value()); // NOLINT assert catches this .value()
+    auto& data = std::get<jsh::binary_data>(*proc_data.value());               // NOLINT assert catches this .value()
 
     // compare the arguments
-    for(std::size_t i = 0; i < correct.size(); ++i){
+    for (std::size_t i = 0; i < correct.size(); ++i) {
         ASSERT_STREQ(correct[i].c_str(), data.args[i].c_str());
     }
 }
@@ -432,10 +432,10 @@ TEST(TestProcess, TestPosixNestedQuotesAndFilenames2) {
     // make sure the command was invalid
     ASSERT_TRUE(proc_data.has_value());
     ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value())); // NOLINT assert catches this .value()
-    auto& data = std::get<jsh::binary_data>(*proc_data.value()); // NOLINT assert catches this .value()
+    auto& data = std::get<jsh::binary_data>(*proc_data.value());               // NOLINT assert catches this .value()
 
     // compare the arguments
-    for(std::size_t i = 0; i < correct.size(); ++i){
+    for (std::size_t i = 0; i < correct.size(); ++i) {
         ASSERT_STREQ(correct[i].c_str(), data.args[i].c_str());
     }
 }
@@ -449,10 +449,10 @@ TEST(TestProcess, TestPosixNestedQuotesAndFilenames3) {
     // make sure the command was invalid
     ASSERT_TRUE(proc_data.has_value());
     ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value())); // NOLINT assert catches this .value()
-    auto& data = std::get<jsh::binary_data>(*proc_data.value()); // NOLINT assert catches this .value()
+    auto& data = std::get<jsh::binary_data>(*proc_data.value());               // NOLINT assert catches this .value()
 
     // compare the arguments
-    for(std::size_t i = 0; i < correct.size(); ++i){
+    for (std::size_t i = 0; i < correct.size(); ++i) {
         ASSERT_STREQ(correct[i].c_str(), data.args[i].c_str());
     }
 }
@@ -466,10 +466,10 @@ TEST(TestProcess, TestPosixNestedQuotesAndFilenames4) {
     // make sure the command was invalid
     ASSERT_TRUE(proc_data.has_value());
     ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value())); // NOLINT assert catches this .value()
-    auto& data = std::get<jsh::binary_data>(*proc_data.value()); // NOLINT assert catches this .value()
+    auto& data = std::get<jsh::binary_data>(*proc_data.value());               // NOLINT assert catches this .value()
 
     // compare the arguments
-    for(std::size_t i = 0; i < correct.size(); ++i){
+    for (std::size_t i = 0; i < correct.size(); ++i) {
         ASSERT_STREQ(correct[i].c_str(), data.args[i].c_str());
     }
 }
@@ -501,10 +501,10 @@ TEST(TestProcess, TestPosixNestedQuotesEscape1) {
     // make sure the command was invalid
     ASSERT_TRUE(proc_data.has_value());
     ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value())); // NOLINT assert catches this .value()
-    auto& data = std::get<jsh::binary_data>(*proc_data.value()); // NOLINT assert catches this .value()
+    auto& data = std::get<jsh::binary_data>(*proc_data.value());               // NOLINT assert catches this .value()
 
     // compare the arguments
-    for(std::size_t i = 0; i < correct.size(); ++i){
+    for (std::size_t i = 0; i < correct.size(); ++i) {
         ASSERT_STREQ(correct[i].c_str(), data.args[i].c_str());
     }
 }
@@ -518,10 +518,10 @@ TEST(TestProcess, TestPosixNestedQuotesEscape2) {
     // make sure the command was invalid
     ASSERT_TRUE(proc_data.has_value());
     ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value())); // NOLINT assert catches this .value()
-    auto& data = std::get<jsh::binary_data>(*proc_data.value()); // NOLINT assert catches this .value()
+    auto& data = std::get<jsh::binary_data>(*proc_data.value());               // NOLINT assert catches this .value()
 
     // compare the arguments
-    for(std::size_t i = 0; i < correct.size(); ++i){
+    for (std::size_t i = 0; i < correct.size(); ++i) {
         ASSERT_STREQ(correct[i].c_str(), data.args[i].c_str());
     }
 }
@@ -535,10 +535,10 @@ TEST(TestProcess, TestPosixNestedQuotesEscape3) {
     // make sure the command was invalid
     ASSERT_TRUE(proc_data.has_value());
     ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value())); // NOLINT assert catches this .value()
-    auto& data = std::get<jsh::binary_data>(*proc_data.value()); // NOLINT assert catches this .value()
+    auto& data = std::get<jsh::binary_data>(*proc_data.value());               // NOLINT assert catches this .value()
 
     // compare the arguments
-    for(std::size_t i = 0; i < correct.size(); ++i){
+    for (std::size_t i = 0; i < correct.size(); ++i) {
         ASSERT_STREQ(correct[i].c_str(), data.args[i].c_str());
     }
 }
@@ -552,10 +552,10 @@ TEST(TestProcess, TestPosixNestedQuotesAndFilenamesEsacpe1) {
     // make sure the command was invalid
     ASSERT_TRUE(proc_data.has_value());
     ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value())); // NOLINT assert catches this .value()
-    auto& data = std::get<jsh::binary_data>(*proc_data.value()); // NOLINT assert catches this .value()
+    auto& data = std::get<jsh::binary_data>(*proc_data.value());               // NOLINT assert catches this .value()
 
     // compare the arguments
-    for(std::size_t i = 0; i < correct.size(); ++i){
+    for (std::size_t i = 0; i < correct.size(); ++i) {
         ASSERT_STREQ(correct[i].c_str(), data.args[i].c_str());
     }
 }
@@ -569,10 +569,10 @@ TEST(TestProcess, TestPosixNestedQuotesAndFilenamesEscape2) {
     // make sure the command was invalid
     ASSERT_TRUE(proc_data.has_value());
     ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value())); // NOLINT assert catches this .value()
-    auto& data = std::get<jsh::binary_data>(*proc_data.value()); // NOLINT assert catches this .value()
+    auto& data = std::get<jsh::binary_data>(*proc_data.value());               // NOLINT assert catches this .value()
 
     // compare the arguments
-    for(std::size_t i = 0; i < correct.size(); ++i){
+    for (std::size_t i = 0; i < correct.size(); ++i) {
         ASSERT_STREQ(correct[i].c_str(), data.args[i].c_str());
     }
 }

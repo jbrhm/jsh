@@ -115,148 +115,148 @@ auto process::parse_process(std::string const& input) -> std::optional<std::uniq
     std::stack<PARSE_STATE> curr_state{};
     // default behavior should be REGULAR mode
     curr_state.push(PARSE_STATE::REGULAR);
-    for(char chr : input) {
+    for (char chr : input) {
         assert(!curr_state.empty()); // this should be true since we dont pop in REGULAR
         assert(static_cast<char>(curr_state.top()) < PARSE_STATE::COUNT);
 
-        auto add_current_arg = [&](){
-            if(!arg.empty()){
+        auto add_current_arg = [&]() {
+            if (!arg.empty()) {
                 args.emplace_back(std::move(arg));
                 arg = std::string{};
             }
         };
-        switch(curr_state.top()){
-            case PARSE_STATE::REGULAR:{
-                // if we encounter white space we want to move push back out new argument and clear it
-                if(static_cast<bool>(std::isspace(chr))){
-                    add_current_arg();
-                }else if(chr == INPUT_REDIRECTION){ // transition to input filename
-                    add_current_arg(); // the redirection characters will act like whitespace
-                    curr_state.push(PARSE_STATE::INPUT_FILENAME);
-                }else if(chr == OUTPUT_REDIRECTION){ // transition to output filename
-                    add_current_arg(); // the redirection characters will act like whitespace
-                    curr_state.push(PARSE_STATE::OUTPUT_FILENAME);
-                }else if(chr == SINGLE_QUOTE){ // transition to single quote state
-                    curr_state.push(PARSE_STATE::QUOTE);
-                }else if(chr == DOUBLE_QUOTE){ // transition to double quote state
-                    curr_state.push(PARSE_STATE::DBL_QUOTE);
-                }else if(chr == ESCAPE){ // if we encounter a a backslash escape next char
-                    curr_state.push(PARSE_STATE::ESCAPED_CHARACTER);
-                }else{ // append the character
-                    arg += chr;
-                }
-
-                break;
-            }
-            case PARSE_STATE::INPUT_FILENAME:{
-                // if we encounter a boundary we want create the filename
-                if(static_cast<bool>(std::isspace(chr)) || chr == INPUT_REDIRECTION || chr == OUTPUT_REDIRECTION){
-                    if (!arg.empty()) {
-                        cout_logger.log(LOG_LEVEL::DEBUG, "Attempting to open file ", arg, " for reading...");
-                        proc_stdin = syscall_wrapper::open_wrapper(arg, O_RDONLY, FILE_MODE);
-
-                        if (!proc_stdin.has_value()) {
-                            return std::nullopt;
-                        }
-                        curr_state.pop();
-                    }
-
-                    // if we are IO redirection then push another state
-                    if(chr == INPUT_REDIRECTION){
-                        curr_state.push(PARSE_STATE::INPUT_FILENAME);
-                    }else if(chr == OUTPUT_REDIRECTION){
-                        curr_state.push(PARSE_STATE::OUTPUT_FILENAME);
-                    }
-                    arg.clear();
-                }else if(chr == SINGLE_QUOTE){ // transition to single quote state
-                    curr_state.push(PARSE_STATE::QUOTE);
-                }else if(chr == DOUBLE_QUOTE){ // transition to double quote state
-                    curr_state.push(PARSE_STATE::DBL_QUOTE);
-                }else if(chr == ESCAPE){ // if we encounter a a backslash escape next char
-                    curr_state.push(PARSE_STATE::ESCAPED_CHARACTER);
-                }else{ // append the character
-                    arg += chr;
-                }
-                break;
-            }
-            case PARSE_STATE::OUTPUT_FILENAME:{
-                // if we encounter a boundary character we want create the filename
-                if(static_cast<bool>(std::isspace(chr)) || chr == INPUT_REDIRECTION || chr == OUTPUT_REDIRECTION){
-                    if (!arg.empty()) {
-                        cout_logger.log(LOG_LEVEL::DEBUG, "Attempting to open file ", arg, " for writing...");
-                        proc_stdout = syscall_wrapper::open_wrapper(arg, O_WRONLY | O_CREAT | O_TRUNC, FILE_MODE);
-
-                        if (!proc_stdout.has_value()) {
-                            return std::nullopt;
-                        }
-                        curr_state.pop();
-                    }
-
-                    // if we are IO redirection then push another state
-                    if(chr == INPUT_REDIRECTION){
-                        curr_state.push(PARSE_STATE::INPUT_FILENAME);
-                    }else if(chr == OUTPUT_REDIRECTION){
-                        curr_state.push(PARSE_STATE::OUTPUT_FILENAME);
-                    }
-                    arg.clear();
-                }else if(chr == SINGLE_QUOTE){ // transition to single quote state
-                    curr_state.push(PARSE_STATE::QUOTE);
-                }else if(chr == DOUBLE_QUOTE){ // transition to double quote state
-                    curr_state.push(PARSE_STATE::DBL_QUOTE);
-                }else if(chr == ESCAPE){ // if we encounter a a backslash escape next char
-                    curr_state.push(PARSE_STATE::ESCAPED_CHARACTER);
-                }else{ // append the character
-                    arg += chr;
-                }
-                break;
-            }
-            case PARSE_STATE::QUOTE:{
-                if(chr == SINGLE_QUOTE){ // close single quote
-                    curr_state.pop();
-                }else if(chr == ESCAPE){ // if we encounter a a backslash escape next char
-                    curr_state.push(PARSE_STATE::ESCAPED_CHARACTER);
-                }else{ // append the character
-                    arg += chr;
-                }
-                break;
-            }
-            case PARSE_STATE::DBL_QUOTE:{
-                if(chr == DOUBLE_QUOTE){ // close double quote
-                    curr_state.pop();
-                }else if(chr == ESCAPE){ // if we encounter a a backslash escape next char
-                    curr_state.push(PARSE_STATE::ESCAPED_CHARACTER);
-                }else{ // append the character
-                    arg += chr;
-                }
-                break;
-            }
-            case PARSE_STATE::ESCAPED_CHARACTER:{
-                // add the character to the argument
+        switch (curr_state.top()) {
+        case PARSE_STATE::REGULAR: {
+            // if we encounter white space we want to move push back out new argument and clear it
+            if (static_cast<bool>(std::isspace(chr))) {
+                add_current_arg();
+            } else if (chr == INPUT_REDIRECTION) { // transition to input filename
+                add_current_arg();                 // the redirection characters will act like whitespace
+                curr_state.push(PARSE_STATE::INPUT_FILENAME);
+            } else if (chr == OUTPUT_REDIRECTION) { // transition to output filename
+                add_current_arg();                  // the redirection characters will act like whitespace
+                curr_state.push(PARSE_STATE::OUTPUT_FILENAME);
+            } else if (chr == SINGLE_QUOTE) { // transition to single quote state
+                curr_state.push(PARSE_STATE::QUOTE);
+            } else if (chr == DOUBLE_QUOTE) { // transition to double quote state
+                curr_state.push(PARSE_STATE::DBL_QUOTE);
+            } else if (chr == ESCAPE) { // if we encounter a a backslash escape next char
+                curr_state.push(PARSE_STATE::ESCAPED_CHARACTER);
+            } else { // append the character
                 arg += chr;
+            }
+
+            break;
+        }
+        case PARSE_STATE::INPUT_FILENAME: {
+            // if we encounter a boundary we want create the filename
+            if (static_cast<bool>(std::isspace(chr)) || chr == INPUT_REDIRECTION || chr == OUTPUT_REDIRECTION) {
+                if (!arg.empty()) {
+                    cout_logger.log(LOG_LEVEL::DEBUG, "Attempting to open file ", arg, " for reading...");
+                    proc_stdin = syscall_wrapper::open_wrapper(arg, O_RDONLY, FILE_MODE);
+
+                    if (!proc_stdin.has_value()) {
+                        return std::nullopt;
+                    }
+                    curr_state.pop();
+                }
+
+                // if we are IO redirection then push another state
+                if (chr == INPUT_REDIRECTION) {
+                    curr_state.push(PARSE_STATE::INPUT_FILENAME);
+                } else if (chr == OUTPUT_REDIRECTION) {
+                    curr_state.push(PARSE_STATE::OUTPUT_FILENAME);
+                }
+                arg.clear();
+            } else if (chr == SINGLE_QUOTE) { // transition to single quote state
+                curr_state.push(PARSE_STATE::QUOTE);
+            } else if (chr == DOUBLE_QUOTE) { // transition to double quote state
+                curr_state.push(PARSE_STATE::DBL_QUOTE);
+            } else if (chr == ESCAPE) { // if we encounter a a backslash escape next char
+                curr_state.push(PARSE_STATE::ESCAPED_CHARACTER);
+            } else { // append the character
+                arg += chr;
+            }
+            break;
+        }
+        case PARSE_STATE::OUTPUT_FILENAME: {
+            // if we encounter a boundary character we want create the filename
+            if (static_cast<bool>(std::isspace(chr)) || chr == INPUT_REDIRECTION || chr == OUTPUT_REDIRECTION) {
+                if (!arg.empty()) {
+                    cout_logger.log(LOG_LEVEL::DEBUG, "Attempting to open file ", arg, " for writing...");
+                    proc_stdout = syscall_wrapper::open_wrapper(arg, O_WRONLY | O_CREAT | O_TRUNC, FILE_MODE);
+
+                    if (!proc_stdout.has_value()) {
+                        return std::nullopt;
+                    }
+                    curr_state.pop();
+                }
+
+                // if we are IO redirection then push another state
+                if (chr == INPUT_REDIRECTION) {
+                    curr_state.push(PARSE_STATE::INPUT_FILENAME);
+                } else if (chr == OUTPUT_REDIRECTION) {
+                    curr_state.push(PARSE_STATE::OUTPUT_FILENAME);
+                }
+                arg.clear();
+            } else if (chr == SINGLE_QUOTE) { // transition to single quote state
+                curr_state.push(PARSE_STATE::QUOTE);
+            } else if (chr == DOUBLE_QUOTE) { // transition to double quote state
+                curr_state.push(PARSE_STATE::DBL_QUOTE);
+            } else if (chr == ESCAPE) { // if we encounter a a backslash escape next char
+                curr_state.push(PARSE_STATE::ESCAPED_CHARACTER);
+            } else { // append the character
+                arg += chr;
+            }
+            break;
+        }
+        case PARSE_STATE::QUOTE: {
+            if (chr == SINGLE_QUOTE) { // close single quote
                 curr_state.pop();
-                break;
+            } else if (chr == ESCAPE) { // if we encounter a a backslash escape next char
+                curr_state.push(PARSE_STATE::ESCAPED_CHARACTER);
+            } else { // append the character
+                arg += chr;
             }
-            case PARSE_STATE::COUNT:{
-                // we should never get here
-                assert(false);
-                break;
+            break;
+        }
+        case PARSE_STATE::DBL_QUOTE: {
+            if (chr == DOUBLE_QUOTE) { // close double quote
+                curr_state.pop();
+            } else if (chr == ESCAPE) { // if we encounter a a backslash escape next char
+                curr_state.push(PARSE_STATE::ESCAPED_CHARACTER);
+            } else { // append the character
+                arg += chr;
             }
+            break;
+        }
+        case PARSE_STATE::ESCAPED_CHARACTER: {
+            // add the character to the argument
+            arg += chr;
+            curr_state.pop();
+            break;
+        }
+        case PARSE_STATE::COUNT: {
+            // we should never get here
+            assert(false);
+            break;
+        }
         }
     }
 
     // check to make sure for errors
-    if(curr_state.top() == PARSE_STATE::QUOTE || curr_state.top() == PARSE_STATE::DBL_QUOTE || curr_state.top() == PARSE_STATE::ESCAPED_CHARACTER){
+    if (curr_state.top() == PARSE_STATE::QUOTE || curr_state.top() == PARSE_STATE::DBL_QUOTE || curr_state.top() == PARSE_STATE::ESCAPED_CHARACTER) {
         cout_logger.log(LOG_LEVEL::ERROR, "Invalid process input...");
         return std::nullopt;
     }
 
-    if((curr_state.top() == PARSE_STATE::OUTPUT_FILENAME || curr_state.top() == PARSE_STATE::INPUT_FILENAME) && arg.empty()){
+    if ((curr_state.top() == PARSE_STATE::OUTPUT_FILENAME || curr_state.top() == PARSE_STATE::INPUT_FILENAME) && arg.empty()) {
         cout_logger.log(LOG_LEVEL::ERROR, "No filename provided...");
         return std::nullopt;
     }
 
     // create leftover filenames
-    if(curr_state.top() == PARSE_STATE::INPUT_FILENAME && !arg.empty()){
+    if (curr_state.top() == PARSE_STATE::INPUT_FILENAME && !arg.empty()) {
         proc_stdin = syscall_wrapper::open_wrapper(arg, O_RDONLY, FILE_MODE);
 
         if (!proc_stdin.has_value()) {
@@ -266,7 +266,7 @@ auto process::parse_process(std::string const& input) -> std::optional<std::uniq
         arg.clear();
     }
 
-    if(curr_state.top() == PARSE_STATE::OUTPUT_FILENAME && !arg.empty()){
+    if (curr_state.top() == PARSE_STATE::OUTPUT_FILENAME && !arg.empty()) {
         proc_stdout = syscall_wrapper::open_wrapper(arg, O_WRONLY | O_CREAT | O_TRUNC, FILE_MODE);
 
         if (!proc_stdout.has_value()) {
@@ -277,7 +277,7 @@ auto process::parse_process(std::string const& input) -> std::optional<std::uniq
     }
 
     // add any leftover arguments
-    if(!arg.empty()){
+    if (!arg.empty()) {
         args.push_back(std::move(arg));
     }
 
@@ -298,14 +298,13 @@ auto process::parse_process(std::string const& input) -> std::optional<std::uniq
         // find the variable name and value from the input
         // we should only have two items in the args list export and [variable name]=[value]
         cout_logger.log(LOG_LEVEL::DEBUG, "Args size: ", args.size());
-        for(auto const& argument : args){
+        for (auto const& argument : args) {
             cout_logger.log(LOG_LEVEL::DEBUG, "Export arg: ", argument);
         }
 
         if (args.size() < 2) {
             return std::nullopt;
         }
-
 
         // find the equals
         // indexing into this at 1 is fine since we know the size is at least 2
