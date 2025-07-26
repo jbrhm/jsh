@@ -140,6 +140,8 @@ auto process::parse_process(std::string const& input) -> std::optional<std::uniq
                     curr_state.push(PARSE_STATE::QUOTE);
                 }else if(chr == DOUBLE_QUOTE){ // transition to double quote state
                     curr_state.push(PARSE_STATE::DBL_QUOTE);
+                }else if(chr == ESCAPE){ // if we encounter a a backslash escape next char
+                    curr_state.push(PARSE_STATE::ESCAPED_CHARACTER);
                 }else{ // append the character
                     arg += chr;
                 }
@@ -170,6 +172,8 @@ auto process::parse_process(std::string const& input) -> std::optional<std::uniq
                     curr_state.push(PARSE_STATE::QUOTE);
                 }else if(chr == DOUBLE_QUOTE){ // transition to double quote state
                     curr_state.push(PARSE_STATE::DBL_QUOTE);
+                }else if(chr == ESCAPE){ // if we encounter a a backslash escape next char
+                    curr_state.push(PARSE_STATE::ESCAPED_CHARACTER);
                 }else{ // append the character
                     arg += chr;
                 }
@@ -199,6 +203,8 @@ auto process::parse_process(std::string const& input) -> std::optional<std::uniq
                     curr_state.push(PARSE_STATE::QUOTE);
                 }else if(chr == DOUBLE_QUOTE){ // transition to double quote state
                     curr_state.push(PARSE_STATE::DBL_QUOTE);
+                }else if(chr == ESCAPE){ // if we encounter a a backslash escape next char
+                    curr_state.push(PARSE_STATE::ESCAPED_CHARACTER);
                 }else{ // append the character
                     arg += chr;
                 }
@@ -207,6 +213,8 @@ auto process::parse_process(std::string const& input) -> std::optional<std::uniq
             case PARSE_STATE::QUOTE:{
                 if(chr == SINGLE_QUOTE){ // close single quote
                     curr_state.pop();
+                }else if(chr == ESCAPE){ // if we encounter a a backslash escape next char
+                    curr_state.push(PARSE_STATE::ESCAPED_CHARACTER);
                 }else{ // append the character
                     arg += chr;
                 }
@@ -215,9 +223,17 @@ auto process::parse_process(std::string const& input) -> std::optional<std::uniq
             case PARSE_STATE::DBL_QUOTE:{
                 if(chr == DOUBLE_QUOTE){ // close double quote
                     curr_state.pop();
+                }else if(chr == ESCAPE){ // if we encounter a a backslash escape next char
+                    curr_state.push(PARSE_STATE::ESCAPED_CHARACTER);
                 }else{ // append the character
                     arg += chr;
                 }
+                break;
+            }
+            case PARSE_STATE::ESCAPED_CHARACTER:{
+                // add the character to the argument
+                arg += chr;
+                curr_state.pop();
                 break;
             }
             case PARSE_STATE::COUNT:{
@@ -229,8 +245,8 @@ auto process::parse_process(std::string const& input) -> std::optional<std::uniq
     }
 
     // check to make sure for errors
-    if(curr_state.top() == PARSE_STATE::QUOTE || curr_state.top() == PARSE_STATE::DBL_QUOTE){
-        cout_logger.log(LOG_LEVEL::ERROR, "Invalid process input, unclosed quotation...");
+    if(curr_state.top() == PARSE_STATE::QUOTE || curr_state.top() == PARSE_STATE::DBL_QUOTE || curr_state.top() == PARSE_STATE::ESCAPED_CHARACTER){
+        cout_logger.log(LOG_LEVEL::ERROR, "Invalid process input...");
         return std::nullopt;
     }
 

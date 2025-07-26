@@ -67,6 +67,7 @@ class process {
     static constexpr char OUTPUT_REDIRECTION = '>';
     static constexpr char SINGLE_QUOTE = '\'';
     static constexpr char DOUBLE_QUOTE = '\"';
+    static constexpr char ESCAPE = '\\';
 
     /**
      * populate the binary with its data
@@ -82,7 +83,8 @@ class process {
         DBL_QUOTE = 2,
         INPUT_FILENAME = 3,
         OUTPUT_FILENAME = 4,
-        COUNT = 5
+        ESCAPED_CHARACTER = 5,
+        COUNT = 6
     };
 
     /**
