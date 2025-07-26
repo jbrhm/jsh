@@ -320,3 +320,166 @@ TEST(TestProcess, TestOutputRedirectionParsingMalformed2) {
     // make sure the command was invalid
     ASSERT_FALSE(proc_data.has_value());
 }
+
+TEST(TestProcess, TestPosixNestedQuotes1) {
+    std::string const input = R"(echo "a'awda'a")";
+    std::vector<std::string> correct{"echo", R"(a'awda'a)"};
+
+    auto proc_data = jsh::process::parse_process(input);
+
+    // make sure the command was invalid
+    ASSERT_TRUE(proc_data.has_value());
+    ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value())); // NOLINT assert catches this .value()
+    auto& data = std::get<jsh::binary_data>(*proc_data.value()); // NOLINT assert catches this .value()
+
+    // compare the arguments
+    for(std::size_t i = 0; i < correct.size(); ++i){
+        ASSERT_STREQ(correct[i].c_str(), data.args[i].c_str());
+    }
+}
+
+TEST(TestProcess, TestPosixNestedQuotes2) {
+    std::string const input = R"(echo "a'awda'")";
+    std::vector<std::string> correct{"echo", R"(a'awda')"};
+
+    auto proc_data = jsh::process::parse_process(input);
+
+    // make sure the command was invalid
+    ASSERT_TRUE(proc_data.has_value());
+    ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value())); // NOLINT assert catches this .value()
+    auto& data = std::get<jsh::binary_data>(*proc_data.value()); // NOLINT assert catches this .value()
+
+    // compare the arguments
+    for(std::size_t i = 0; i < correct.size(); ++i){
+        ASSERT_STREQ(correct[i].c_str(), data.args[i].c_str());
+    }
+}
+
+TEST(TestProcess, TestPosixNestedQuotes3) {
+    std::string const input = R"(echo "'awda'a")";
+    std::vector<std::string> correct{"echo", R"('awda'a)"};
+
+    auto proc_data = jsh::process::parse_process(input);
+
+    // make sure the command was invalid
+    ASSERT_TRUE(proc_data.has_value());
+    ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value())); // NOLINT assert catches this .value()
+    auto& data = std::get<jsh::binary_data>(*proc_data.value()); // NOLINT assert catches this .value()
+
+    // compare the arguments
+    for(std::size_t i = 0; i < correct.size(); ++i){
+        ASSERT_STREQ(correct[i].c_str(), data.args[i].c_str());
+    }
+}
+
+TEST(TestProcess, TestPosixAdjacentQuotes1) {
+    std::string const input = R"(echo a"'awda'a"a)";
+    std::vector<std::string> correct{"echo", R"(a'awda'aa)"};
+
+    auto proc_data = jsh::process::parse_process(input);
+
+    // make sure the command was invalid
+    ASSERT_TRUE(proc_data.has_value());
+    ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value())); // NOLINT assert catches this .value()
+    auto& data = std::get<jsh::binary_data>(*proc_data.value()); // NOLINT assert catches this .value()
+
+    // compare the arguments
+    for(std::size_t i = 0; i < correct.size(); ++i){
+        ASSERT_STREQ(correct[i].c_str(), data.args[i].c_str());
+    }
+}
+
+TEST(TestProcess, TestPosixAdjacentQuotes2) {
+    std::string const input = R"(echo a"'awda'a"r)";
+    std::vector<std::string> correct{"echo", R"(a'awda'ar)"};
+
+    auto proc_data = jsh::process::parse_process(input);
+
+    // make sure the command was invalid
+    ASSERT_TRUE(proc_data.has_value());
+    ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value())); // NOLINT assert catches this .value()
+    auto& data = std::get<jsh::binary_data>(*proc_data.value()); // NOLINT assert catches this .value()
+
+    // compare the arguments
+    for(std::size_t i = 0; i < correct.size(); ++i){
+        ASSERT_STREQ(correct[i].c_str(), data.args[i].c_str());
+    }
+}
+
+TEST(TestProcess, TestPosixNestedQuotesAndFilenames1) {
+    std::string const input = R"(echo a"'awda'a"r > apwodpk"adjwojo"a)";
+    std::vector<std::string> correct{"echo", R"(a'awda'ar)"};
+
+    auto proc_data = jsh::process::parse_process(input);
+
+    // make sure the command was invalid
+    ASSERT_TRUE(proc_data.has_value());
+    ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value())); // NOLINT assert catches this .value()
+    auto& data = std::get<jsh::binary_data>(*proc_data.value()); // NOLINT assert catches this .value()
+
+    // compare the arguments
+    for(std::size_t i = 0; i < correct.size(); ++i){
+        ASSERT_STREQ(correct[i].c_str(), data.args[i].c_str());
+    }
+}
+
+TEST(TestProcess, TestPosixNestedQuotesAndFilenames2) {
+    std::string const input = R"(echo a"'awda'a"r >>> "adjwojo"a)";
+    std::vector<std::string> correct{"echo", R"(a'awda'ar)"};
+
+    auto proc_data = jsh::process::parse_process(input);
+
+    // make sure the command was invalid
+    ASSERT_TRUE(proc_data.has_value());
+    ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value())); // NOLINT assert catches this .value()
+    auto& data = std::get<jsh::binary_data>(*proc_data.value()); // NOLINT assert catches this .value()
+
+    // compare the arguments
+    for(std::size_t i = 0; i < correct.size(); ++i){
+        ASSERT_STREQ(correct[i].c_str(), data.args[i].c_str());
+    }
+}
+
+TEST(TestProcess, TestPosixNestedQuotesAndFilenames3) {
+    std::string const input = R"(echo a"'awda'a"r >>> adwad"adjwojo")";
+    std::vector<std::string> correct{"echo", R"(a'awda'ar)"};
+
+    auto proc_data = jsh::process::parse_process(input);
+
+    // make sure the command was invalid
+    ASSERT_TRUE(proc_data.has_value());
+    ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value())); // NOLINT assert catches this .value()
+    auto& data = std::get<jsh::binary_data>(*proc_data.value()); // NOLINT assert catches this .value()
+
+    // compare the arguments
+    for(std::size_t i = 0; i < correct.size(); ++i){
+        ASSERT_STREQ(correct[i].c_str(), data.args[i].c_str());
+    }
+}
+
+TEST(TestProcess, TestPosixNestedQuotesAndFilenames4) {
+    std::string const input = R"(echo a"'awda'a"r >>> "adjwojo")";
+    std::vector<std::string> correct{"echo", R"(a'awda'ar)"};
+
+    auto proc_data = jsh::process::parse_process(input);
+
+    // make sure the command was invalid
+    ASSERT_TRUE(proc_data.has_value());
+    ASSERT_TRUE(std::holds_alternative<jsh::binary_data>(*proc_data.value())); // NOLINT assert catches this .value()
+    auto& data = std::get<jsh::binary_data>(*proc_data.value()); // NOLINT assert catches this .value()
+
+    // compare the arguments
+    for(std::size_t i = 0; i < correct.size(); ++i){
+        ASSERT_STREQ(correct[i].c_str(), data.args[i].c_str());
+    }
+}
+
+TEST(TestProcess, TestPosixFilenameMalformed) {
+    std::string const input = R"(echo a"'awda'a"r >>>)";
+    std::vector<std::string> correct{"echo", R"(a'awda'ar)"};
+
+    auto proc_data = jsh::process::parse_process(input);
+
+    // make sure the command was invalid
+    ASSERT_FALSE(proc_data.has_value());
+}
