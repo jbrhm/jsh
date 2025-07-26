@@ -6,6 +6,7 @@
 #include <macros.hpp>
 
 TEST(TestEnvironment, EnvironmentSetGet) {
+    jsh::set_log_level(jsh::LOG_LEVEL::DEBUG);
     // create the envp
     std::string var1 = "VAR1", var2 = "VAR2", var3 = "VAR3", var4 = "VAR4"; // NOLINT
     std::string val1 = "VAL1", val2 = "VAL2", val3 = "VAL3", val4 = "VAL4"; // NOLINT
