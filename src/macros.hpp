@@ -20,7 +20,7 @@ enum LOG_LEVEL : char {
     COUNT = 6
 };
 
-inline static constexpr char const* LOG_LEVEL_STRINGS[] = {"DEBUG", "WARN", "ERROR", "FATAL", "STATUS", ""}; // NOLINT this is because std::array is not allowed here
+inline static constexpr char const* LOG_LEVEL_STRINGS[] = {"\033[35mDEBUG\033[0m", "\033[93mWARN\033[0m", "\033[31mERROR\033[0m", "\033[30mFATAL\033[0m", "\033[92mSTATUS\033[0m", ""}; // NOLINT this is because std::array is not allowed here
 
 inline char global_log_level = 0;
 inline void set_log_level(char level) {
