@@ -115,7 +115,7 @@ auto process::parse_process(std::string const& input) -> std::optional<std::uniq
     std::stack<PARSE_STATE> curr_state{};
     // default behavior should be REGULAR mode
     curr_state.push(PARSE_STATE::REGULAR);
-    for (char chr : input) {
+    for (char const chr : input) {
         assert(!curr_state.empty()); // this should be true since we dont pop in REGULAR
         assert(static_cast<char>(curr_state.top()) < PARSE_STATE::COUNT);
 
