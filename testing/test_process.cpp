@@ -561,7 +561,7 @@ TEST(TestProcess, TestPosixNestedQuotesAndFilenamesEsacpe1) {
 }
 
 TEST(TestProcess, TestPosixNestedQuotesAndFilenamesEscape2) {
-    std::string const input = R"(echo a"'awda'a"r >testing/tmp/\>> testing/tmp/"adjwojo"a)";
+    std::string const input = R"(echo a"'awda'a"r >testing/tmp/\>> testing/tmp/"adj\>wo>jo"a)";
     std::vector<std::string> correct{"echo", R"(a'awda'ar)"};
 
     auto proc_data = jsh::process::parse_process(input);
