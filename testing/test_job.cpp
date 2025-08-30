@@ -315,6 +315,9 @@ TEST(TestJob, TestParseJobPipeEdge2) {
 
     // ensure parsing succeeded
     ASSERT_TRUE(job.has_value());
+    if (!job.has_value()) {
+        return;
+    }
 
     // ensure correct sizing
     ASSERT_TRUE(job.value()->process_seq.empty());
