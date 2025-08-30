@@ -1,7 +1,12 @@
 #include "job.hpp"
 
 namespace jsh {
-auto job::parse_job(std::string const& input) -> std::unique_ptr<job_data> {
+auto job::parse_job(std::string const& input) -> std::optional<std::unique_ptr<job_data>> {
+    // exit jsh on exit keyword
+    if (input == "exit" || input == "\nexit" || input == "exit\n" || input == "\nexit\n") {
+        return std::nullopt;
+    }
+
     // stack allocated struct for job_data
     std::unique_ptr<job_data> j_data = std::make_unique<job_data>();
 
@@ -78,7 +83,7 @@ auto job::parse_job(std::string const& input) -> std::unique_ptr<job_data> {
     // make sure all of the sequences are appropriately sized
     assert(j_data->operator_seq.size() == j_data->input_seq.size() - 1);
 
-    return j_data;
+    return std::make_optional<std::unique_ptr<job_data>>(std::move(j_data));
 }
 
 void job::execute_job(std::unique_ptr<job_data>& data) {

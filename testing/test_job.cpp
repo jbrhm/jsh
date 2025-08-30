@@ -11,13 +11,16 @@ TEST(TestJob, TestParseJobNoOperators) {
 
     auto job = jsh::job::parse_job(input);
 
+    // ensure parsing succeeded
+    ASSERT_TRUE(job.has_value());
+
     // ensure correct sizing
-    ASSERT_TRUE(job->process_seq.empty());
-    ASSERT_TRUE(job->input_seq.size() == 1);
-    ASSERT_TRUE(job->operator_seq.empty());
+    ASSERT_TRUE(job.value()->process_seq.empty());
+    ASSERT_TRUE(job.value()->input_seq.size() == 1);
+    ASSERT_TRUE(job.value()->operator_seq.empty());
 
     // ensure correct contents for input and operator sequence
-    ASSERT_STREQ(job->input_seq[0].c_str(), "echo hi");
+    ASSERT_STREQ(job.value()->input_seq[0].c_str(), "echo hi");
 }
 
 TEST(TestJob, TestParseJobAndBasic1) {
@@ -26,15 +29,18 @@ TEST(TestJob, TestParseJobAndBasic1) {
 
     auto job = jsh::job::parse_job(input);
 
+    // ensure parsing succeeded
+    ASSERT_TRUE(job.has_value());
+
     // ensure correct sizing
-    ASSERT_TRUE(job->process_seq.empty());
-    ASSERT_TRUE(job->input_seq.size() == 2);
-    ASSERT_TRUE(job->operator_seq.size() == 1);
+    ASSERT_TRUE(job.value()->process_seq.empty());
+    ASSERT_TRUE(job.value()->input_seq.size() == 2);
+    ASSERT_TRUE(job.value()->operator_seq.size() == 1);
 
     // ensure correct contents for input and operator sequence
-    ASSERT_STREQ(job->input_seq[0].c_str(), "echo hi ");
-    ASSERT_STREQ(job->input_seq[1].c_str(), " echo hi");
-    ASSERT_EQ(job->operator_seq[0], jsh::job::OPERATOR::AND);
+    ASSERT_STREQ(job.value()->input_seq[0].c_str(), "echo hi ");
+    ASSERT_STREQ(job.value()->input_seq[1].c_str(), " echo hi");
+    ASSERT_EQ(job.value()->operator_seq[0], jsh::job::OPERATOR::AND);
 }
 
 TEST(TestJob, TestParseJobAndBasic2) {
@@ -43,15 +49,18 @@ TEST(TestJob, TestParseJobAndBasic2) {
 
     auto job = jsh::job::parse_job(input);
 
+    // ensure parsing succeeded
+    ASSERT_TRUE(job.has_value());
+
     // ensure correct sizing
-    ASSERT_TRUE(job->process_seq.empty());
-    ASSERT_TRUE(job->input_seq.size() == 2);
-    ASSERT_TRUE(job->operator_seq.size() == 1);
+    ASSERT_TRUE(job.value()->process_seq.empty());
+    ASSERT_TRUE(job.value()->input_seq.size() == 2);
+    ASSERT_TRUE(job.value()->operator_seq.size() == 1);
 
     // ensure correct contents for input and operator sequence
-    ASSERT_STREQ(job->input_seq[0].c_str(), "echo hi");
-    ASSERT_STREQ(job->input_seq[1].c_str(), " echo hi");
-    ASSERT_EQ(job->operator_seq[0], jsh::job::OPERATOR::AND);
+    ASSERT_STREQ(job.value()->input_seq[0].c_str(), "echo hi");
+    ASSERT_STREQ(job.value()->input_seq[1].c_str(), " echo hi");
+    ASSERT_EQ(job.value()->operator_seq[0], jsh::job::OPERATOR::AND);
 }
 
 TEST(TestJob, TestParseJobAndBasic3) {
@@ -60,15 +69,18 @@ TEST(TestJob, TestParseJobAndBasic3) {
 
     auto job = jsh::job::parse_job(input);
 
+    // ensure parsing succeeded
+    ASSERT_TRUE(job.has_value());
+
     // ensure correct sizing
-    ASSERT_TRUE(job->process_seq.empty());
-    ASSERT_TRUE(job->input_seq.size() == 2);
-    ASSERT_TRUE(job->operator_seq.size() == 1);
+    ASSERT_TRUE(job.value()->process_seq.empty());
+    ASSERT_TRUE(job.value()->input_seq.size() == 2);
+    ASSERT_TRUE(job.value()->operator_seq.size() == 1);
 
     // ensure correct contents for input and operator sequence
-    ASSERT_STREQ(job->input_seq[0].c_str(), "echo hi ");
-    ASSERT_STREQ(job->input_seq[1].c_str(), "echo hi");
-    ASSERT_EQ(job->operator_seq[0], jsh::job::OPERATOR::AND);
+    ASSERT_STREQ(job.value()->input_seq[0].c_str(), "echo hi ");
+    ASSERT_STREQ(job.value()->input_seq[1].c_str(), "echo hi");
+    ASSERT_EQ(job.value()->operator_seq[0], jsh::job::OPERATOR::AND);
 }
 
 TEST(TestJob, TestParseJobAndBasic4) {
@@ -77,15 +89,18 @@ TEST(TestJob, TestParseJobAndBasic4) {
 
     auto job = jsh::job::parse_job(input);
 
+    // ensure parsing succeeded
+    ASSERT_TRUE(job.has_value());
+
     // ensure correct sizing
-    ASSERT_TRUE(job->process_seq.empty());
-    ASSERT_TRUE(job->input_seq.size() == 2);
-    ASSERT_TRUE(job->operator_seq.size() == 1);
+    ASSERT_TRUE(job.value()->process_seq.empty());
+    ASSERT_TRUE(job.value()->input_seq.size() == 2);
+    ASSERT_TRUE(job.value()->operator_seq.size() == 1);
 
     // ensure correct contents for input and operator sequence
-    ASSERT_STREQ(job->input_seq[0].c_str(), "echo hi");
-    ASSERT_STREQ(job->input_seq[1].c_str(), "echo hi");
-    ASSERT_EQ(job->operator_seq[0], jsh::job::OPERATOR::AND);
+    ASSERT_STREQ(job.value()->input_seq[0].c_str(), "echo hi");
+    ASSERT_STREQ(job.value()->input_seq[1].c_str(), "echo hi");
+    ASSERT_EQ(job.value()->operator_seq[0], jsh::job::OPERATOR::AND);
 }
 
 TEST(TestJob, TestParseJobAndEdge1) {
@@ -94,15 +109,18 @@ TEST(TestJob, TestParseJobAndEdge1) {
 
     auto job = jsh::job::parse_job(input);
 
+    // ensure parsing succeeded
+    ASSERT_TRUE(job.has_value());
+
     // ensure correct sizing
-    ASSERT_TRUE(job->process_seq.empty());
-    ASSERT_TRUE(job->input_seq.size() == 2);
-    ASSERT_TRUE(job->operator_seq.size() == 1);
+    ASSERT_TRUE(job.value()->process_seq.empty());
+    ASSERT_TRUE(job.value()->input_seq.size() == 2);
+    ASSERT_TRUE(job.value()->operator_seq.size() == 1);
 
     // ensure correct contents for input and operator sequence
-    ASSERT_STREQ(job->input_seq[0].c_str(), "");
-    ASSERT_STREQ(job->input_seq[1].c_str(), "");
-    ASSERT_EQ(job->operator_seq[0], jsh::job::OPERATOR::AND);
+    ASSERT_STREQ(job.value()->input_seq[0].c_str(), "");
+    ASSERT_STREQ(job.value()->input_seq[1].c_str(), "");
+    ASSERT_EQ(job.value()->operator_seq[0], jsh::job::OPERATOR::AND);
 }
 
 TEST(TestJob, TestParseJobAndEdge2) {
@@ -111,15 +129,18 @@ TEST(TestJob, TestParseJobAndEdge2) {
 
     auto job = jsh::job::parse_job(input);
 
+    // ensure parsing succeeded
+    ASSERT_TRUE(job.has_value());
+
     // ensure correct sizing
-    ASSERT_TRUE(job->process_seq.empty());
-    ASSERT_TRUE(job->input_seq.size() == 2);
-    ASSERT_TRUE(job->operator_seq.size() == 1);
+    ASSERT_TRUE(job.value()->process_seq.empty());
+    ASSERT_TRUE(job.value()->input_seq.size() == 2);
+    ASSERT_TRUE(job.value()->operator_seq.size() == 1);
 
     // ensure correct contents for input and operator sequence
-    ASSERT_STREQ(job->input_seq[0].c_str(), "");
-    ASSERT_STREQ(job->input_seq[1].c_str(), "&");
-    ASSERT_EQ(job->operator_seq[0], jsh::job::OPERATOR::AND);
+    ASSERT_STREQ(job.value()->input_seq[0].c_str(), "");
+    ASSERT_STREQ(job.value()->input_seq[1].c_str(), "&");
+    ASSERT_EQ(job.value()->operator_seq[0], jsh::job::OPERATOR::AND);
 }
 
 TEST(TestJob, TestParseJobAndEdge3) {
@@ -128,17 +149,20 @@ TEST(TestJob, TestParseJobAndEdge3) {
 
     auto job = jsh::job::parse_job(input);
 
+    // ensure parsing succeeded
+    ASSERT_TRUE(job.has_value());
+
     // ensure correct sizing
-    ASSERT_TRUE(job->process_seq.empty());
-    ASSERT_TRUE(job->input_seq.size() == 3);
-    ASSERT_TRUE(job->operator_seq.size() == 2);
+    ASSERT_TRUE(job.value()->process_seq.empty());
+    ASSERT_TRUE(job.value()->input_seq.size() == 3);
+    ASSERT_TRUE(job.value()->operator_seq.size() == 2);
 
     // ensure correct contents for input and operator sequence
-    ASSERT_STREQ(job->input_seq[0].c_str(), "");
-    ASSERT_STREQ(job->input_seq[1].c_str(), "");
-    ASSERT_STREQ(job->input_seq[2].c_str(), "");
-    ASSERT_EQ(job->operator_seq[0], jsh::job::OPERATOR::AND);
-    ASSERT_EQ(job->operator_seq[1], jsh::job::OPERATOR::AND);
+    ASSERT_STREQ(job.value()->input_seq[0].c_str(), "");
+    ASSERT_STREQ(job.value()->input_seq[1].c_str(), "");
+    ASSERT_STREQ(job.value()->input_seq[2].c_str(), "");
+    ASSERT_EQ(job.value()->operator_seq[0], jsh::job::OPERATOR::AND);
+    ASSERT_EQ(job.value()->operator_seq[1], jsh::job::OPERATOR::AND);
 }
 
 TEST(TestJob, TestParseJobAndEdge4) {
@@ -147,17 +171,20 @@ TEST(TestJob, TestParseJobAndEdge4) {
 
     auto job = jsh::job::parse_job(input);
 
+    // ensure parsing succeeded
+    ASSERT_TRUE(job.has_value());
+
     // ensure correct sizing
-    ASSERT_TRUE(job->process_seq.empty());
-    ASSERT_TRUE(job->input_seq.size() == 3);
-    ASSERT_TRUE(job->operator_seq.size() == 2);
+    ASSERT_TRUE(job.value()->process_seq.empty());
+    ASSERT_TRUE(job.value()->input_seq.size() == 3);
+    ASSERT_TRUE(job.value()->operator_seq.size() == 2);
 
     // ensure correct contents for input and operator sequence
-    ASSERT_STREQ(job->input_seq[0].c_str(), "");
-    ASSERT_STREQ(job->input_seq[1].c_str(), "a");
-    ASSERT_STREQ(job->input_seq[2].c_str(), " command");
-    ASSERT_EQ(job->operator_seq[0], jsh::job::OPERATOR::AND);
-    ASSERT_EQ(job->operator_seq[1], jsh::job::OPERATOR::AND);
+    ASSERT_STREQ(job.value()->input_seq[0].c_str(), "");
+    ASSERT_STREQ(job.value()->input_seq[1].c_str(), "a");
+    ASSERT_STREQ(job.value()->input_seq[2].c_str(), " command");
+    ASSERT_EQ(job.value()->operator_seq[0], jsh::job::OPERATOR::AND);
+    ASSERT_EQ(job.value()->operator_seq[1], jsh::job::OPERATOR::AND);
 }
 
 TEST(TestJob, TestParseJobAndEdge5) {
@@ -166,15 +193,18 @@ TEST(TestJob, TestParseJobAndEdge5) {
 
     auto job = jsh::job::parse_job(input);
 
+    // ensure parsing succeeded
+    ASSERT_TRUE(job.has_value());
+
     // ensure correct sizing
-    ASSERT_TRUE(job->process_seq.empty());
-    ASSERT_TRUE(job->input_seq.size() == 2);
-    ASSERT_TRUE(job->operator_seq.size() == 1);
+    ASSERT_TRUE(job.value()->process_seq.empty());
+    ASSERT_TRUE(job.value()->input_seq.size() == 2);
+    ASSERT_TRUE(job.value()->operator_seq.size() == 1);
 
     // ensure correct contents for input and operator sequence
-    ASSERT_STREQ(job->input_seq[0].c_str(), "aa");
-    ASSERT_STREQ(job->input_seq[1].c_str(), " command");
-    ASSERT_EQ(job->operator_seq[0], jsh::job::OPERATOR::AND);
+    ASSERT_STREQ(job.value()->input_seq[0].c_str(), "aa");
+    ASSERT_STREQ(job.value()->input_seq[1].c_str(), " command");
+    ASSERT_EQ(job.value()->operator_seq[0], jsh::job::OPERATOR::AND);
 }
 
 TEST(TestJob, TestParseJobPipeBasic1) {
@@ -183,15 +213,18 @@ TEST(TestJob, TestParseJobPipeBasic1) {
 
     auto job = jsh::job::parse_job(input);
 
+    // ensure parsing succeeded
+    ASSERT_TRUE(job.has_value());
+
     // ensure correct sizing
-    ASSERT_TRUE(job->process_seq.empty());
-    ASSERT_TRUE(job->input_seq.size() == 2);
-    ASSERT_TRUE(job->operator_seq.size() == 1);
+    ASSERT_TRUE(job.value()->process_seq.empty());
+    ASSERT_TRUE(job.value()->input_seq.size() == 2);
+    ASSERT_TRUE(job.value()->operator_seq.size() == 1);
 
     // ensure correct contents for input and operator sequence
-    ASSERT_STREQ(job->input_seq[0].c_str(), "echo hi ");
-    ASSERT_STREQ(job->input_seq[1].c_str(), " echo hi");
-    ASSERT_EQ(job->operator_seq[0], jsh::job::OPERATOR::PIPE);
+    ASSERT_STREQ(job.value()->input_seq[0].c_str(), "echo hi ");
+    ASSERT_STREQ(job.value()->input_seq[1].c_str(), " echo hi");
+    ASSERT_EQ(job.value()->operator_seq[0], jsh::job::OPERATOR::PIPE);
 }
 
 TEST(TestJob, TestParseJobPipeBasic2) {
@@ -200,15 +233,18 @@ TEST(TestJob, TestParseJobPipeBasic2) {
 
     auto job = jsh::job::parse_job(input);
 
+    // ensure parsing succeeded
+    ASSERT_TRUE(job.has_value());
+
     // ensure correct sizing
-    ASSERT_TRUE(job->process_seq.empty());
-    ASSERT_TRUE(job->input_seq.size() == 2);
-    ASSERT_TRUE(job->operator_seq.size() == 1);
+    ASSERT_TRUE(job.value()->process_seq.empty());
+    ASSERT_TRUE(job.value()->input_seq.size() == 2);
+    ASSERT_TRUE(job.value()->operator_seq.size() == 1);
 
     // ensure correct contents for input and operator sequence
-    ASSERT_STREQ(job->input_seq[0].c_str(), "echo hi");
-    ASSERT_STREQ(job->input_seq[1].c_str(), " echo hi");
-    ASSERT_EQ(job->operator_seq[0], jsh::job::OPERATOR::PIPE);
+    ASSERT_STREQ(job.value()->input_seq[0].c_str(), "echo hi");
+    ASSERT_STREQ(job.value()->input_seq[1].c_str(), " echo hi");
+    ASSERT_EQ(job.value()->operator_seq[0], jsh::job::OPERATOR::PIPE);
 }
 
 TEST(TestJob, TestParseJobPipeBasic3) {
@@ -217,15 +253,18 @@ TEST(TestJob, TestParseJobPipeBasic3) {
 
     auto job = jsh::job::parse_job(input);
 
+    // ensure parsing succeeded
+    ASSERT_TRUE(job.has_value());
+
     // ensure correct sizing
-    ASSERT_TRUE(job->process_seq.empty());
-    ASSERT_TRUE(job->input_seq.size() == 2);
-    ASSERT_TRUE(job->operator_seq.size() == 1);
+    ASSERT_TRUE(job.value()->process_seq.empty());
+    ASSERT_TRUE(job.value()->input_seq.size() == 2);
+    ASSERT_TRUE(job.value()->operator_seq.size() == 1);
 
     // ensure correct contents for input and operator sequence
-    ASSERT_STREQ(job->input_seq[0].c_str(), "echo hi ");
-    ASSERT_STREQ(job->input_seq[1].c_str(), "echo hi");
-    ASSERT_EQ(job->operator_seq[0], jsh::job::OPERATOR::PIPE);
+    ASSERT_STREQ(job.value()->input_seq[0].c_str(), "echo hi ");
+    ASSERT_STREQ(job.value()->input_seq[1].c_str(), "echo hi");
+    ASSERT_EQ(job.value()->operator_seq[0], jsh::job::OPERATOR::PIPE);
 }
 
 TEST(TestJob, TestParseJobPipeBasic4) {
@@ -234,15 +273,18 @@ TEST(TestJob, TestParseJobPipeBasic4) {
 
     auto job = jsh::job::parse_job(input);
 
+    // ensure parsing succeeded
+    ASSERT_TRUE(job.has_value());
+
     // ensure correct sizing
-    ASSERT_TRUE(job->process_seq.empty());
-    ASSERT_TRUE(job->input_seq.size() == 2);
-    ASSERT_TRUE(job->operator_seq.size() == 1);
+    ASSERT_TRUE(job.value()->process_seq.empty());
+    ASSERT_TRUE(job.value()->input_seq.size() == 2);
+    ASSERT_TRUE(job.value()->operator_seq.size() == 1);
 
     // ensure correct contents for input and operator sequence
-    ASSERT_STREQ(job->input_seq[0].c_str(), "echo hi");
-    ASSERT_STREQ(job->input_seq[1].c_str(), "echo hi");
-    ASSERT_EQ(job->operator_seq[0], jsh::job::OPERATOR::PIPE);
+    ASSERT_STREQ(job.value()->input_seq[0].c_str(), "echo hi");
+    ASSERT_STREQ(job.value()->input_seq[1].c_str(), "echo hi");
+    ASSERT_EQ(job.value()->operator_seq[0], jsh::job::OPERATOR::PIPE);
 }
 
 TEST(TestJob, TestParseJobPipeEdge1) {
@@ -251,15 +293,18 @@ TEST(TestJob, TestParseJobPipeEdge1) {
 
     auto job = jsh::job::parse_job(input);
 
+    // ensure parsing succeeded
+    ASSERT_TRUE(job.has_value());
+
     // ensure correct sizing
-    ASSERT_TRUE(job->process_seq.empty());
-    ASSERT_TRUE(job->input_seq.size() == 2);
-    ASSERT_TRUE(job->operator_seq.size() == 1);
+    ASSERT_TRUE(job.value()->process_seq.empty());
+    ASSERT_TRUE(job.value()->input_seq.size() == 2);
+    ASSERT_TRUE(job.value()->operator_seq.size() == 1);
 
     // ensure correct contents for input and operator sequence
-    ASSERT_STREQ(job->input_seq[0].c_str(), "");
-    ASSERT_STREQ(job->input_seq[1].c_str(), "");
-    ASSERT_EQ(job->operator_seq[0], jsh::job::OPERATOR::PIPE);
+    ASSERT_STREQ(job.value()->input_seq[0].c_str(), "");
+    ASSERT_STREQ(job.value()->input_seq[1].c_str(), "");
+    ASSERT_EQ(job.value()->operator_seq[0], jsh::job::OPERATOR::PIPE);
 }
 
 TEST(TestJob, TestParseJobPipeEdge2) {
@@ -268,17 +313,23 @@ TEST(TestJob, TestParseJobPipeEdge2) {
 
     auto job = jsh::job::parse_job(input);
 
+    // ensure parsing succeeded
+    ASSERT_TRUE(job.has_value());
+    if (!job.has_value()) {
+        return;
+    }
+
     // ensure correct sizing
-    ASSERT_TRUE(job->process_seq.empty());
-    ASSERT_TRUE(job->input_seq.size() == 3);
-    ASSERT_TRUE(job->operator_seq.size() == 2);
+    ASSERT_TRUE(job.value()->process_seq.empty());
+    ASSERT_TRUE(job.value()->input_seq.size() == 3);
+    ASSERT_TRUE(job.value()->operator_seq.size() == 2);
 
     // ensure correct contents for input and operator sequence
-    ASSERT_STREQ(job->input_seq[0].c_str(), "");
-    ASSERT_STREQ(job->input_seq[1].c_str(), "");
-    ASSERT_STREQ(job->input_seq[2].c_str(), "");
-    ASSERT_EQ(job->operator_seq[0], jsh::job::OPERATOR::PIPE);
-    ASSERT_EQ(job->operator_seq[1], jsh::job::OPERATOR::PIPE);
+    ASSERT_STREQ(job.value()->input_seq[0].c_str(), "");
+    ASSERT_STREQ(job.value()->input_seq[1].c_str(), "");
+    ASSERT_STREQ(job.value()->input_seq[2].c_str(), "");
+    ASSERT_EQ(job.value()->operator_seq[0], jsh::job::OPERATOR::PIPE);
+    ASSERT_EQ(job.value()->operator_seq[1], jsh::job::OPERATOR::PIPE);
 }
 
 TEST(TestJob, TestParseJobPipeEdge3) {
@@ -287,17 +338,20 @@ TEST(TestJob, TestParseJobPipeEdge3) {
 
     auto job = jsh::job::parse_job(input);
 
+    // ensure parsing succeeded
+    ASSERT_TRUE(job.has_value());
+
     // ensure correct sizing
-    ASSERT_TRUE(job->process_seq.empty());
-    ASSERT_TRUE(job->input_seq.size() == 3);
-    ASSERT_TRUE(job->operator_seq.size() == 2);
+    ASSERT_TRUE(job.value()->process_seq.empty());
+    ASSERT_TRUE(job.value()->input_seq.size() == 3);
+    ASSERT_TRUE(job.value()->operator_seq.size() == 2);
 
     // ensure correct contents for input and operator sequence
-    ASSERT_STREQ(job->input_seq[0].c_str(), "");
-    ASSERT_STREQ(job->input_seq[1].c_str(), "a");
-    ASSERT_STREQ(job->input_seq[2].c_str(), " command");
-    ASSERT_EQ(job->operator_seq[0], jsh::job::OPERATOR::PIPE);
-    ASSERT_EQ(job->operator_seq[1], jsh::job::OPERATOR::PIPE);
+    ASSERT_STREQ(job.value()->input_seq[0].c_str(), "");
+    ASSERT_STREQ(job.value()->input_seq[1].c_str(), "a");
+    ASSERT_STREQ(job.value()->input_seq[2].c_str(), " command");
+    ASSERT_EQ(job.value()->operator_seq[0], jsh::job::OPERATOR::PIPE);
+    ASSERT_EQ(job.value()->operator_seq[1], jsh::job::OPERATOR::PIPE);
 }
 
 TEST(TestJob, TestParseJobPipeEdge4) {
@@ -306,15 +360,18 @@ TEST(TestJob, TestParseJobPipeEdge4) {
 
     auto job = jsh::job::parse_job(input);
 
+    // ensure parsing succeeded
+    ASSERT_TRUE(job.has_value());
+
     // ensure correct sizing
-    ASSERT_TRUE(job->process_seq.empty());
-    ASSERT_TRUE(job->input_seq.size() == 2);
-    ASSERT_TRUE(job->operator_seq.size() == 1);
+    ASSERT_TRUE(job.value()->process_seq.empty());
+    ASSERT_TRUE(job.value()->input_seq.size() == 2);
+    ASSERT_TRUE(job.value()->operator_seq.size() == 1);
 
     // ensure correct contents for input and operator sequence
-    ASSERT_STREQ(job->input_seq[0].c_str(), "aa");
-    ASSERT_STREQ(job->input_seq[1].c_str(), " command");
-    ASSERT_EQ(job->operator_seq[0], jsh::job::OPERATOR::PIPE);
+    ASSERT_STREQ(job.value()->input_seq[0].c_str(), "aa");
+    ASSERT_STREQ(job.value()->input_seq[1].c_str(), " command");
+    ASSERT_EQ(job.value()->operator_seq[0], jsh::job::OPERATOR::PIPE);
 }
 
 TEST(TestJob, TestExecuteJobBasic1) {
@@ -326,11 +383,14 @@ TEST(TestJob, TestExecuteJobBasic1) {
     // parse the command
     auto job = jsh::job::parse_job(CMD);
 
+    // ensure parsing succeeded
+    ASSERT_TRUE(job.has_value());
+
     // not actually in the terminal so we use background processes
-    job->is_foreground = false;
+    job.value()->is_foreground = false;
 
     // execute the job
-    jsh::job::execute_job(job);
+    jsh::job::execute_job(job.value());
 
     // open the file
     static constexpr mode_t MODE = 0777;
@@ -366,11 +426,14 @@ TEST(TestJob, TestExecuteJobBasic2) {
     // create a job
     auto job = jsh::job::parse_job(CMD);
 
+    // ensure parsing succeeded
+    ASSERT_TRUE(job.has_value());
+
     // not actually in the terminal so we use background processes
-    job->is_foreground = false;
+    job.value()->is_foreground = false;
 
     // execute the job
-    jsh::job::execute_job(job);
+    jsh::job::execute_job(job.value());
 
     // open the file
     static constexpr mode_t MODE = 0777;
@@ -408,11 +471,14 @@ TEST(TestJob, TestExecuteJobBasic3) {
     // parse job
     auto job = jsh::job::parse_job(CMD);
 
+    // ensure parsing succeeded
+    ASSERT_TRUE(job.has_value());
+
     // not actually in the terminal so we use background processes
-    job->is_foreground = false;
+    job.value()->is_foreground = false;
 
     // execute the job
-    jsh::job::execute_job(job);
+    jsh::job::execute_job(job.value());
 
     static constexpr mode_t MODE = 0777;
 
@@ -475,11 +541,14 @@ TEST(TestJob, TestExitCodeEnvVar) {
     // parse job
     auto job = jsh::job::parse_job(CMD);
 
+    // ensure parsing succeeded
+    ASSERT_TRUE(job.has_value());
+
     // not actually in the terminal so we use background processes
-    job->is_foreground = false;
+    job.value()->is_foreground = false;
 
     // execute the job
-    jsh::job::execute_job(job);
+    jsh::job::execute_job(job.value());
 
     // get the $? env var
     ASSERT_STREQ(jsh::environment::get_var("?"), jsh::environment::SUCCESS_STRING);
@@ -492,12 +561,59 @@ TEST(TestJob, TestExitCodeEnvVarFail) {
     // parse job
     auto job = jsh::job::parse_job(CMD);
 
+    // ensure parsing succeeded
+    ASSERT_TRUE(job.has_value());
+
     // not actually in the terminal so we use background processes
-    job->is_foreground = false;
+    job.value()->is_foreground = false;
 
     // execute the job
-    jsh::job::execute_job(job);
+    jsh::job::execute_job(job.value());
 
     // get the $? env var
     ASSERT_STRNE(jsh::environment::get_var("?"), jsh::environment::SUCCESS_STRING);
+}
+
+TEST(TestJob, TestExit1) {
+    // command
+    static constexpr char const* CMD = "exit";
+
+    // parse job
+    auto job = jsh::job::parse_job(CMD);
+
+    // ensure parsing succeeded
+    ASSERT_TRUE(!job.has_value());
+}
+
+TEST(TestJob, TestExit2) {
+    // command
+    static constexpr char const* CMD = "\nexit";
+
+    // parse job
+    auto job = jsh::job::parse_job(CMD);
+
+    // ensure parsing succeeded
+    ASSERT_TRUE(!job.has_value());
+}
+
+TEST(TestJob, TestExit3) {
+    // command
+    static constexpr char const* CMD = "exit\n";
+
+    // parse job
+    auto job = jsh::job::parse_job(CMD);
+
+    // ensure parsing succeeded
+    ASSERT_TRUE(!job.has_value());
+}
+
+TEST(TestJob, TestExit4) {
+    // command
+    static constexpr char const* CMD = "\nexit\n";
+
+    // parse job
+    auto job = jsh::job::parse_job(CMD);
+
+    // ensure parsing succeeded
+    ASSERT_TRUE(!job.has_value());
 }
