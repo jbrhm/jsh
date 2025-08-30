@@ -192,16 +192,16 @@ auto shell::execute_command() -> bool {
     input = jsh::parsing::variable_substitution(input);
     jsh::cout_logger.log(jsh::LOG_LEVEL::DEBUG, "Substituted user input: ", input);
 
-    // exit jsh on exit keyword
-    if (input == "exit" || input == "\nexit" || input == "exit\n" || input == "\nexit\n") {
-        return false;
-    }
 
     // parse the job
     auto job_data = jsh::job::parse_job(input);
 
+    if(!job_data.has_value()){
+        return false;
+    }
+
     // execute the job
-    jsh::job::execute_job(job_data);
+    jsh::job::execute_job(job_data.value());
 
     // success
     return true;
